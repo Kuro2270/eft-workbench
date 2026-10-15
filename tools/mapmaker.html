@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EFT マップ作成（手元用）</title>
+<style>
+:root{
+  --bg:#1E2528; --panel:#263034; --line:#3A474C; --text:#E3DDD0; --muted:#98A29F;
+  --tan:#C9A66B; --gain:#8DBF6A; --loss:#D0654A; --warn:#E0B44C;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"BIZ UDPGothic","Hiragino Sans","Yu Gothic UI",Meiryo,sans-serif;font-size:13px;line-height:1.5;display:flex;flex-direction:column}
+header{padding:10px 16px;border-bottom:2px solid var(--tan);display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center}
+header h1{margin:0;font-size:18px}
+header a{color:var(--tan)}
+button,select,input{font:inherit;color:var(--text);background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:4px 8px}
+button{cursor:pointer}
+button.primary{background:var(--tan);color:#1E2528;border-color:var(--tan);font-weight:700}
+button.on{border-color:var(--tan);color:var(--tan)}
+:focus-visible{outline:2px solid var(--tan);outline-offset:2px}
+.wrap{flex:1;display:grid;grid-template-columns:1fr 360px;min-height:0}
+#stage{position:relative;min-height:0;overflow:hidden;background:#171d1f}
+#svg{width:100%;height:100%;display:block;cursor:grab;user-select:none}
+#svg.drag{cursor:grabbing}
+#drop{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:rgba(201,166,107,.15);border:3px dashed var(--tan);font-size:18px;pointer-events:none}
+#drop.on{display:flex}
+#hud{position:absolute;left:10px;bottom:8px;color:var(--muted);font-size:12px;background:rgba(0,0,0,.4);padding:3px 8px;border-radius:4px}
+aside{border-left:1px solid var(--line);overflow-y:auto;padding:10px 12px;display:flex;flex-direction:column;gap:12px}
+section h2{font-size:13px;margin:0 0 6px;color:var(--tan)}
+.row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:6px}
+.note{color:var(--muted);font-size:12px}
+.shape{border:1px solid var(--line);border-radius:6px;padding:6px 8px;margin-bottom:6px}
+.shape.sel{border-color:var(--tan);background:#2b3236}
+.shape .head{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.shape .sw{width:12px;height:12px;border-radius:3px;display:inline-block}
+.shape input[type=text]{width:120px}
+.pt{font-family:Consolas,monospace;font-size:12px;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:6px 8px}
+#status{color:var(--muted);font-size:12px}
+</style>
+</head>
+<body>
+<header>
+  <h1>マップ作成（手元用）</h1>
+  <a href="../public/index.html">← トップへ</a>
+  <label>マップ <select id="mapSel"></select></label>
+  <span id="status"></span>
+</header>
+<div class="wrap">
+  <div id="stage">
+    <svg id="svg" xmlns="http://www.w3.org/2000/svg"></svg>
+    <div id="drop">スクリーンショットをここに落とす</div>
+    <div id="hud"></div>
+  </div>
+  <aside>
+    <section>
+      <h2>1. スクリーンショットを読み込む</h2>
+      <div class="row">
+        <button class="primary" id="btnWatch">フォルダを見張る</button>
+        <button id="btnFiles">ファイルを選ぶ</button>
+        <input type="file" id="fileIn" accept="image/*" multiple hidden>
+      </div>
+      <p class="note">「フォルダを見張る」で Screenshots フォルダを選ぶと、ゲーム中に撮ったものが3秒ごとに自動で入ります（Chrome／Edge）。画面に落としても読み込めます。</p>
+      <div class="row">
+        <label>撮影の間が <input type="number" id="gap" min="3" max="600" style="width:60px"> 秒より空いたら、別の形にする</label>
+      </div>
+    </section>
+    <section>
+      <h2>2. 表示</h2>
+      <div class="row">
+        <label>回転 <select id="rot"><option value="0">0°</option><option value="90">90°</option><option value="180">180°</option><option value="270">270°</option></select></label>
+        <label><input type="checkbox" id="flip"> 左右反転</label>
+        <button id="btnFit">全体を表示</button>
+      </div>
+      <div class="row">
+        <label>高さ <input type="number" id="hMin" step="0.5" style="width:70px" placeholder="下限"> 〜 <input type="number" id="hMax" step="0.5" style="width:70px" placeholder="上限"></label>
+      </div>
+      <div class="row"><label><input type="checkbox" id="showPts" checked> 撮った点を表示</label><label><input type="checkbox" id="showDir" checked> 向きを表示</label></div>
+    </section>
+    <section>
+      <h2>3. 選んだ点</h2>
+      <div id="ptInfo" class="note">地図上の点を押すと、ここに出ます。</div>
+    </section>
+    <section>
+      <h2>4. 形の一覧 <span id="shapeCount" class="note"></span></h2>
+      <div id="shapes"></div>
+    </section>
+    <section>
+      <h2>5. 保存・書き出し</h2>
+      <div class="row">
+        <button id="btnSvg">SVG で書き出す</button>
+        <button id="btnJson">データを保存（JSON）</button>
+        <button id="btnLoad">データを読み込む</button>
+        <input type="file" id="jsonIn" accept="application/json" hidden>
+      </div>
+      <p class="note">作業中のデータは、このブラウザにマップごとに自動で残ります。別のPCへ移すときは JSON で保存・読み込みしてください。</p>
+      <div class="row"><button id="btnClear">このマップのデータを消す</button></div>
+    </section>
+  </aside>
+</div>
+<script src="../src/mapmaker-parse.js"></script>
+<script>
+/* マップ作成ツール（手元用・非公開）
+   スクリーンショットのファイル名の位置から、道路や建物の輪郭を描く。他の人の地図は使わない。
+   ファイル名の読み取りは src/mapmaker-parse.js。ここは画面・保存・書き出し */
+const $ = id => document.getElementById(id);
+const MAPS = ["Customs","Streets of Tarkov","Interchange","Woods","Shoreline","Reserve","Lighthouse","Factory","Ground Zero","The Lab"];
+const TYPES = {
+  road:     { ja: "道路",       fill: "#2c3438", stroke: "#5b6a70", closed: false, width: 6 },
+  building: { ja: "建物",       fill: "#d9cfa8", stroke: "#a99f78", closed: true,  width: 1.5 },
+  green:    { ja: "緑地",       fill: "#2f6a3e", stroke: "#3f8a52", closed: true,  width: 1 },
+  water:    { ja: "水辺",       fill: "#2c5a78", stroke: "#3f7aa0", closed: true,  width: 1 },
+  wall:     { ja: "壁・柵",     fill: "none",    stroke: "#b8b2a2", closed: false, width: 1.5 },
+  spot:     { ja: "待ちポイント", fill: "#e5484d", stroke: "#ffffff", closed: false, width: 1 },
+  other:    { ja: "その他",     fill: "none",    stroke: "#98a29f", closed: false, width: 1 }
+};
+const KEY = m => "eft.mapmaker." + m;
+const PREF = "eft.mapmaker.pref";
+let pref = load(PREF, { map: MAPS[0], gap: 20 });
+let st = null;                 // { shapes:[{id,type,closed,label,pts:[]}], view:{rot,flip}, hMin, hMax }
+let sel = { shape: null, pt: null };
+let vb = null;                 // 表示範囲 {x,y,w,h}（画面の座標）
+let dirHandle = null, seen = new Set(), watchTimer = null;
+
+function load(k, d){ try{ const v = JSON.parse(localStorage.getItem(k)); return v || d; }catch(e){ return d; } }
+function save(){ try{ localStorage.setItem(KEY(pref.map), JSON.stringify(st)); localStorage.setItem(PREF, JSON.stringify(pref)); }catch(e){ setStatus("この端末に保存できませんでした（容量など）。JSON で保存してください。"); } }
+function setStatus(s){ $("status").textContent = s; }
+const uid = () => Math.random().toString(36).slice(2, 9);
+const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+/* ---------- 座標：ゲーム (x, z) → 画面 (X, Y)。北が上、回転・反転は表示だけ ---------- */
+function toScreen(p){
+  let X = p.x, Y = -p.z;
+  if(st.view.flip) X = -X;
+  switch(+st.view.rot){
+    case 90:  [X, Y] = [-Y, X]; break;
+    case 180: [X, Y] = [-X, -Y]; break;
+    case 270: [X, Y] = [Y, -X]; break;
+  }
+  return [X, Y];
+}
+/* 画面で上向きを 0° とした向き（度） */
+function screenYaw(yaw){
+  let a = st.view.flip ? -yaw : yaw;
+  return (a + +st.view.rot + 360) % 360;
+}
+const visible = p => (st.hMin === "" || st.hMin == null || p.y >= +st.hMin) && (st.hMax === "" || st.hMax == null || p.y <= +st.hMax);
+
+/* ---------- マップの切り替え ---------- */
+function openMap(m){
+  pref.map = m;
+  st = load(KEY(m), null) || { shapes: [], view: { rot: 0, flip: false }, hMin: "", hMax: "" };
+  st.ignored = st.ignored || [];          // 消した点（見張り中に読み直さないため）
+  seen = new Set([...st.shapes.flatMap(s => s.pts.map(p => p.name)), ...st.ignored]);
+  sel = { shape: null, pt: null };
+  $("rot").value = st.view.rot; $("flip").checked = !!st.view.flip;
+  $("hMin").value = st.hMin ?? ""; $("hMax").value = st.hMax ?? "";
+  save(); fit(); render();
+}
+
+/* ---------- 読み込み：新しい点を、時間の間隔で形に振り分ける ---------- */
+function addPoints(list){
+  const fresh = list.filter(p => p && !seen.has(p.name)).sort((a, b) => a.time - b.time);
+  if(!fresh.length) return 0;
+  const gap = Math.max(3, +pref.gap || 20) * 1000;
+  let last = st.shapes[st.shapes.length - 1];
+  for(const p of fresh){
+    seen.add(p.name);
+    const prev = last && last.pts[last.pts.length - 1];
+    if(!last || !prev || p.time - prev.time > gap){
+      last = { id: uid(), type: "building", closed: true, label: "", pts: [] };
+      st.shapes.push(last);
+    }
+    last.pts.push(p);
+  }
+  save();
+  if(!vb || st.shapes.flatMap(s => s.pts).length === fresh.length) fit();
+  render();
+  return fresh.length;
+}
+async function readFiles(files){
+  const pts = [], bad = [];
+  for(const f of files){
+    const p = MapParse.parseShotName(f.name, f.lastModified);
+    if(p) pts.push(p); else bad.push(f.name);
+  }
+  const n = addPoints(pts);
+  setStatus(`${n} 点を追加しました。` + (bad.length ? `位置が読めないファイル ${bad.length} 件（例：${bad[0]}）` : ""));
+}
+$("btnFiles").onclick = () => $("fileIn").click();
+$("fileIn").onchange = e => { readFiles([...e.target.files]); e.target.value = ""; };
+const stage = $("stage");
+stage.addEventListener("dragover", e => { e.preventDefault(); $("drop").classList.add("on"); });
+stage.addEventListener("dragleave", () => $("drop").classList.remove("on"));
+stage.addEventListener("drop", e => { e.preventDefault(); $("drop").classList.remove("on"); readFiles([...e.dataTransfer.files]); });
+
+/* フォルダを見張る（File System Access API）。3秒ごとに新しいファイルだけ読む */
+$("btnWatch").onclick = async () => {
+  if(watchTimer){ clearInterval(watchTimer); watchTimer = null; $("btnWatch").textContent = "フォルダを見張る"; $("btnWatch").classList.remove("on"); setStatus("見張りを止めました。"); return; }
+  if(!window.showDirectoryPicker){ setStatus("このブラウザはフォルダの見張りに対応していません。Chrome か Edge で開くか、ファイルを選んでください。"); return; }
+  try{ dirHandle = await window.showDirectoryPicker({ id: "eft-shots" }); }catch(e){ return; }
+  const tick = async () => {
+    try{
+      const files = [];
+      for await (const [name, h] of dirHandle.entries()){
+        if(h.kind !== "file" || seen.has(name) || !/\.(png|jpe?g|bmp)$/i.test(name)) continue;
+        files.push(await h.getFile());
+      }
+      if(files.length) await readFiles(files);
+    }catch(e){ setStatus("フォルダを読めませんでした：" + e.message); }
+  };
+  await tick();
+  watchTimer = setInterval(tick, 3000);
+  $("btnWatch").textContent = "見張りを止める"; $("btnWatch").classList.add("on");
+  setStatus(`「${dirHandle.name}」を見張っています。ゲームで撮ると自動で入ります。`);
+};
+
+/* ---------- 描画 ---------- */
+function fit(){
+  const all = st.shapes.flatMap(s => s.pts).filter(visible).map(toScreen);
+  if(!all.length){ vb = { x: -100, y: -100, w: 200, h: 200 }; return; }
+  const xs = all.map(a => a[0]), ys = all.map(a => a[1]);
+  const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+  const pad = Math.max(10, (x1 - x0 + y1 - y0) * 0.08);
+  vb = { x: x0 - pad, y: y0 - pad, w: Math.max(20, x1 - x0 + pad * 2), h: Math.max(20, y1 - y0 + pad * 2) };
+}
+function shapePath(s){
+  const pts = s.pts.filter(visible).map(toScreen);
+  if(!pts.length) return "";
+  return "M" + pts.map(p => p[0].toFixed(2) + " " + p[1].toFixed(2)).join(" L") + (s.closed && pts.length > 2 ? " Z" : "");
+}
+function spotMarks(s, scale){
+  const T = TYPES.spot;
+  return s.pts.filter(visible).map(p => {
+    const [X, Y] = toScreen(p), r = 22 * scale;
+    let cone = "";
+    if(p.yaw != null){
+      const a = screenYaw(p.yaw) * Math.PI / 180, half = 25 * Math.PI / 180;
+      const P = d => [X + Math.sin(a + d) * r * 3, Y - Math.cos(a + d) * r * 3];
+      const [ax, ay] = P(-half), [bx, by] = P(half);
+      cone = `<path d="M${X} ${Y} L${ax} ${ay} A${r * 3} ${r * 3} 0 0 1 ${bx} ${by} Z" fill="#ffcc33" fill-opacity=".35" stroke="#ffcc33" stroke-width="${scale}"/>`;
+    }
+    return cone + `<circle cx="${X}" cy="${Y}" r="${r / 2}" fill="${T.fill}" stroke="${T.stroke}" stroke-width="${scale * 1.5}"/>`;
+  }).join("");
+}
+function render(){
+  const svg = $("svg");
+  const W = svg.clientWidth || 800;
+  const scale = vb.w / W;              // 画面1px あたりの地図の長さ
+  svg.setAttribute("viewBox", `${vb.x} ${vb.y} ${vb.w} ${vb.h}`);
+  let out = `<rect x="${vb.x}" y="${vb.y}" width="${vb.w}" height="${vb.h}" fill="#171d1f"/>`;
+  /* 方眼（10m ごと、50m ごとに濃く） */
+  const step = vb.w > 600 ? 50 : 10;
+  for(let gx = Math.floor(vb.x / step) * step; gx < vb.x + vb.w; gx += step) out += `<line x1="${gx}" y1="${vb.y}" x2="${gx}" y2="${vb.y + vb.h}" stroke="${gx % 50 === 0 ? "#2b3438" : "#202729"}" stroke-width="${scale}"/>`;
+  for(let gy = Math.floor(vb.y / step) * step; gy < vb.y + vb.h; gy += step) out += `<line x1="${vb.x}" y1="${gy}" x2="${vb.x + vb.w}" y2="${gy}" stroke="${gy % 50 === 0 ? "#2b3438" : "#202729"}" stroke-width="${scale}"/>`;
+  /* 形（道路→緑地→水辺→建物→壁→その他→待ちポイントの順に重ねる） */
+  const order = ["road", "green", "water", "building", "wall", "other", "spot"];
+  for(const ty of order){
+    for(const s of st.shapes.filter(s => s.type === ty)){
+      const T = TYPES[ty], isSel = sel.shape === s.id;
+      if(ty === "spot"){ out += spotMarks(s, scale); continue; }
+      const d = shapePath(s); if(!d) continue;
+      const w = ty === "road" ? T.width : T.width * scale;
+      out += `<path d="${d}" fill="${s.closed && ty !== "road" ? T.fill : "none"}" stroke="${isSel ? "#C9A66B" : T.stroke}" stroke-width="${isSel ? Math.max(w, 3 * scale) : w}" stroke-linejoin="round" stroke-linecap="round" fill-opacity="${ty === "building" ? .9 : .7}"/>`;
+      if(s.label){
+        const pts = s.pts.filter(visible).map(toScreen);
+        const cx = pts.reduce((a, p) => a + p[0], 0) / pts.length, cy = pts.reduce((a, p) => a + p[1], 0) / pts.length;
+        out += `<text x="${cx}" y="${cy}" font-size="${13 * scale}" fill="#1E2528" stroke="#E3DDD0" stroke-width="${3 * scale}" paint-order="stroke" text-anchor="middle" dominant-baseline="middle">${esc(s.label)}</text>`;
+      }
+    }
+  }
+  /* 撮った点と向き */
+  if($("showPts").checked){
+    for(const s of st.shapes){
+      s.pts.forEach((p, i) => {
+        if(!visible(p)) return;
+        const [X, Y] = toScreen(p), isSel = sel.pt && sel.pt.name === p.name;
+        if($("showDir").checked && p.yaw != null){
+          const a = screenYaw(p.yaw) * Math.PI / 180, L = 14 * scale;
+          out += `<line x1="${X}" y1="${Y}" x2="${X + Math.sin(a) * L}" y2="${Y - Math.cos(a) * L}" stroke="#8DBF6A" stroke-width="${1.5 * scale}"/>`;
+        }
+        out += `<circle class="pt" data-s="${s.id}" data-i="${i}" cx="${X}" cy="${Y}" r="${(isSel ? 6 : 4) * scale}" fill="${isSel ? "#C9A66B" : sel.shape === s.id ? "#E0B44C" : "#E3DDD0"}" stroke="#171d1f" stroke-width="${scale}" style="cursor:pointer"/>`;
+      });
+    }
+  }
+  svg.innerHTML = out;
+  $("hud").textContent = `${st.shapes.reduce((n, s) => n + s.pts.length, 0)} 点・幅 ${vb.w.toFixed(0)} m　ホイール：拡大縮小／ドラッグ：移動`;
+  renderPanel();
+}
+
+/* ---------- 右側：選んだ点と形の一覧 ---------- */
+function renderPanel(){
+  const sh = st.shapes.find(s => s.id === sel.shape);
+  if(sel.pt && sh){
+    const p = sel.pt, i = sh.pts.indexOf(p);
+    $("ptInfo").innerHTML = `<div class="pt">${esc(p.name)}<br>x ${p.x.toFixed(2)}　z ${p.z.toFixed(2)}　高さ ${p.y.toFixed(2)}${p.yaw != null ? `　向き ${p.yaw.toFixed(0)}°` : ""}</div>
+      <div class="row" style="margin-top:6px"><button id="ptSplit" ${i <= 0 ? "disabled" : ""}>この点から別の形にする</button><button id="ptDel">この点を消す</button></div>`;
+    if($("ptSplit")) $("ptSplit").onclick = () => { const rest = sh.pts.splice(i); st.shapes.splice(st.shapes.indexOf(sh) + 1, 0, { id: uid(), type: sh.type, closed: sh.closed, label: "", pts: rest }); sel.pt = null; save(); render(); };
+    $("ptDel").onclick = () => { sh.pts.splice(i, 1); seen.add(p.name); st.ignored.push(p.name); if(!sh.pts.length) st.shapes.splice(st.shapes.indexOf(sh), 1); sel.pt = null; save(); render(); };
+  }else $("ptInfo").innerHTML = `<span class="note">地図上の点を押すと、ここに出ます。</span>`;
+
+  $("shapeCount").textContent = `（${st.shapes.length}）`;
+  $("shapes").innerHTML = st.shapes.map((s, k) => `<div class="shape${sel.shape === s.id ? " sel" : ""}" data-id="${s.id}">
+    <div class="head"><span class="sw" style="background:${TYPES[s.type].stroke}"></span>
+      <select data-act="type">${Object.entries(TYPES).map(([k2, T]) => `<option value="${k2}"${k2 === s.type ? " selected" : ""}>${T.ja}</option>`).join("")}</select>
+      <label><input type="checkbox" data-act="closed"${s.closed ? " checked" : ""}> 閉じる</label>
+      <span class="note">${s.pts.length} 点</span></div>
+    <div class="head" style="margin-top:4px"><input type="text" data-act="label" placeholder="名前（地図に出す）" value="${esc(s.label)}">
+      <button data-act="pick">選ぶ</button>${k > 0 ? `<button data-act="merge" title="1つ上の形とつなげる">上とつなぐ</button>` : ""}<button data-act="del">消す</button></div>
+  </div>`).join("") || `<p class="note">まだありません。スクリーンショットを読み込むと、撮った間隔ごとに形の候補ができます。</p>`;
+}
+$("shapes").addEventListener("change", e => {
+  const box = e.target.closest(".shape"); if(!box) return;
+  const s = st.shapes.find(x => x.id === box.dataset.id), act = e.target.dataset.act;
+  if(act === "type"){ s.type = e.target.value; s.closed = TYPES[s.type].closed; }
+  if(act === "closed") s.closed = e.target.checked;
+  if(act === "label") s.label = e.target.value;
+  save(); render();
+});
+$("shapes").addEventListener("click", e => {
+  const b = e.target.closest("button"); if(!b) return;
+  const box = b.closest(".shape"), s = st.shapes.find(x => x.id === box.dataset.id), k = st.shapes.indexOf(s);
+  if(b.dataset.act === "pick"){ sel = { shape: s.id, pt: null }; }
+  if(b.dataset.act === "merge" && k > 0){ st.shapes[k - 1].pts.push(...s.pts); st.shapes.splice(k, 1); sel = { shape: st.shapes[k - 1].id, pt: null }; }
+  if(b.dataset.act === "del" && confirm("この形（点ごと）を消しますか？")){ st.ignored.push(...s.pts.map(p => p.name)); st.shapes.splice(k, 1); sel = { shape: null, pt: null }; }
+  save(); render();
+});
+
+/* ---------- 地図の操作（ホイールで拡大縮小、ドラッグで移動、点を押して選ぶ） ---------- */
+const svg = $("svg");
+function svgPoint(e){ const r = svg.getBoundingClientRect(); return [vb.x + (e.clientX - r.left) / r.width * vb.w, vb.y + (e.clientY - r.top) / r.height * vb.h]; }
+svg.addEventListener("wheel", e => {
+  e.preventDefault();
+  const [mx, my] = svgPoint(e), k = e.deltaY > 0 ? 1.15 : 1 / 1.15;
+  vb = { x: mx - (mx - vb.x) * k, y: my - (my - vb.y) * k, w: vb.w * k, h: vb.h * k };
+  render();
+}, { passive: false });
+let drag = null;
+svg.addEventListener("mousedown", e => {
+  const c = e.target.closest("circle.pt");
+  if(c){
+    const s = st.shapes.find(x => x.id === c.dataset.s);
+    sel = { shape: s.id, pt: s.pts[+c.dataset.i] }; render(); return;
+  }
+  drag = { x: e.clientX, y: e.clientY, vb: { ...vb } }; svg.classList.add("drag");
+});
+window.addEventListener("mousemove", e => {
+  if(!drag) return;
+  const r = svg.getBoundingClientRect();
+  vb = { ...drag.vb, x: drag.vb.x - (e.clientX - drag.x) / r.width * drag.vb.w, y: drag.vb.y - (e.clientY - drag.y) / r.height * drag.vb.h };
+  render();
+});
+window.addEventListener("mouseup", () => { drag = null; svg.classList.remove("drag"); });
+window.addEventListener("resize", () => { const r = svg.getBoundingClientRect(); vb.h = vb.w * r.height / Math.max(1, r.width); render(); });
+
+/* ---------- 表示の設定 ---------- */
+$("rot").onchange = e => { st.view.rot = +e.target.value; save(); fit(); render(); };
+$("flip").onchange = e => { st.view.flip = e.target.checked; save(); fit(); render(); };
+$("hMin").onchange = e => { st.hMin = e.target.value; save(); render(); };
+$("hMax").onchange = e => { st.hMax = e.target.value; save(); render(); };
+$("showPts").onchange = render; $("showDir").onchange = render;
+$("btnFit").onclick = () => { fit(); fixAspect(); render(); };
+$("gap").value = pref.gap; $("gap").onchange = e => { pref.gap = +e.target.value || 20; save(); };
+function fixAspect(){ const r = svg.getBoundingClientRect(); if(!r.width) return; const want = r.height / r.width; const h = vb.w * want; if(h >= vb.h){ vb.y -= (h - vb.h) / 2; vb.h = h; } else { const w = vb.h / want; vb.x -= (w - vb.w) / 2; vb.w = w; } }
+
+/* ---------- 保存・書き出し ---------- */
+function download(name, text, type){ const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([text], { type })); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000); }
+const fileBase = () => pref.map.replace(/\s+/g, "_");
+$("btnJson").onclick = () => download(`${fileBase()}.mapdata.json`, JSON.stringify({ map: pref.map, ...st }, null, 1), "application/json");
+$("btnLoad").onclick = () => $("jsonIn").click();
+$("jsonIn").onchange = async e => {
+  const f = e.target.files[0]; e.target.value = ""; if(!f) return;
+  try{
+    const d = JSON.parse(await f.text());
+    if(!Array.isArray(d.shapes)) throw new Error("形のデータがありません");
+    const m = MAPS.includes(d.map) ? d.map : pref.map;
+    if(!confirm(`「${m}」のデータを、読み込んだ内容で置き換えますか？`)) return;
+    localStorage.setItem(KEY(m), JSON.stringify({ shapes: d.shapes, ignored: d.ignored || [], view: d.view || { rot: 0, flip: false }, hMin: d.hMin ?? "", hMax: d.hMax ?? "" }));
+    $("mapSel").value = m; openMap(m); setStatus("読み込みました。");
+  }catch(err){ setStatus("読み込めませんでした：" + err.message); }
+};
+$("btnClear").onclick = () => { if(!confirm(`「${pref.map}」のデータをすべて消しますか？（元に戻せません）`)) return; st.shapes = []; st.ignored = []; seen = new Set(); sel = { shape: null, pt: null }; save(); fit(); render(); };
+/* SVG：点や方眼を除いた、地図としての絵だけを書き出す */
+$("btnSvg").onclick = () => {
+  const keep = { pts: $("showPts").checked };
+  $("showPts").checked = false; const saveVb = { ...vb }; fit(); render();
+  let body = $("svg").innerHTML.replace(/<line [^>]*stroke="#(2b3438|202729)"[^>]*\/?>(<\/line>)?/g, "");
+  const out = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb.x} ${vb.y} ${vb.w} ${vb.h}" width="${Math.round(vb.w * 4)}" height="${Math.round(vb.h * 4)}">${body}</svg>`;
+  $("showPts").checked = keep.pts; vb = saveVb; render();
+  download(`${fileBase()}.svg`, out, "image/svg+xml");
+};
+
+/* ---------- 起動 ---------- */
+$("mapSel").innerHTML = MAPS.map(m => `<option>${m}</option>`).join("");
+$("mapSel").value = pref.map;
+$("mapSel").onchange = e => openMap(e.target.value);
+openMap(pref.map);
+requestAnimationFrame(() => { fixAspect(); render(); });
+</script>
+</body>
+</html>

@@ -1,0 +1,1888 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EFT 転売ボード</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#1E2528; --panel:#263034; --line:#3A474C; --text:#E3DDD0; --muted:#98A29F;
+  --tan:#C9A66B; --gain:#8DBF6A; --loss:#D0654A; --warn:#E0B44C;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);
+  font-family:"BIZ UDPGothic","Hiragino Sans","Yu Gothic UI",Meiryo,sans-serif;font-size:14px;line-height:1.55}
+header{padding:18px 20px 10px;border-bottom:2px solid var(--tan);display:flex;flex-wrap:wrap;gap:12px 24px;align-items:baseline}
+header h1{margin:0;font-size:22px;letter-spacing:.02em}
+header .status{color:var(--muted);font-size:13px}
+main{padding:14px 20px 40px;max-width:1400px}
+button,select,input{font:inherit;color:var(--text);background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:5px 10px}
+button{cursor:pointer}
+button.primary{background:var(--tan);color:#1E2528;border-color:var(--tan);font-weight:700}
+button:disabled{opacity:.5;cursor:default}
+:focus-visible{outline:2px solid var(--tan);outline-offset:2px}
+details.settings{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:10px 14px;margin-bottom:14px}
+details.settings summary{cursor:pointer;font-weight:700}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px 16px;margin-top:10px}
+.grid label{display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--muted)}
+.grid input,.grid select{width:100%}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:12px}
+.tabs button{border:none;border-bottom:3px solid transparent;border-radius:0;background:none;padding:8px 14px;color:var(--muted)}
+.tabs button[aria-selected="true"]{color:var(--text);border-bottom-color:var(--tan);font-weight:700}
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:10px}
+.note{color:var(--muted);font-size:12px}
+.banner{border-left:4px solid var(--warn);background:#2E2A1E;padding:8px 12px;margin-bottom:10px;font-size:13px}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:6px}
+table{border-collapse:collapse;width:100%;min-width:980px;font-variant-numeric:tabular-nums}
+th,td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th{background:var(--panel);position:sticky;top:0;font-size:12px;color:var(--muted);cursor:pointer;user-select:none}
+th.l,td.l{text-align:left}
+th[data-sorted]::after{content:attr(data-sorted);color:var(--tan)}
+tr:hover td{background:#243035}
+td.item{display:flex;gap:8px;align-items:center;min-width:220px;white-space:normal}
+td.item img{width:36px;height:36px;object-fit:contain;background:#151B1D;border-radius:3px;flex:none}
+td.item a{color:var(--text);text-decoration:none}
+td.item a:hover{text-decoration:underline}
+.copy{display:inline-flex;align-items:center;justify-content:center;width:22px;height:20px;padding:0;margin:0 4px;vertical-align:-3px;border-radius:3px;color:var(--muted)}
+.copy:hover{color:var(--text);border-color:var(--tan)}
+.copy.done{color:#1E2528;background:var(--gain);border-color:var(--gain)}
+.copy.fail{color:#1E2528;background:var(--loss);border-color:var(--loss)}
+.lang{margin-left:auto;display:inline-flex;border:1px solid var(--line);border-radius:4px;overflow:hidden}
+.lang button{border:none;border-radius:0;padding:3px 10px;font-size:12px;color:var(--muted);background:none}
+.lang button[aria-pressed="true"]{background:var(--tan);color:#1E2528;font-weight:700}
+.sub{display:block;color:var(--muted);font-size:11px}
+.gain{color:var(--gain)} .loss{color:var(--loss)}
+.tag{display:inline-block;font-size:11px;border:1px solid var(--line);border-radius:3px;padding:0 4px;margin-left:4px;color:var(--muted)}
+.tag.need{border-color:#5E7A5A;color:#A9C79A}
+td.liq{white-space:normal;min-width:170px}
+.sub.mats{white-space:normal;max-width:420px}
+td.liq .sub{margin-top:2px}
+.tag.warn{border-color:var(--warn);color:var(--warn)}
+.hides label{margin-left:9px;display:inline-flex;align-items:center;gap:4px;cursor:pointer}
+.hides input{vertical-align:-2px;accent-color:var(--tan)}
+.tier{display:inline-block;min-width:26px;text-align:center;font-weight:700;border-radius:3px;padding:1px 5px;color:#1E2528}
+.tier.S{background:#E0B44C} .tier.A{background:#8DBF6A} .tier.B{background:#7FA8C9}
+.tier.C{background:#98A29F} .tier.D{background:#5A6468;color:#C9CFCD}
+.opp{display:inline-flex;align-items:center;gap:6px}
+.opp i{display:inline-block;width:54px;height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.opp i b{display:block;height:100%;background:var(--gain)}
+svg.spark{display:block}
+[hidden]{display:none !important}
+.pages{display:flex;gap:6px;margin-left:auto}
+.pages a{color:var(--muted);text-decoration:none;border:1px solid var(--line);border-radius:4px;padding:3px 10px}
+.pages a[aria-current="page"]{color:#1E2528;background:var(--tan);border-color:var(--tan);font-weight:700}
+#tierBoard{display:flex;flex-direction:column;gap:6px}
+.trow{display:flex;gap:8px;align-items:stretch}
+.tlab{flex:0 0 112px;border-radius:4px;padding:8px 6px;color:#1E2528;text-align:center;display:flex;flex-direction:column;justify-content:center}
+.tlab b{font-size:30px;line-height:1.1}.tlab small{font-size:11px;font-weight:400;line-height:1.3}
+.tlab.S{background:#E0B44C}.tlab.A{background:#8DBF6A}.tlab.B{background:#7FA8C9}.tlab.C{background:#98A29F}.tlab.D{background:#5A6468;color:#E3DDD0}
+.ticons{flex:1;display:flex;flex-wrap:wrap;gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:6px;min-height:78px;align-content:flex-start}
+.ti{width:64px;height:64px;background:#1A2124;border:1px solid var(--line);border-radius:3px;display:flex;align-items:center;justify-content:center;overflow:hidden;font-size:10px;line-height:1.2;text-align:center;color:var(--muted);text-decoration:none;word-break:break-all}
+.ti img{max-width:100%;max-height:100%;object-fit:contain}
+.ti:hover,.ti:focus{outline:2px solid var(--tan);outline-offset:1px}
+#tip{position:fixed;z-index:50;pointer-events:none;background:#12181A;border:1px solid var(--tan);border-radius:4px;padding:8px 11px;font-size:12.5px;line-height:1.55;max-width:320px;box-shadow:0 4px 16px #0009}
+#tip b.n{display:block;font-size:13.5px;margin-bottom:2px}
+#tip .k{color:var(--muted)}
+#marketPanel{margin:0 0 10px}
+.mbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:10px 12px;margin-bottom:12px}
+.mbar input[type=number]{width:4.6em}
+.note.ok{color:var(--gain)} .note.warn{color:var(--warn)}
+.msec{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:10px 12px;margin-bottom:12px;overflow-x:auto}
+.msec h2{font-size:15px;margin:0 0 2px} .msec h2 small{font-weight:400;color:var(--muted);font-size:12px;margin-left:8px}
+.msec.buy h2{color:#7FA8C9} .msec.sell h2{color:var(--gain)}
+.mtbl{width:100%;border-collapse:collapse;font-size:13px}
+.mtbl th,.mtbl td{padding:5px 8px;border-top:1px solid var(--line);text-align:right;white-space:nowrap;vertical-align:middle}
+.mtbl th{color:var(--muted);font-weight:400;border-top:0}
+.mtbl .l{text-align:left}
+.mtbl tr.mrow{cursor:pointer} .mtbl tr.mrow:hover td{background:#ffffff08}
+.mtbl tr.mrow.open td{background:#ffffff0d}
+.wico{display:inline-flex;width:28px;height:28px;vertical-align:middle;margin-right:6px;align-items:center;justify-content:center}
+.wico img{max-width:100%;max-height:100%}
+.mrec b{font-size:14px} .msec.buy .mrec b{color:#7FA8C9} .msec.sell .mrec b{color:var(--gain)}
+.mtag{display:inline-block;border-radius:3px;padding:0 6px;font-size:12px;margin-left:6px;color:#1E2528;font-weight:700}
+.mtag.buy{background:#7FA8C9} .mtag.sell{background:var(--gain)}
+.mprofit b{color:var(--gain);font-size:14px}
+.mtag.held{background:var(--tan)}
+.sadd{margin-left:8px;padding:1px 8px;font-size:12px}
+.sform{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}
+#stockDlg{position:fixed;z-index:60;left:50%;top:24px;transform:translateX(-50%);background:var(--panel);border:2px solid var(--tan);border-radius:6px;padding:14px 18px;box-shadow:0 8px 28px #000c;max-width:calc(100vw - 32px)}
+.msec.stock{border-color:var(--tan)} .msec.stock h2{color:var(--tan)}
+.ssell{margin:4px 0;color:#1E2528;background:var(--gain);display:inline-block;border-radius:3px;padding:1px 10px;font-weight:700}
+.sstate{display:inline-block;border:1px solid var(--line);border-radius:3px;padding:0 6px;color:var(--muted)}
+.s-sell .sstate{background:var(--gain);border-color:var(--gain);color:#1E2528;font-weight:700}
+.s-sell td{background:#8DBF6A14}
+.s-plus .sstate{border-color:var(--gain);color:var(--gain)}
+.s-high .sstate{border-color:var(--warn);color:var(--warn)}
+.spl b.gain{color:var(--gain)} .spl b.loss{color:var(--loss)}
+.mrange{display:inline-block;position:relative;width:140px;height:8px;border-radius:4px;background:linear-gradient(90deg,#7FA8C9 0 25%,var(--line) 25% 75%,var(--gain) 75% 100%);vertical-align:middle;opacity:.9}
+.mrange i{position:absolute;top:-4px;width:4px;height:16px;margin-left:-2px;border-radius:2px;background:#E3DDD0;box-shadow:0 0 0 2px var(--panel)}
+.mrangeL{display:flex;justify-content:space-between;width:140px;margin-left:auto;font-size:11px;color:var(--muted)}
+.mdetail td{padding:8px 8px 12px;text-align:left;white-space:normal}
+.mdetail .mtext{color:var(--muted);font-size:12.5px;line-height:1.7;margin-top:6px}
+svg.wchart{display:block;cursor:crosshair;max-width:100%}
+svg.wchart .dot{fill:var(--muted);opacity:.55}
+svg.wchart .ma-short{fill:none;stroke:var(--tan);stroke-width:2;stroke-linejoin:round}
+svg.wchart .ma-long{fill:none;stroke:#E3DDD0;stroke-width:2;stroke-dasharray:4 3;opacity:.7}
+svg.wchart .ref-buy{stroke:#7FA8C9;stroke-width:1.5;stroke-dasharray:2 3}
+svg.wchart .ref-sell{stroke:var(--gain);stroke-width:1.5;stroke-dasharray:2 3}
+svg.wchart text{font-size:10px;fill:var(--muted)}
+svg.wchart .cross{stroke:var(--muted);stroke-width:1}
+.wleg{font-weight:400;font-size:11.5px;display:inline-flex;flex-wrap:wrap;align-items:center;gap:4px 12px;color:var(--muted)}
+.wleg i{display:inline-block;width:16px;height:0;margin-right:4px;vertical-align:middle}
+.wleg i.ls{border-top:2px solid var(--tan)} .wleg i.ll{border-top:2px dashed #E3DDD0} .wleg i.ld{width:5px;height:5px;border-radius:50%;background:var(--muted)}
+.wleg i.lb{border-top:2px dotted #7FA8C9} .wleg i.lh{border-top:2px dotted var(--gain)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin:8px 0 18px}
+.cards .lead{grid-column:1/-1;margin:0 0 4px;color:var(--muted)}
+.card{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:16px 18px;color:inherit;text-decoration:none}
+.card b{font-size:17px;color:var(--tan)}
+.card span{color:var(--muted);font-size:13px;line-height:1.6}
+.card:hover,.card:focus{border-color:var(--tan)}
+.card.sub b{color:inherit}
+.setline a{color:var(--tan)}
+footer{padding:16px 20px;color:var(--muted);font-size:12px;border-top:1px solid var(--line)}
+footer a{color:var(--muted)}
+@media (max-width:700px){header,main{padding-left:10px;padding-right:10px}}
+</style>
+</head>
+<body>
+<header>
+  <h1 data-i18n="title">EFT 転売ボード</h1>
+  <span class="status" id="status"></span>
+  <nav class="pages" id="pages" hidden><a href="index.html" id="pgTop" data-i18n="pageTop"></a><a href="flip.html" id="pgFlip" data-i18n="pageBoard"></a><a href="loot.html" id="pgLoot" data-i18n="pageLoot"></a><a href="watch.html" id="pgWatch" data-i18n="pageWatch"></a><a href="settings.html" id="pgSettings" data-i18n="pageSettings"></a></nav>
+  <span class="lang" role="group" aria-label="Language / 言語"><button type="button" data-lang="ja">日本語</button><button type="button" data-lang="en">English</button></span>
+</header>
+<main>
+  <section id="topCards" class="cards" hidden>
+    <p class="lead" data-i18n="topLead"></p>
+    <a class="card" href="flip.html"><b data-i18n="pageBoard"></b><span data-i18n="topFlip"></span></a>
+    <a class="card" href="loot.html"><b data-i18n="pageLoot"></b><span data-i18n="topLoot"></span></a>
+    <a class="card" href="watch.html"><b data-i18n="pageWatch"></b><span data-i18n="topWatch"></span></a>
+    <a class="card sub" href="settings.html"><b data-i18n="pageSettings"></b><span data-i18n="topSettings"></span></a>
+    <a class="card sub" href="mapmaker.html"><b data-i18n="pageMapmaker"></b><span data-i18n="topMapmaker"></span></a>
+  </section>
+  <p class="note" id="pageLead" hidden></p>
+  <details class="settings" id="flipBox">
+    <summary data-i18n="flipSummary"></summary>
+    <div class="grid" id="flipGrid"></div>
+  </details>
+  <p class="note setline" id="settingsLine" hidden></p>
+  <details class="settings" id="settingsBox">
+    <summary data-i18n="settingsSummary"></summary>
+    <div class="grid" id="settingsGrid"></div>
+    <p class="note" data-i18n="settingsNote"></p>
+  </details>
+
+  <div class="bar">
+    <label class="note"><span data-i18n="mode"></span> <select id="modeSel"></select></label>
+    <button class="primary" id="loadBtn" data-i18n="load"></button>
+    <button id="analyzeBtn" disabled data-i18n="analyze"></button>
+    <label class="note"><span data-i18n="topN"></span> <select id="topN"><option>20</option><option selected>30</option><option>50</option></select></label>
+    <label class="note"><span data-i18n="days"></span> <select id="daysSel"></select></label>
+    <label class="note" id="liqFilterWrap" hidden><span data-i18n="liqFilter"></span> <select id="liqFilter">
+      <option value="all" data-i18n="liqAll"></option><option value="mid" data-i18n="liqMid"></option><option value="high" data-i18n="liqHigh"></option></select></label>
+    <label class="note" id="lootFilterWrap" hidden><span data-i18n="lootType"></span> <select id="lootType"></select>
+      <input type="search" id="lootSearch" placeholder="" size="14"></label>
+    <span class="note hides" id="lootHideWrap" hidden><span data-i18n="lootHide"></span><label><input type="checkbox" data-hide="hideLootKeys"><span data-i18n="lootHideKeys"></span></label><label><input type="checkbox" data-hide="hideLootArmor"><span data-i18n="lootHideArmor"></span></label><label><input type="checkbox" data-hide="hideLootHelmets"><span data-i18n="lootHideHelmets"></span></label><label><input type="checkbox" data-hide="hideLootBalaclava"><span data-i18n="lootHideBalaclava"></span></label><label><input type="checkbox" data-hide="hideLootVariants"><span data-i18n="lootHideVariants"></span></label><label><input type="checkbox" data-hide="hideLootMods"><span data-i18n="lootHideMods"></span></label><label><input type="checkbox" data-hide="hideLootWearables"><span data-i18n="lootHideWearables"></span></label><label><input type="checkbox" data-hide="hideLootHeadsets"><span data-i18n="lootHideHeadsets"></span></label><label><input type="checkbox" data-hide="hideLootGuns"><span data-i18n="lootHideGuns"></span></label><label><input type="checkbox" data-hide="hideLootPosters"><span data-i18n="lootHidePosters"></span></label></span>
+    <span class="note hides" id="lootRareWrap" hidden><label><span data-i18n="lootRare1"></span><input type="number" id="lootMinOffers" min="0" max="999" style="width:4.5em"><span data-i18n="lootRare2"></span></label> <span id="lootCut"></span></span>
+    <button id="viewBtn" hidden></button>
+    <span class="note" id="progress"></span>
+  </div>
+
+  <div class="tabs" role="tablist">
+    <button role="tab" aria-selected="true" data-tab="f2t" data-i18n="tabF2T"></button>
+    <button role="tab" aria-selected="false" data-tab="t2f" data-i18n="tabT2F"></button>
+    <button role="tab" aria-selected="false" data-tab="b2f" data-i18n="tabB2F"></button>
+    <button role="tab" aria-selected="false" data-tab="loot" data-i18n="tabLoot"></button>
+  </div>
+  <div id="banner"></div>
+  <section id="marketPanel" hidden></section>
+  <p class="note" id="tierLegend"></p>
+  <div id="tierBoard" hidden></div>
+  <div class="tablewrap" id="listWrap"><table id="tbl"><thead></thead><tbody></tbody></table></div>
+  <p class="note" id="hiddenNote"></p>
+  <p class="note" id="explain"></p>
+</main>
+<footer id="footer"></footer>
+<div id="tip" hidden></div>
+
+<script>
+"use strict";
+/* ================= 言語 ================= */
+const I18N = {
+  ja: {
+    title: "EFT 転売ボード", titleLoot: "EFT 持ち帰りティア表", titleTop: "EFT ツール", titleWatch: "EFT 売り時・買い時", titleSettings: "EFT プレイヤー設定",
+    pageTop: "トップ", pageBoard: "転売ボード", pageLoot: "持ち帰りティア表", pageWatch: "売り時・買い時", pageSettings: "プレイヤー設定",
+    topLead: "使いたいツールを選んでください。プレイヤー設定は、すべてのツールで共通です。",
+    topFlip: "フリマとトレーダーの値段の差で利益が出る品を、売れやすさと一緒に一覧にします。",
+    topLoot: "レイドで持ち帰る品を、1マスあたりの売値で S〜D の段に分けます。何を優先して持ち帰るかの目安に。",
+    topWatch: "いまの値段が過去の底値付近の品（買い場）と、高値付近の品（売り場）をランキングで並べ、おすすめの買値・売値も出します。品を選ぶと値動きと移動平均のグラフも見られます。",
+    topSettings: "プレイヤーレベル・トレーダーのLL・インテルセンターなど。手数料や買える品の判定に使います。",
+    pageMapmaker: "マップ作成（手元用）", topMapmaker: "ゲーム内で撮ったスクリーンショットの位置から、道路や建物の見取り図を描きます。",
+    leadWatch: "いまの相場（安い出品いくつかの平均）が、過去の値動きの中でどの位置にあるかを見て、底値付近の品を「買い場」、高値付近の品を「売り場」として並べます。品をクリックすると、値動き・移動平均・おすすめの値段をグラフで確かめられます。",
+    leadSettings: "ここで決めた内容は、転売ボード・持ち帰りティア表・売り時通知のすべてで使います（このブラウザに保存されます）。",
+    setLine: "プレイヤー設定：Lv{lv}・インテルセンターLv{intel}", setLink: "変更する",
+    settingsSummary: "プレイヤーの状況（自動で保存されます）", flipSummary: "転売の条件（最低利益・出品数など）",
+    settingsNote: "トレーダーのロイヤリティレベル（LL）は、トレーダーから買う転売で「買える品物」の判定に使います。インテルセンターLv3以上でフリマ手数料が安くなります。",
+    mode: "モード", load: "最新の価格に更新", analyze: "上位の推移を分析", topN: "分析する件数", days: "期間", dayOpt: "{n}日",
+    liqFilter: "売れやすさ", liqAll: "すべて", liqMid: "中以上", liqHigh: "高のみ",
+    tabF2T: "フリマで買ってトレーダーに売る", tabT2F: "トレーダーで買ってフリマで売る", tabB2F: "交換で手に入れてフリマで売る",
+    tabLoot: "レイドで持ち帰る",
+    lootType: "種類", lootAll: "すべて", lootSearch: "名前で絞り込み",
+    slotsN: "{w}×{h}＝{n}マス", stackTag: "1マスに{n}個", noFleaTag: "フリマ不可", fleaLockTag: "フリマLv{n}で解放", fleaLockTip: "フリマで売るにはプレイヤーLv{n}が必要です。いまの設定はLv{c}です。設定の「プレイヤーレベル」を実際のレベルに合わせると、ここにフリマ手取りが出ます。",
+    lootTotal: "計 {v}（{t}）", lootTotalFlea: "計 {v}（手数料 {f}）",
+    tierLegend: "段位の目安（1マスあたりの手取り）　S：{s}以上／A：{a}以上／B：{b}以上／C：{c}以上／D：それ未満",
+    explainLoot: "マス単価：売ったときの手取りを、そのアイテムが占めるマス数で割った額です。トレーダーはその場で確実に売れる額（手数料なし・FIR不要）、フリマは最安値で出したときの手数料を引いたあとの手取りです。高いほうをマス単価として段位を付けています。弾はばら売りしないので一覧に出していません（弾薬箱は出ます）。アームバンドとドッグタグも出していません。銃はフリマ価格が組み立て済みと混ざっているため、トレーダー側だけで見ています。段位は、そのときの全アイテムの中での位置（上位何%か）で決まります。既定では、ドッグタグは常に出していません。鍵・ケース（当てにできない）、防具・リグ・ヘルメット（耐久が削れていて値段が当てにならない）、バックパック（自分で背負うもの）、マスク・バラクラバなどの顔まわり（ほとんど出回らない）、名前に（）が付く特殊バージョン（柄や色違いの限定品）、武器パーツ（外す手間の割に安い）、ヘッドセット（自分で着けるもの）、帽子・メガネ・ひげなどの身に着ける小物、アリーナの品（本編では拾えない。常に出しません）、銃・近接武器（拾うのが難しい）、ポスター、銃のプリセット（銃と二重になる）を一覧に出していません。出していないぶんは段位の境目を決める数にも入れていません。上の「一覧に表示」にチェックを入れると出せます（プリセットは常に出しません）。入手の難しさはドロップ率のデータが無いため、フリマの出品数で見ています。出品が少ない品は、拾えてもたまたまなので外します（「件未満は外す」で変えられます。外した品は件数の上にマウスを乗せると見えます）。",
+    kinds: {barter: "バーター品", meds: "医療品", provisions: "食料・飲料", keys: "鍵", mods: "武器パーツ", poster: "ポスター", gun: "銃", ammo: "弾薬", ammoBox: "弾薬箱", armor: "防具", armorPlate: "装甲板", helmet: "ヘルメット", rig: "リグ", backpack: "バックパック", container: "コンテナ", grenade: "投擲物", glasses: "アイウェア", headphones: "ヘッドセット", injectors: "注射器", wearable: "着用品", suppressor: "サプレッサー"},
+    matCost: "材料原価", mats: "材料", matFlea: "フリマ", matHard: "材料が揃いにくい",
+    matHardTip: "{name}：必要{n}個に対して{why}", matFewOffers: "フリマの出品が{o}件しかありません", matLimit: "トレーダーの購入上限が{o}個です",
+    matAvgNote: "2個以上必要な材料は、最安値だけでは揃わないため最安値と24時間平均の中間で計算しています",
+    explainB2F: "材料原価：交換に必要な材料を、フリマの最安値とトレーダーの現金価格（あなたのLLで買えるもの）の安いほうで揃えた場合の合計です。2個以上必要な材料は最安値と24時間平均の中間で計算しています。「材料が揃いにくい」は、出品数や購入上限が必要数に対して少ない材料がある交換です。利益が出た割合・売れやすさは受け取る品物について計算しています。",
+    footer: "価格データ：{src}（{mode}）。フリマの最安値や出品数は数分〜数十分遅れることがあります。<br>当サイトは非公式のファンサイトで、Battlestate Games とは関係ありません。<br><a href=\"about.html\">運営者情報</a>・<a href=\"privacy.html\">プライバシーポリシー</a>・<a href=\"contact.html\">お問い合わせ</a>",
+    modes: {regular: "PvP（通常）", "pvp-season": "PvP シーズナル", pve: "PvE"},
+    traders: {prapor: "プラパー", therapist: "セラピスト", skier: "スキアー", peacekeeper: "ピースキーパー", mechanic: "メカニック", ragman: "ラグマン", jaeger: "イェーガー", ref: "レフ"},
+    sPlayerLevel: "PMCレベル", sIntel: "インテルセンター Lv", sMgmt: "ハイドアウト管理スキル", sMinProfit: "最低利益（₽／1個）", sMinOffers: "最低出品数",
+    sFence: "フェンスへの売却", include: "含める", exclude: "含めない",
+    sTaskLocked: "クエスト解放が必要な品", hide: "隠す", show: "表示",
+    sKeys: "残量のある品（鍵・カード・医薬品・燃料など）：フリマ→トレーダー", keysWarn: "注意付きで表示", keysExclude: "除外（おすすめ）",
+    sWeapons: "銃本体・プリセット", gunsWarn: "注意付きで表示", gunsExclude: "除外（おすすめ）",
+    lootHide: "一覧に表示：", lootHideKeys: "鍵・ケース", lootHideArmor: "防具・リグ・バッグ", lootHideHelmets: "ヘルメット・パーツ", lootHideBalaclava: "マスク・バラクラバ", lootHideVariants: "特殊バージョン（名前に（）付き）", lootHideMods: "武器パーツ", lootHideHeadsets: "ヘッドセット", lootHideWearables: "帽子・メガネ・ひげなど", lootHideGuns: "銃・近接武器", lootHidePosters: "ポスター", lootRare1: "フリマの出品数が", lootRare2: "件未満の品は外す（0で外さない）", lootCutN: "{n}品を外しています", lootCutNone: "外した品はありません",
+    gunTag: "組み立て済みの値段",
+    gunTip: "銃のフリマ最安値は、その銃の組み立て済み（プリセット）の出品も含めた最安値です。トレーダーが売るのは素の本体なので、この差額はそのままでは取れません。素の本体を出品しても、この値段では売れないと考えてください。",
+    stepItems: "アイテムと価格（数十MBあるため少し時間がかかります）",
+    loading: "取得中…", loaded: "{mode}：{n}品目を取得（{time}）", loadedSnap: "{mode}：{n}品目（{date} {time} 時点のデータ）", loadFail: "取得できませんでした：{msg}",
+    netErr: "{step}で通信できませんでした（{why}）", timeout: "90秒で応答なし", httpErr: "{step}でエラー（HTTP {status}）",
+    stepNames: {items: "アイテム取得", items_ja: "日本語名の取得", items_en: "英語名の取得", traders: "トレーダー取得", traders_ja: "トレーダー名の取得（日）", traders_en: "トレーダー名の取得（英）", prices: "推移の取得"},
+    histProgress: "推移を取得中 {i} / {n}", histDone: "{n}件を分析しました", histFail: "推移の取得に失敗しました：{msg}",
+    switched: "{mode}に切り替えました",
+    cols: {item: "アイテム", buyFlea: "フリマ最安（買値）", sellTrader: "トレーダー買取", profit: "利益／個", offers: "出品数", chg: "48h変動",
+      tier: "段位", perSlot: "マス単価", slots: "サイズ", traderSell: "トレーダー売却", fleaNet: "フリマ手取り",
+      rate: "利益が出た割合", expected: "期待利益／個", spark: "{d}日間の最安値", buyTrader: "トレーダー価格", matCost: "材料原価", sellFlea: "フリマ売値", fee: "手数料", limit: "購入上限", liq: "売れやすさ", total: "想定総利益（上限まで）"},
+    totalExp: "期待値なら {v}", totalTip: "利益／個 × {n}個（{by}）。トレーダーが補充するたびに、また同じだけ買えます",
+    capBy: {limit: "購入上限", stock: "在庫数"},
+    breakEven: "下限 {v}", breakEvenTip: "この売値を下回ると、手数料を引いたあとに最低利益（{p}）が残りません",
+    pcs: "{n}個", median7: "{d}日中央値 {n}", tooFew: "データ不足",
+    worst: "残り1回なら {v}", worstTip: "最安の出品が残り1回の鍵だった場合",
+    usesTag: "使用回数 最大{n}回", hpTag: "残量 最大{n}", resTag: "残量 最大{n}",
+    usesTipF2T: "フリマの最安値は使用済み（残りが少ない）出品の可能性が高く、トレーダーの買取額は残量に応じて下がります。購入時は残量を必ず確認してください",
+    usesTipT2F: "トレーダー品は新品（最大回数）です。フリマの最安値は使用済みの出品の可能性があり、新品はもう少し高く売れることがあります",
+    taskTag: "要クエスト", fleaLv: "フリマLv{n}", needTip: "買い手がいる理由：{k}として合計{n}個使われます（この品物を交換で手に入れるという意味ではありません）",
+    demand: {quest: "クエスト納品", hideout: "ハイドアウト素材", barter: "交換の材料", craft: "クラフト素材"}, demandSep: "・",
+    copy: "名前をコピー",
+    liqLevel: {high: "高", mid: "中", low: "低"},
+    why: {
+      priceDown: "価格が下落傾向（1日{v}%）", priceUp: "価格が上昇傾向", offersUp: "出品数が増加傾向（1日+{v}%）",
+      offersDown: "出品数が減っている（買われている）", spreadSmall: "最安値と平均価格の差が小さい", spreadLarge: "最安値と平均価格の差が大きい",
+      volatile: "価格の上下が激しい", thin: "出品が常に少ない（取引が薄い）", fewish: "出品が少なめ", demand: "需要あり：{list}", noDemand: "クエスト・ハイドアウト等での用途なし"
+    },
+    sparkLabel: "{d}日間のフリマ最安値の推移と{line}", lineF2T: "買ってよい上限", lineT2F: "利益が出る下限",
+    emptyInit: "データを読み込むと、今フリマとトレーダーの間で利益が出る品物を一覧にします。",
+    emptyLiq: "売れやすさの条件に合う品物がありません（{n}件を非表示）。「分析する件数」を増やすか、条件を「すべて」に戻してください。",
+    liqHidden: "売れやすさの条件で{n}件を非表示", liqBase: "基準点 50", autoAnalyzing: "上位{n}件の推移を分析中…",
+    empty: "条件に合う品物がありません。設定の「最低利益」や「最低出品数」を下げると候補が増えます。",
+    explainF2T: "利益が出た割合：過去{d}日間の記録のうち、フリマ最安値で買ってトレーダーに売ると最低利益以上になった時点の割合。期待利益＝割合×その時の平均利益。点線は「この値段以下で買えれば最低利益が残る」上限で、上の帯に入っている時間は買っても損になります。",
+    explainT2F: "利益が出た割合：過去{d}日間の記録のうち、最安値より1₽安く出品して手数料を引いても最低利益以上残った時点の割合。点線は利益が出る下限で、下の帯に入っている時間は出品しても損になります。買える数は、あなたの購入上限とトレーダーの在庫数の小さいほうです。売れやすさ：出来高のデータは無いため、7日間の価格と出品数の動き、最安値と平均価格の差、クエスト納品・ハイドアウト素材・クラフト素材としての用途から推定した目安（0〜100）です。",
+    firBanner: "現在のフリマは「レイド中に見つけた（FIR）」品物しか出品できない設定になっています（APIの値）。トレーダーで買った品物はFIRにならないため、この一覧の多くは実際には出品できない可能性があります。安い品物で一度試してから使ってください。",
+  },
+  en: {
+    title: "EFT Flip Board", titleLoot: "EFT Loot Tier List", titleTop: "EFT Tools", titleWatch: "EFT Buy & Sell Signals", titleSettings: "EFT Player Settings",
+    pageTop: "Home", pageBoard: "Flip board", pageLoot: "Loot tier list", pageWatch: "Buy & sell signals", pageSettings: "Player settings",
+    topLead: "Pick a tool. Player settings are shared by every tool.",
+    topFlip: "Items you can buy on one side and sell on the other (flea ⇄ traders) for a profit, with how easily they sell.",
+    topLoot: "Raid loot ranked S–D by take-home per grid slot, so you know what to carry out first.",
+    topWatch: "Rankings of items trading near their past lows (buy zone) and near their past highs (sell zone), with suggested buy and sell prices and a moving-average chart.",
+    topSettings: "Player level, trader loyalty levels and Intelligence Center. Used for fees and what you can buy.",
+    pageMapmaker: "Map maker (private)", topMapmaker: "Draw roads and buildings from the positions in your in-game screenshots.",
+    leadWatch: "Shows where each item's current lowest price sits within its past price range: near the low is a buy zone, near the high a sell zone. Click an item for its chart, moving averages and suggested prices.",
+    leadSettings: "These settings are used by the flip board, the loot tier list and sell alerts (saved in this browser).",
+    setLine: "Player settings: Lv{lv}, Intelligence Center Lv{intel}", setLink: "Change",
+    settingsSummary: "Your progress (saved automatically)", flipSummary: "Flip conditions (minimum profit, offers, etc.)",
+    settingsNote: "Trader loyalty levels (LL) decide which trader items you can buy for flipping. Intelligence Center level 3+ lowers flea market fees.",
+    mode: "Mode", load: "Refresh prices now", analyze: "Analyze history of top items", topN: "Items to analyze", days: "History", dayOpt: "{n} d",
+    liqFilter: "Sellability", liqAll: "All", liqMid: "Medium or better", liqHigh: "High only",
+    tabF2T: "Buy on flea, sell to traders", tabT2F: "Buy from traders, sell on flea", tabB2F: "Barter at traders, sell on flea",
+    tabLoot: "What to bring back",
+    lootType: "Kind", lootAll: "All", lootSearch: "Filter by name",
+    slotsN: "{w}×{h} = {n}", stackTag: "{n} per slot", noFleaTag: "No flea", fleaLockTag: "Flea unlocks at Lv{n}", fleaLockTip: "Selling on the flea needs player level {n}. Your setting is level {c}. Set “Player level” in settings to your real level to see the flea value here.",
+    lootTotal: "{v} total ({t})", lootTotalFlea: "{v} total (fee {f})",
+    tierLegend: "Tier cut-offs (take-home per slot) — S: {s}+ / A: {a}+ / B: {b}+ / C: {c}+ / D: below",
+    explainLoot: "Per slot: what you take home when you sell it, divided by the grid space it occupies. Trader is the sure, instant sale (no fee, no found-in-raid needed); flea is what is left after fees when listing at the current low price. The higher of the two sets the tier. Loose ammo, armbands and dog tags are not listed (nobody sells single rounds; ammo boxes are still listed). Guns use the trader side only, because their flea price is mixed in with assembled presets. Tiers are percentile-based, so they follow the economy as it shifts. By default this list leaves out keys and cases (never reliable), armor, helmets and rigs (durability makes their value unpredictable), backpacks (you wear them), face masks and balaclavas, special variants with a bracketed name (pattern or colour editions), weapon mods (rarely worth the time to strip), headsets (you wear them), hats, glasses, beards and other wearables, Arena items (never found in raids; always hidden), guns and melee weapons (hard to find in a raid), posters, and gun presets (duplicates of the gun itself). What is left out is also left out of the tier maths. Tick “Show” above to bring any of them back (presets always stay hidden). There is no drop-rate data, so rarity is judged by the number of flea offers: items that barely ever appear are hidden even if you could pick one up (change the threshold next to the checkboxes; hover the count to see what was hidden).",
+    kinds: {barter: "Barter items", meds: "Meds", provisions: "Food & drink", keys: "Keys", mods: "Weapon mods", poster: "Posters", gun: "Guns", ammo: "Ammo", ammoBox: "Ammo boxes", armor: "Armor", armorPlate: "Plates", helmet: "Helmets", rig: "Rigs", backpack: "Backpacks", container: "Containers", grenade: "Throwables", glasses: "Eyewear", headphones: "Headsets", injectors: "Injectors", wearable: "Wearables", suppressor: "Suppressors"},
+    matCost: "Material cost", mats: "Materials", matFlea: "Flea", matHard: "Materials hard to gather",
+    matHardTip: "{name}: need {n}, but {why}", matFewOffers: "only {o} flea offers", matLimit: "trader buy limit is {o}",
+    matAvgNote: "Materials needed in quantity are priced between the flea low and the 24h average, since the cheapest offer alone won’t cover them",
+    explainB2F: "Material cost: the total cost of the barter’s materials, each bought at the cheaper of the flea low and the trader cash price you can access at your LL. Materials needed 2+ times are priced between the flea low and the 24h average. “Materials hard to gather” means some material has few offers or a low buy limit for the amount needed. Profitable share and sellability refer to the item you receive.",
+    footer: "Price data: {src} ({mode}). Flea prices and offer counts can lag by several minutes.<br>An unofficial fan site, not affiliated with Battlestate Games.<br><a href=\"about.html\">About</a> · <a href=\"privacy.html\">Privacy</a> · <a href=\"contact.html\">Contact</a>",
+    modes: {regular: "PvP (regular)", "pvp-season": "PvP seasonal", pve: "PvE"},
+    traders: {prapor: "Prapor", therapist: "Therapist", skier: "Skier", peacekeeper: "Peacekeeper", mechanic: "Mechanic", ragman: "Ragman", jaeger: "Jaeger", ref: "Ref"},
+    sPlayerLevel: "PMC level", sIntel: "Intelligence Center level", sMgmt: "Hideout Management skill", sMinProfit: "Min. profit (₽ per item)", sMinOffers: "Min. offers",
+    sFence: "Selling to Fence", include: "Include", exclude: "Exclude",
+    sTaskLocked: "Quest-locked trader items", hide: "Hide", show: "Show",
+    sKeys: "Items with uses/charges (keys, cards, meds, fuel): flea → trader", keysWarn: "Show with warning", keysExclude: "Exclude (recommended)",
+    sWeapons: "Guns and presets", gunsWarn: "Show with warning", gunsExclude: "Exclude (recommended)",
+    lootHide: "Show:", lootHideKeys: "Keys & cases", lootHideArmor: "Armor, rigs & bags", lootHideHelmets: "Helmets & parts", lootHideBalaclava: "Masks & balaclavas", lootHideVariants: "Special variants (name with brackets)", lootHideMods: "Weapon mods", lootHideHeadsets: "Headsets", lootHideWearables: "Hats, glasses, beards etc.", lootHideGuns: "Guns & melee", lootHidePosters: "Posters", lootRare1: "Hide items with fewer than ", lootRare2: " flea offers (0 = off)", lootCutN: "{n} items hidden", lootCutNone: "Nothing hidden",
+    gunTag: "Built-gun price",
+    gunTip: "For guns, the flea low price includes offers for assembled presets of that gun, not just the stripped weapon. Traders sell the stripped weapon, so this gap is not a profit you can actually take: a bare gun will not sell at that price.",
+    stepItems: "items and prices (tens of MB, this takes a moment)",
+    loading: "Loading…", loaded: "{mode}: {n} items loaded ({time})", loadedSnap: "{mode}: {n} items (data as of {date} {time})", loadFail: "Could not load: {msg}",
+    netErr: "Network error during {step} ({why})", timeout: "no response in 90 s", httpErr: "Error during {step} (HTTP {status})",
+    stepNames: {items: "item download", items_ja: "Japanese names", items_en: "English names", traders: "trader download", traders_ja: "trader names (JA)", traders_en: "trader names (EN)", prices: "price history"},
+    histProgress: "Fetching history {i} / {n}", histDone: "Analyzed {n} item(s)", histFail: "Could not fetch history: {msg}",
+    switched: "Switched to {mode}",
+    cols: {item: "Item", buyFlea: "Flea low (buy)", sellTrader: "Trader pays", profit: "Profit / item", offers: "Offers", chg: "48h change",
+      tier: "Tier", perSlot: "Per slot", slots: "Size", traderSell: "Trader", fleaNet: "Flea (after fee)",
+      rate: "Profitable share", expected: "Expected profit / item", spark: "{d}-day low price", buyTrader: "Trader price", matCost: "Material cost", sellFlea: "Flea sell price", fee: "Fee", limit: "Buy limit", liq: "Sellability", total: "Total profit (up to limit)"},
+    totalExp: "Expected: {v}", totalTip: "Profit per item × {n} ({by}). You can buy that many again at every trader restock.",
+    capBy: {limit: "buy limit", stock: "in stock"},
+    breakEven: "Floor {v}", breakEvenTip: "Below this price, fees leave less than your minimum profit ({p}).",
+    pcs: "{n}", median7: "{d}-day median {n}", tooFew: "Not enough data",
+    worst: "If 1 use left: {v}", worstTip: "If the cheapest offer is a key with only one use left",
+    usesTag: "Up to {n} uses", hpTag: "Up to {n} HP", resTag: "Up to {n} units",
+    usesTipF2T: "The cheapest flea offer is likely partly used, and traders pay less for what is left. Always check the remaining uses before buying.",
+    usesTipT2F: "Trader keys are new (full uses). The flea low price may be a used key, so a new one can sell a little higher.",
+    taskTag: "Quest unlock", fleaLv: "Flea Lv{n}", needTip: "Why people buy it: {n} needed in total as {k} (this does not mean you get it from a barter)",
+    demand: {quest: "Quest turn-in", hideout: "Hideout material", barter: "Barter material", craft: "Craft material"}, demandSep: ", ",
+    copy: "Copy name",
+    liqLevel: {high: "High", mid: "Med", low: "Low"},
+    why: {
+      priceDown: "Price falling ({v}% per day)", priceUp: "Price rising", offersUp: "Offers piling up (+{v}% per day)",
+      offersDown: "Offers shrinking (being bought)", spreadSmall: "Low price close to average", spreadLarge: "Low price far below average",
+      volatile: "Price swings a lot", thin: "Always few offers (thin market)", fewish: "Somewhat few offers", demand: "Used in: {list}", noDemand: "Not used in quests, hideout, barters or crafts"
+    },
+    sparkLabel: "{d}-day flea low price with {line}", lineF2T: "max buy price", lineT2F: "break-even sell price",
+    emptyInit: "Press “Fetch prices” to list items you can currently flip between the flea market and traders.",
+    emptyLiq: "No items match the sellability filter ({n} hidden). Analyze more items or set the filter back to “All”.",
+    liqHidden: "{n} hidden by the sellability filter", liqBase: "Base 50", autoAnalyzing: "Analyzing history of top {n}…",
+    empty: "No items match. Lower “Min. profit” or “Min. offers” in your settings to see more.",
+    explainF2T: "Profitable share: the share of the last {d} days’ price points where buying at the flea low and selling to a trader cleared your minimum profit. Expected profit = share × average profit at those points. The dashed line is the highest price you can pay and still clear that profit; time spent in the shaded band above it is time you would lose money buying.",
+    explainT2F: "Profitable share: the share of the last {d} days’ price points where listing 1 ₽ under the flea low still cleared your minimum profit after fees. The dashed line is the lowest sell price that still clears it; time in the shaded band below it is time you would lose money listing. The quantity is the smaller of your buy limit and the trader’s stock. Sellability: there is no sales-volume data, so this 0–100 estimate uses 7-day price and offer trends, the gap between low and average price, and use as quest turn-ins, hideout materials and craft materials.",
+    firBanner: "The flea market currently only accepts found-in-raid (FIR) items (per the API). Items bought from traders are not FIR, so many items here may not be listable. Test with a cheap item first.",
+  }
+};
+const TRADER_KEYS = ["prapor","therapist","skier","peacekeeper","mechanic","ragman","jaeger","ref"];
+const MODE_KEYS = ["regular","pvp-season","pve"];
+const DAY_OPTS = [7, 14, 30, 60, 90];
+const DEMAND_KEYS = ["quest","hideout","craft"];
+const DEFAULTS = {
+  lang: (navigator.language || "ja").startsWith("ja") ? "ja" : "en",
+  mode: "regular", playerLevel: 30, intel: 3, mgmt: 0, minProfit: 3000, minOffers: 5, excludeFence: false, hideTaskLocked: true, liqFilter: "all", depletableF2T: "exclude", weapons: "exclude", days: 7,
+  hideLootKeys: true, hideLootArmor: true, hideLootMods: true, hideLootGuns: true, hideLootPosters: true, hideLootHelmets: true, hideLootBalaclava: true, hideLootVariants: true, hideLootHeadsets: true, hideLootWearables: true, mkDays: 30, mkTh: 5, mkFreshMin: 60, mkMinOffers: 10, mkMinProfit: 10000, mkMinRate: 15, mkNeedRebound: true, mkStock: [], lootMinOffers: 10, _lmo10: true,
+  ll: Object.fromEntries(TRADER_KEYS.map(k => [k, 4]))
+};
+
+/* ================= 設定 ================= */
+function migrate(s){
+  if(!s._lmo10){ s.lootMinOffers = 10; s._lmo10 = true; }   // 出品数の既定値を3→10にした（初回だけ切り替える）
+  if(s.hideLowLiq && !s.liqFilter) s.liqFilter = "mid";
+  if(s.lootKeys !== undefined && s.hideLootKeys === undefined) s.hideLootKeys = s.lootKeys !== "show";
+  delete s.hideLowLiq; delete s.keyMode; delete s.lootKeys;
+  return s;
+}
+function loadSettings(){
+  try{ const s = JSON.parse(localStorage.getItem("eftflip.settings") || "null"); if(s && migrate(s)) return {...DEFAULTS, ...s, ll:{...DEFAULTS.ll, ...(s.ll||{})}}; }catch(e){}
+  return structuredClone(DEFAULTS);
+}
+function saveSettings(){ try{ localStorage.setItem("eftflip.settings", JSON.stringify(S)); }catch(e){} }
+let S = loadSettings();
+
+const L = () => I18N[S.lang] || I18N.ja;
+function t(key, vars){
+  let v = key.split(".").reduce((o,k) => o && o[k], L());
+  if(v == null) v = key.split(".").reduce((o,k) => o && o[k], I18N.ja) ?? key;
+  if(vars) v = String(v).replace(/\{(\w+)\}/g, (_, k) => vars[k] ?? "");
+  return v;
+}
+const locale = () => S.lang === "ja" ? "ja-JP" : "en-US";
+const fmt = n => Number(n).toLocaleString(locale());
+const modeLabel = () => t("modes")[S.mode] || S.mode;
+
+/* 設定の入力欄。プレイヤーの状況（全ツール共通）と、転売ボードだけの条件に分けて作る */
+function buildSettings(){
+  const num = (key,label,min,max) => `<label>${label}<input type="number" min="${min}" max="${max}" data-k="${key}" value="${S[key]}"></label>`;
+  const sel = (key,label,opts) => `<label>${label}<select data-k="${key}">${opts.map(([v,l]) => `<option value="${v}" ${String(S[key]) === v ? "selected" : ""}>${l}</option>`).join("")}</select></label>`;
+  // プレイヤーの状況：レベル・インテルセンター・管理スキル・フェンス・各トレーダーのLL
+  let h = num("playerLevel",t("sPlayerLevel"),1,79) + num("intel",t("sIntel"),0,3) + num("mgmt",t("sMgmt"),0,51);
+  h += sel("excludeFence", t("sFence"), [["false",t("include")],["true",t("exclude")]]);
+  for(const k of TRADER_KEYS){
+    h += `<label>${t("traders")[k]} LL<select data-ll="${k}">${[1,2,3,4].map(v=>`<option ${S.ll[k]==v?"selected":""}>${v}</option>`).join("")}</select></label>`;
+  }
+  document.getElementById("settingsGrid").innerHTML = h;
+  // 転売ボードの条件：利益・出品数・クエスト解放・残量のある品・銃
+  document.getElementById("flipGrid").innerHTML = num("minProfit",t("sMinProfit"),0,1000000) + num("minOffers",t("sMinOffers"),0,1000)
+    + sel("hideTaskLocked", t("sTaskLocked"), [["true",t("hide")],["false",t("show")]])
+    + sel("depletableF2T", t("sKeys"), [["exclude",t("keysExclude")],["warn",t("keysWarn")]])
+    + sel("weapons", t("sWeapons"), [["exclude",t("gunsExclude")],["warn",t("gunsWarn")]]);
+}
+function onSettingChange(e){
+  const el = e.target;
+  if(el.dataset.ll){ S.ll[el.dataset.ll] = +el.value; }
+  else if(el.dataset.k){
+    const k = el.dataset.k;
+    const STR = new Set(["depletableF2T", "weapons"]), BOOL = new Set(["excludeFence", "hideTaskLocked"]);
+    S[k] = STR.has(k) ? el.value : (BOOL.has(k) ? el.value === "true" : +el.value);
+  }
+  saveSettings(); buildLootTypes(); recompute(); paintSettingsLine();
+}
+document.getElementById("settingsGrid").addEventListener("change", onSettingChange);
+document.getElementById("flipGrid").addEventListener("change", onSettingChange);
+
+/* ================= API（tarkov.dev の JSON API。サイト本体と同じ取得元） ================= */
+const JSON_API = "https://json.tarkov.dev/";
+async function getJson(path, stepKey){
+  const step = t("stepNames")[stepKey] || stepKey;
+  let r;
+  try{
+    r = await fetch(JSON_API + S.mode + "/" + path, {cache: "no-cache", headers: {Accept: "application/json"}, signal: AbortSignal.timeout(90000)});
+  }catch(e){
+    throw new Error(t("netErr", {step, why: e.name === "TimeoutError" ? t("timeout") : e.message}));
+  }
+  if(!r.ok) throw new Error(t("httpErr", {step, status: r.status}));
+  return (await r.json()).data;
+}
+/* ================= データの組み立て（画面とスナップショット作成で共通） =================
+   tarkov.dev の JSON API から取った生データを、画面で使う形に組み立てる。
+   ・画面（app.html）… build.mjs がこのファイルを埋め込む。「最新の価格に更新」で使う
+   ・snapshot.mjs     … 定期実行で同じ組み立てをして data/<モード>.json に書き出す
+   どちらも同じ関数を通すので、保存したデータと、その場で取ったデータの中身は同じになる。
+   DOM や画面の設定（S）には触れない。 */
+
+/* 取りに行く生データ。soft は取れなくても続ける（需要の計算に使うだけのもの） */
+const RAW_PATHS = [
+  {key: "items", path: "items"}, {key: "itemsJa", path: "items_ja"}, {key: "itemsEn", path: "items_en"},
+  {key: "traders", path: "traders"}, {key: "tradersJa", path: "traders_ja"}, {key: "tradersEn", path: "traders_en", soft: true},
+  {key: "tasks", path: "tasks", soft: true}, {key: "hideout", path: "hideout", soft: true},
+  {key: "barters", path: "barters", soft: true}, {key: "crafts", path: "crafts", soft: true},
+];
+const SNAPSHOT_VERSION = 1;
+
+/* 翻訳キー（"<id> Name" など）を指定言語→英語の順に置き換える */
+const tr = (key, primary, fallback) => (primary && primary[key]) || (fallback && fallback[key]) || key;
+
+/* 買い手がいる理由（需要の源泉）：アイテムID → {quest, hideout, barter, craft} の必要数 */
+function buildDemand(tasks, hideout, barters, crafts){
+  const m = new Map();
+  const add = (id, kind, n) => {
+    if(!id) return;
+    const d = m.get(id) || {quest: 0, hideout: 0, barter: 0, craft: 0};
+    d[kind] += n || 1; m.set(id, d);
+  };
+  const vals = x => !x ? [] : Array.isArray(x) ? x : Object.values(x);
+  // クエスト納品：フリマやトレーダーで買った品（FIRでない品）でも納品できるものだけ数える
+  for(const tk of vals(tasks && tasks.tasks)){
+    for(const o of tk.objectives || []){
+      if(o.type !== "giveItem" || o.foundInRaid) continue;
+      const ids = o.items || (o.item ? [o.item] : []);
+      for(const id of ids) add(typeof id === "object" ? id.id : id, "quest", o.count);
+    }
+  }
+  for(const st of vals(hideout)) for(const lv of st.levels || []) for(const r of lv.itemRequirements || []) add(r.item, "hideout", r.count);
+  for(const c of vals(crafts)) for(const r of c.requiredItems || []) add(r.item, "craft", r.count);
+  return m;
+}
+
+/* 1マスに何個まとまるか。弾薬だけはデータに入っている */
+function stackSize(pr){
+  return pr && pr.propertiesType === "ItemPropertiesAmmo" && pr.stackMaxSize > 1 ? pr.stackMaxSize : 1;
+}
+/* 残量（使用回数・HP・燃料など）がある品。フリマの最安値は使いかけの出品であることが多い */
+function depletable(pr){
+  if(!pr) return null;
+  switch(pr.propertiesType){
+    case "ItemPropertiesKey": return pr.uses > 1 ? {kind: "uses", max: pr.uses} : null;
+    case "ItemPropertiesMedicalItem": case "ItemPropertiesPainkiller": return pr.uses > 1 ? {kind: "uses", max: pr.uses} : null;
+    case "ItemPropertiesMedKit": return pr.hitpoints > 1 ? {kind: "hp", max: pr.hitpoints} : null;
+    case "ItemPropertiesResource": return pr.units > 1 ? {kind: "res", max: pr.units} : null;
+  }
+  return null;
+}
+
+/* 生データ → 保存できる形（JSON にそのまま書ける。バーターは品物を ID で持つ） */
+function buildData(raw){
+  const {items, itemsJa, itemsEn, traders, tradersJa, tradersEn, tasks, hideout, barters, crafts} = raw;
+  const demand = buildDemand(tasks, hideout, barters, crafts);
+  const T = {};
+  for(const [id, tt] of Object.entries(traders)){
+    T[id] = {name: {ja: tr(tt.name, tradersJa, tradersEn), en: tr(tt.name, tradersEn, tradersJa)}, normalizedName: tt.normalizedName};
+  }
+  const list = Object.values(items.items).map(raw => ({
+    id: raw.id,
+    name: {ja: tr(raw.name, itemsJa, itemsEn), en: tr(raw.name, itemsEn)},
+    shortName: {ja: tr(raw.shortName, itemsJa, itemsEn), en: tr(raw.shortName, itemsEn)},
+    iconLink: raw.iconLink, link: raw.link, width: raw.width, height: raw.height, basePrice: raw.basePrice, types: raw.types || [],
+    avg24hPrice: raw.avg24hPrice, lastLowPrice: raw.lastLowPrice, low24hPrice: raw.low24hPrice, high24hPrice: raw.high24hPrice,
+    updated: raw.updated ? (Date.parse(raw.updated) || 0) : 0,     // フリマ価格を最後に読み取った時刻（売り時通知で「今」の値に使う）
+    lastOfferCount: raw.lastOfferCount, changeLast48hPercent: raw.changeLast48hPercent, minLevelForFlea: raw.minLevelForFlea,
+    sellFor: (raw.sellToTrader || []).filter(o => T[o.trader]).map(o => ({priceRUB: o.priceRUB, vendor: {name: T[o.trader].name, normalizedName: T[o.trader].normalizedName}})),
+    buyFor: (raw.buyFromTrader || []).filter(o => T[o.trader]).map(o => ({priceRUB: o.priceRUB, vendor: {
+      name: T[o.trader].name, normalizedName: T[o.trader].normalizedName, trader: {normalizedName: T[o.trader].normalizedName},
+      minTraderLevel: o.minTraderLevel, buyLimit: o.buyLimit, restockAmount: o.restockAmount, taskUnlock: !!o.taskUnlock}})),
+    demand: demand.get(raw.id) || null,
+    depl: depletable(raw.properties),
+    melee: !!(raw.properties && raw.properties.propertiesType === "ItemPropertiesMelee"),
+    pt: (raw.properties && raw.properties.propertiesType) || "",
+    cats: [raw.category, ...(raw.categories || []), ...(raw.handbookCategories || [])].filter(Boolean).map(c => String(c.normalizedName || c.name || c.id || c).toLowerCase()),
+    stack: stackSize(raw.properties),
+  }));
+  const ids = new Set(list.map(it => it.id));
+  const bartersList = (Array.isArray(barters) ? barters : barters ? Object.values(barters) : []).map(b => {
+    const rw = b.offeredItem || (b.rewardItems || [])[0];
+    const reqs = (b.requiredItems || []).map(r => ({id: r.item, count: r.count || 1, special: r.attributes && Object.keys(r.attributes).length > 0}));
+    if(!rw || !ids.has(rw.item) || !T[b.trader] || !reqs.length || reqs.some(r => !ids.has(r.id) || r.special)) return null;   // 条件付き材料（ドッグタグのレベル指定など）は対象外
+    return {id: b.id, trader: T[b.trader], ll: b.minTraderLevel || 1, task: !!b.taskUnlock, limit: b.buyLimit || 0,
+            rewardId: rw.item, rewardCount: rw.count || 1, reqs: reqs.map(r => ({id: r.id, count: r.count}))};
+  }).filter(Boolean);
+  return {v: SNAPSHOT_VERSION, items: list, flea: items.fleaMarket, barters: bartersList};
+}
+
+/* 保存できる形 → 画面で使う形（バーターの ID を品物そのものにつなぐ） */
+function hydrateData(d){
+  const byId = new Map(d.items.map(it => [it.id, it]));
+  const barters = d.barters.map(b => ({id: b.id, trader: b.trader, ll: b.ll, task: b.task, limit: b.limit,
+    reward: byId.get(b.rewardId), rewardCount: b.rewardCount, reqs: b.reqs.map(r => ({it: byId.get(r.id), count: r.count, special: false}))}))
+    .filter(b => b.reward && b.reqs.every(r => r.it));
+  return {items: d.items, flea: d.flea, barters};
+}
+
+/* ================= 売り時・買い時：相場の位置の計算（計算だけ。画面・取得には触れない） =================
+   考え方
+   ・値段は、価格記録の「平均価格」（その時点の安い出品いくつかの平均。tarkov.dev のグラフの実線）を使う。
+     「最安値」は、すぐ買われる極端に安い1件を拾うことがあり、実際に買える値段とずれるため（平均価格が無い記録だけ最安値で代用）
+   ・品ごとの価格記録（prices/<id>）から、過去 N 日（既定30日）の値動きの幅を出す。
+     最安値は1件の出品で跳ねるので、幅の両端は「下から5%」「上から5%」の値を使う（極端な1点に引っぱられない）
+   ・いまの最安値がその幅のどこにあるか（位置 0%＝底値、100%＝高値）で、買い場・売り場を決める
+     位置 20%以下＝底値付近（買い場）、80%以上＝高値付近（売り場）
+   ・おすすめの値段：買うなら「下から25%」の値以下、売るなら「上から25%」の値以上
+     （過去 N 日のうち、4分の3の時間はそれより高かった／安かった、という値）
+   ・グラフ用に、24時間と7日の移動平均（跳ねた値を外した平均）も出す */
+
+const HOUR = 3600e3, DAY = 24 * HOUR;
+const MA_SHORT = DAY, MA_LONG = 7 * DAY;     // 短期線・長期線の幅
+const MIN_SHORT = 3, MIN_LONG = 10;          // 平均を出すのに要る最低の記録数
+const MIN_RANGE = 10;                        // 幅を出すのに要る最低の記録数
+const ZONE = 0.2;                            // 底値付近・高値付近とみなす位置（下から／上から20%）
+
+/* 価格記録 → 時刻順の点（平均価格。無ければ最安値。どちらも0の点は捨てる）。from より前は使わない */
+function pricePoints(hist, from){
+  const tsOf = p => isNaN(+p.timestamp) ? Date.parse(p.timestamp) : +p.timestamp;
+  return (hist || []).map(p => ({t: tsOf(p), price: p.price > 0 ? p.price : p.priceMin, min: p.priceMin || 0, offers: p.offerCount || 0}))
+                     .filter(p => p.price > 0 && p.t >= from).sort((a, b) => a.t - b.t);
+}
+const CUR_SCANS = 3;                         // 「いまの相場」＝直近3回の読み取りの中央値
+const ODD_LOW = 0.8;                         // 一覧の最安値が相場の80%未満なら「極端に安い出品」とみなす
+/* 並べ替え済みの配列の q 分位点（0〜1） */
+function quantile(sorted, q){
+  if(!sorted.length) return null;
+  const i = (sorted.length - 1) * q, lo = Math.floor(i), hi = Math.ceil(i);
+  return sorted[lo] + (sorted[hi] - sorted[lo]) * (i - lo);
+}
+/* 時刻 t までの width 幅の移動平均（記録が min 件に足りなければ null）。
+   その幅の中央値から ±30% を超える値は外してから平均する */
+const OUTLIER = 0.3;
+function movingAvg(pts, t, width, min){
+  const vals = [];
+  for(const p of pts){ if(p.t > t - width && p.t <= t) vals.push(p.price); }
+  if(vals.length < (min || 1)) return null;
+  const med = quantile([...vals].sort((a, b) => a - b), 0.5);
+  const kept = vals.filter(v => Math.abs(v - med) <= med * OUTLIER);
+  return kept.reduce((a, b) => a + b, 0) / kept.length;
+}
+/* グラフ用：from〜to を step ごとに区切った短期線・長期線 */
+function trendLines(pts, from, to, step){
+  const out = [];
+  for(let t = from; t <= to; t += step){
+    out.push({t, short: movingAvg(pts, t, MA_SHORT, MIN_SHORT), long: movingAvg(pts, t, MA_LONG, MIN_LONG)});
+  }
+  return out;
+}
+/* いまの値段の、過去 days 日の中での位置。
+   live = {price, at}：アイテム一覧の最新の最安値（価格記録の最後より新しければ「いま」として使う） */
+function marketView(hist, opt){
+  const now = opt.now || Date.now(), days = opt.days || 30;
+  const all = pricePoints(hist, now - Math.max(days, 14) * DAY);
+  const pts = all.filter(p => p.t >= now - days * DAY);
+  if(pts.length < MIN_RANGE) return {zone: "few", n: pts.length, pts: all};
+  const sorted = pts.map(p => p.price).sort((a, b) => a - b);
+  const low = quantile(sorted, 0.05), high = quantile(sorted, 0.95);
+  const buyAt = quantile(sorted, 0.25), sellAt = quantile(sorted, 0.75), median = quantile(sorted, 0.5);
+  /* いまの相場：直近3回の読み取りの中央値（1回だけの外れに引っぱられない）。
+     一覧の最安値（live）は、相場より極端に安ければ「すぐ売り切れる安い出品」として別に知らせるだけにする */
+  const recent = pts.slice(-CUR_SCANS);
+  const cur = {price: quantile(recent.map(p => p.price).sort((a, b) => a - b), 0.5), t: recent[recent.length - 1].t};
+  const lv = opt.live;
+  const oddLow = lv && lv.price > 0 && lv.price < cur.price * ODD_LOW ? {price: lv.price, at: lv.at} : null;
+  const pos = high > low ? Math.min(1, Math.max(0, (cur.price - low) / (high - low))) : 0.5;
+  const zone = pos <= ZONE ? "buy" : pos >= 1 - ZONE ? "sell" : "mid";
+  const short = movingAvg(all, now, MA_SHORT, MIN_SHORT), long = movingAvg(all, now, MA_LONG, MIN_LONG);
+  const rb = rebounds(all, now - days * DAY, now, buyAt, sellAt);
+  return {zone, pos, price: cur.price, at: cur.t, oddLow, low, high, buyAt, sellAt, median, short, long,
+          trend: short != null && long != null ? short / long - 1 : null, rebounds: rb.count, recentHigh: rb.high, n: pts.length, pts: all};
+}
+/* 「底値から、おすすめ売値まで戻った」回数（往復の回数）。
+   24時間平均（グラフの実線）を期間の頭から順に見て、おすすめ買値以下まで下がったあとに、
+   おすすめ売値以上まで戻ったら1回と数える。一度高値から落ちて、そのまま戻っていない品は 0 回になる
+   （ワイプ後に使い道が減って値崩れし続けている品など）。
+   1回の跳ねた読み取りや、1日の中の上下では数えないよう、24時間平均で見る */
+function rebounds(pts, from, to, buyAt, sellAt){
+  let count = 0, wasLow = false, high = 0, lastLowAt = 0;
+  for(let t = from; t <= to; t += 2 * HOUR){
+    const ma = movingAvg(pts, t, MA_SHORT, MIN_SHORT);
+    if(ma == null) continue;
+    if(ma <= buyAt){ wasLow = true; lastLowAt = t; high = 0; }
+    else if(wasLow) high = Math.max(high, ma);               // 底値を付けたあとの最高値
+    if(wasLow && ma >= sellAt){ count++; wasLow = false; }
+  }
+  return {count, high};
+}
+/* 底値付近で買って、おすすめ売値（上から25%の値）で売ったときの見込み利益。
+   売り先はフリマ（手数料を引いた手取り）とトレーダー（その場で売れる額）の高いほう。買うのはフリマの今の最安値（手数料なし） */
+function buyProfit(buyPrice, sellAt, feeOf, traderPrice){
+  const fleaNet = sellAt - feeOf(sellAt);
+  const viaTrader = (traderPrice || 0) > fleaNet;
+  const sellNet = viaTrader ? traderPrice : fleaNet;
+  const profit = sellNet - buyPrice;
+  return {sellNet, via: viaTrader ? "trader" : "flea", profit, rate: buyPrice > 0 ? profit / buyPrice : 0};
+}
+/* 在庫（仕込んだ品）の状態。v＝marketView の結果、cost＝1個あたりの買値、netNow＝いま売ったときの1個あたりの手取り
+   sell：売り場（高値付近か、おすすめ売値に届いた）で、売れば利益が出る／high：高値付近だが、買値が高く売ると赤字／plus：売れば利益は出るが、まだ上がる余地あり／hold：待ち／few：判定できない */
+function stockState(v, cost, netNow){
+  if(!v || v.zone === "few") return "few";
+  if(v.zone === "sell" || v.price >= v.sellAt) return netNow >= cost ? "sell" : "high";
+  if(netNow > cost) return "plus";
+  return "hold";
+}
+/* 一覧の段階で候補を絞るための目安：いまの最安値が24時間平均より何%高い（安い）か。
+   全品の価格記録は取れないので、まずこれで候補を選び、候補だけ記録を取って位置を確かめる */
+function quickDev(it){
+  return it.avg24hPrice > 0 && it.lastLowPrice > 0 ? it.lastLowPrice / it.avg24hPrice - 1 : null;
+}
+/* 候補にするか：いまの最安値が24時間平均より th 以上安い（高い）か、48時間で th 以上下がった（上がった）品。
+   side = "buy"（安い側）／"sell"（高い側）。th は 0.05 なら 5%。返り値は外れ具合（並べ替え用、大きいほど外れている）。対象外なら null */
+function candScore(it, side, th){
+  const dev = quickDev(it), ch = it.changeLast48hPercent != null ? it.changeLast48hPercent / 100 : null;
+  const vals = [dev, ch].filter(v => v != null).map(v => side === "buy" ? -v : v);
+  if(!vals.length) return null;
+  const best = Math.max(...vals);
+  return best >= th ? best : null;
+}
+
+/* 値段の更新がこまめな品か。データを取った時刻（refAt）の時点で、最安値の読み取りが maxMin 分以内だった品 */
+function isFresh(updatedAt, refAt, maxMin){
+  return updatedAt > 0 && refAt - updatedAt <= maxMin * 60000;
+}
+
+
+/* その場で tarkov.dev から取る（「最新の価格に更新」） */
+async function loadAll(onStep){
+  onStep(t("stepItems"));
+  const got = await Promise.all(RAW_PATHS.map(r => getJson(r.path, r.path).catch(err => { if(!r.soft) throw err; console.warn(err); return null; })));
+  return hydrateData(buildData(Object.fromEntries(RAW_PATHS.map((r, i) => [r.key, got[i]]))));
+}
+/* サーバーに置いた保存データ（data/<モード>.json）を読む。無い・古い形式なら null */
+async function loadSnapshot(mode){
+  try{
+    const r = await fetch(`data/${mode}.json`, {cache: "no-cache"});
+    if(!r.ok) return null;
+    const d = await r.json();
+    if(!d || d.v !== SNAPSHOT_VERSION || !Array.isArray(d.items)) return null;
+    return {...hydrateData(d), at: new Date(d.at)};
+  }catch(e){ return null; }
+}
+const nm = o => o ? (o[S.lang] || o.ja || o.en || "") : "";
+
+/* ================= 計算（tarkov.dev と同じ手数料式） ================= */
+function fleaFee(basePrice, price, flea){
+  if(!price || !basePrice) return 0;
+  const vo = basePrice, vr = price;
+  let po = Math.log10(vo / vr); if(vr < vo) po = Math.pow(po, 1.08);
+  let pr = Math.log10(vr / vo); if(vr >= vo) pr = Math.pow(pr, 1.08);
+  let fee = vo * flea.sellOfferFeeRate * Math.pow(4, po) + vr * flea.sellRequirementFeeRate * Math.pow(4, pr);
+  if(S.intel >= 3){ const d = 0.3 + 0.3 * S.mgmt * 0.01; fee -= fee * d; }
+  return Math.round(fee);
+}
+/* 銃本体とプリセット。
+   tarkov.dev は、銃のフリマ価格に「その銃の組み立て済み（プリセット）の出品」も混ぜて、
+   いちばん安いものを本体の最安値としている（update-flea-prices.mjs の
+   「we need to add preset prices back into the base weapon」）。
+   一方トレーダーが売るのは素の本体なので、この2つを引き算しても実際には取れない利益になる。
+   例：素のHK416A5をトレーダーで₽27,250 → フリマ最安は組み立て済みの₽69,696、という並び方をする。 */
+const isGun = it => it.types.includes("gun") || it.types.includes("preset");
+
+function fleaUsable(it){
+  if(S.weapons === "exclude" && isGun(it)) return false;
+  return !it.types.includes("noFlea") && it.lastLowPrice > 0 && (it.minLevelForFlea || 0) <= S.playerLevel;
+}
+function bestTraderSell(it){
+  let best = null;
+  for(const p of it.sellFor || []){
+    const v = p.vendor.normalizedName;
+    if(v === "flea-market" || !p.priceRUB) continue;
+    if(S.excludeFence && v === "fence") continue;
+    if(!best || p.priceRUB > best.priceRUB) best = p;
+  }
+  return best;
+}
+function cheapestTraderBuy(it){
+  let best = null;
+  for(const p of it.buyFor || []){
+    const v = p.vendor;
+    if(v.normalizedName === "flea-market" || !v.trader || !p.priceRUB) continue;
+    const tn = v.trader.normalizedName;
+    if((v.minTraderLevel || 1) > (S.ll[tn] || 4)) continue;
+    if(S.hideTaskLocked && v.taskUnlock) continue;
+    if(!best || p.priceRUB < best.priceRUB) best = p;
+  }
+  return best;
+}
+
+/* 1回の補充で実際に買える数。
+   buyLimit は「あなたが買える上限」で、制限が無い品は 0 で返ってくる。
+   restockAmount は「トレーダーが並べる在庫数」。どちらも効くので、小さいほうが実際の上限になる。
+   以前は buyLimit だけを見ていたため、無制限に買える品の想定総利益が空欄になり、
+   いちばん稼げるはずの品が並べ替えで最下位に沈んでいた。 */
+function buyCap(v){
+  const lim = +v.buyLimit || 0, stock = +v.restockAmount || 0;
+  if(lim && stock) return {n: Math.min(lim, stock), by: lim <= stock ? "limit" : "stock"};
+  if(lim) return {n: lim, by: "limit"};
+  if(stock) return {n: stock, by: "stock"};
+  return {n: 0, by: null};
+}
+/* 手数料を引いても原価（＋最低利益）が残る、いちばん安い売値。
+   手数料は売値が上がるほど重くなるので、二分法で求める */
+function breakEvenPrice(basePrice, cost, flea){
+  if(!(cost > 0)) return 0;
+  let lo = cost, hi = cost * 8 + 1000;
+  const f = p => p - fleaFee(basePrice, p, flea) - cost;
+  if(f(hi) < 0) return Infinity;
+  for(let i = 0; i < 50; i++){ const m = (lo + hi) / 2; if(f(m) < 0) lo = m; else hi = m; }
+  return Math.round((lo + hi) / 2);
+}
+
+function rowsF2T(){
+  const out = [];
+  for(const it of DATA.items){
+    if(!fleaUsable(it)) continue;
+    if(it.depl && S.depletableF2T === "exclude") continue;
+    const sell = bestTraderSell(it); if(!sell) continue;
+    const buy = it.lastLowPrice, profit = sell.priceRUB - buy;
+    if(profit < S.minProfit || (it.lastOfferCount || 0) < S.minOffers) continue;
+    // 使用回数のある鍵：最安の出品が「残り1回」だった場合、トレーダー買取額は残り回数に比例して下がる想定
+    const worst = it.depl && it.depl.kind === "uses" ? Math.round(sell.priceRUB / it.depl.max) - buy : null;
+    // この値段以下で買えれば最低利益が残る、という上限。グラフの線と帯に使う
+    out.push({it, buy, sellPrice: sell.priceRUB, sellTo: sell.vendor.name, profit, worst,
+              line: sell.priceRUB - S.minProfit, dir: "max"});
+  }
+  return out;
+}
+function rowsT2F(){
+  const out = [];
+  for(const it of DATA.items){
+    if(!fleaUsable(it)) continue;
+    const b = cheapestTraderBuy(it); if(!b) continue;
+    const sellPrice = it.lastLowPrice - 1;
+    const fee = fleaFee(it.basePrice, sellPrice, DATA.flea);
+    const profit = sellPrice - fee - b.priceRUB;
+    if(profit < S.minProfit || (it.lastOfferCount || 0) < S.minOffers) continue;
+    const cap = buyCap(b.vendor);
+    out.push({it, buy: b.priceRUB, buyFrom: b.vendor.name, ll: b.vendor.minTraderLevel, limit: cap.n, capBy: cap.by,
+              task: b.vendor.taskUnlock, sellPrice, fee, profit,
+              line: breakEvenPrice(it.basePrice, b.priceRUB + S.minProfit, DATA.flea), dir: "min"});
+  }
+  return out;
+}
+
+/* 材料1個あたりの入手価格：フリマ最安値とトレーダー現金価格（LL・クエスト条件を満たすもの）の安いほう */
+function materialCost(it, count){
+  let best = null;
+  if(!it.types.includes("noFlea") && it.lastLowPrice > 0 && (it.minLevelForFlea || 0) <= S.playerLevel){
+    // 2個以上は最安の出品だけでは揃わないので、最安値と24時間平均の中間で見積もる
+    const unit = count >= 2 && it.avg24hPrice > it.lastLowPrice ? Math.round((it.lastLowPrice + it.avg24hPrice) / 2) : it.lastLowPrice;
+    best = {unit, src: "flea", offers: it.lastOfferCount || 0};
+  }
+  const tb = cheapestTraderBuy(it);
+  if(tb && (!best || tb.priceRUB < best.unit)) best = {unit: tb.priceRUB, src: "trader", name: tb.vendor.name, limit: tb.vendor.buyLimit || 0};
+  if(!best) return null;
+  let hard = null;
+  if(best.src === "flea" && best.offers < count + 2) hard = {k: "matFewOffers", o: best.offers};
+  if(best.src === "trader" && best.limit && best.limit < count) hard = {k: "matLimit", o: best.limit};
+  return {...best, hard};
+}
+function rowsB2F(){
+  const out = [];
+  for(const b of DATA.barters || []){
+    const it = b.reward;
+    if(!fleaUsable(it)) continue;
+    if((b.ll || 1) > (S.ll[b.trader.normalizedName] || 4)) continue;
+    if(S.hideTaskLocked && b.task) continue;
+    let cost = 0, ok = true; const mats = [];
+    for(const r of b.reqs){
+      const m = materialCost(r.it, r.count);
+      if(!m){ ok = false; break; }
+      cost += m.unit * r.count;
+      mats.push({it: r.it, count: r.count, ...m});
+    }
+    if(!ok) continue;
+    const unitCost = cost / b.rewardCount;
+    const sellPrice = it.lastLowPrice - 1;
+    const fee = fleaFee(it.basePrice, sellPrice, DATA.flea);
+    const profit = sellPrice - fee - unitCost;
+    if(profit < S.minProfit || (it.lastOfferCount || 0) < S.minOffers) continue;
+    out.push({key: b.id, it, buy: unitCost, buyFrom: b.trader.name, ll: b.ll, limit: b.limit ? b.limit * b.rewardCount : 0, capBy: "limit", task: b.task,
+              sellPrice, fee, profit, line: breakEvenPrice(it.basePrice, unitCost + S.minProfit, DATA.flea), dir: "min",
+              mats, matHard: mats.some(m => m.hard)});
+  }
+  return out;
+}
+
+/* ================= レイドで持ち帰る価値（1マスあたり） =================
+   スタッシュに入れて売ったときの手取りを、そのアイテムが占めるマス数で割る。
+   ・トレーダー … その場で確実に売れる額。手数料なし、FIRも不要
+   ・フリマ　　 … 最安値で出したときの手取り（手数料を引いたあと）
+   銃はフリマ価格が組み立て済みと混ざっているので、トレーダー側だけで見る。
+   弾薬は1マスにまとまるぶん、1マスあたりの価値が上がる。 */
+/* 持ち帰り一覧から外すもの。
+   ・プリセット … 銃そのものと二重に並ぶだけで、レイドで拾う対象ではない
+   ・鍵・ケース … 落ちていることはあっても当てにはできない。これが混ざると
+                  段位の境目が現実離れするので、既定では数にも入れない */
+const LOOT_HIDE = {
+  hideLootKeys:  ["keys", "container"],          // 落ちていても当てにできない
+  hideLootArmor: ["armor", "armorPlate", "rig", "backpack"],   // 防具・リグは耐久で値段が当てにならない。バッグは大きくてマス単価が出ない（自分で背負うもの）
+  hideLootMods:  ["mods", "suppressor", "pistolGrip"],       // 銃から外す手間の割に安い
+  hideLootHelmets: ["helmet"],                               // 耐久が削れていて値段が当てにならない
+  hideLootGuns:  ["gun"],                                    // 拾うのが相当難しい
+  hideLootPosters: ["poster"],
+  hideLootHeadsets: ["headphones"]                           // 自分で着けるもので、売るために持ち帰る品ではない
+};
+/* 近接武器は「銃本体」と同じスイッチで扱う（種類の名前がAPIに無いので、性能の種別で見分ける） */
+let LOOT_RARE = [];   // 出品数が少なくて外した品（画面に件数と名前を出す）
+function lootSkip(it){
+  if(it.types.includes("preset")) return true;   // 銃そのものと二重に並ぶだけ
+  if(it.types.includes("ammo") && !it.types.includes("ammoBox")) return true;     // 弾をばら売りすることはないので、常に出さない（弾薬箱は残す）
+  if(/armband|アームバンド|腕章/i.test((it.name && (it.name.en || "")) + " " + (it.name && (it.name.ja || "")))) return true;   // アームバンドも常に出さない
+  for(const k in LOOT_HIDE) if(S[k] && it.types.some(ty => LOOT_HIDE[k].includes(ty))) return true;
+  /* 特殊バージョン：「Neoprene mask (ONI)」のように、名前の後ろに（）で柄や色が付く品。
+     アリーナの限定品などで、拾えるものではない */
+  if(S.hideLootVariants && /[(（][^)）]+[)）]/.test((it.name && (it.name.en || "")) + " " + (it.name && (it.name.ja || "")))) return true;
+  /* アリーナ（EFT: ARENA）の品：本編のレイドには落ちていないので、常に出さない */
+  if(/EFT: ?ARENA|^ARENA |アリーナ/i.test((it.name && (it.name.en || "")) + " " + (it.name && (it.name.ja || "")))) return true;
+  /* 帽子・メガネ・ひげなどの身に着ける小物。防具・リグ・バッグ・ヘルメット・ヘッドセットは、それぞれ別のチェックで見る */
+  if(S.hideLootWearables && !it.types.some(ty => ["armor", "armorPlate", "rig", "backpack", "helmet", "headphones"].includes(ty))){
+    const en = (it.name && it.name.en) || "", ja = (it.name && it.name.ja) || "";
+    if(it.types.includes("glasses") || it.types.includes("wearable")) return true;
+    if(it.cats && it.cats.some(c => /headwear|eyewear|vis-?observ|cosmetic/.test(c))) return true;      // 種類が付いていない場合はカテゴリで
+    if(/\b(sunglasses|glasses|goggles|cap|hat|beanie|beret|bandana|beard|mustache|moustache)\b/i.test(en)
+       || /サングラス|メガネ|眼鏡|ゴーグル|キャップ|帽子|ニット帽|ベレー|バンダナ|ひげ|ヒゲ|髭/.test(ja)) return true;   // 最後は名前で
+  }
+  /* ドッグタグは常に出さない */
+  if(/dog ?tag|ドッグタグ/i.test((it.name && (it.name.en || "")) + " " + (it.name && (it.name.ja || "")))) return true;
+  /* ヘルメット本体と、そのオプションパーツ（フェイスシールド・マンディブルなど）。
+     「種類」だけでは取りこぼすので、性能の種別でも見る。防弾プレートは「防具」側 */
+  if(S.hideLootHelmets && (it.pt === "ItemPropertiesHelmet" || (it.pt === "ItemPropertiesArmorAttachment" && !it.types.includes("armorPlate")))) return true;
+  if(S.hideLootGuns && it.melee) return true;
+  /* 防具の取りこぼし：種類が付いていない防具（例：Ops-Core SOTR）。カテゴリか名前で見分けて「防具・リグ・バッグ」に含める */
+  if(S.hideLootArmor){
+    const nmA = ((it.name && it.name.en) || "") + " " + ((it.name && it.name.ja) || "");
+    if(it.cats && it.cats.some(c => /^(armored-equipment|armor|body-armor|armor-vests|chest-rig|tactical-rigs)$/.test(c))) return true;
+    if(/\bSOTR\b|respirator|レスピレーター/i.test(nmA)) return true;
+  }
+  /* ヘッドセット：イヤープラグ型（ProFlex など）も種類が違って返ることがあるので、名前でも見分ける */
+  if(S.hideLootHeadsets && /headset|earplug|proflex|ヘッドセット|イヤープラグ|イヤーマフ/i.test((it.name && (it.name.en || "")) + " " + (it.name && (it.name.ja || "")))) return true;
+  /* バラクラバ：種類の名前がAPIに無いので、名前で見分ける（ヘッドセットは別のチェック） */
+  if(S.hideLootBalaclava){
+    const nmAll = (it.name && (it.name.en || "")) + " " + (it.name && (it.name.ja || ""));
+    if(it.cats && it.cats.some(c => /face-?cover|facecover|face cover/.test(c))) return true;          // APIがカテゴリを返す場合はこちら
+    if(/balaclava|バラクラバ|mask|マスク|メンポ|shemagh|シュマグ|scarf|スカーフ|neck gaiter|ネックゲーター/i.test(nmAll) && !/filter|フィルター/i.test(nmAll)) return true;   // 返さない場合は名前で見分ける
+  }
+  /* 入手の難しさ：ドロップ率はAPIに無いので、フリマの出品数で代用する。
+     出回っていない品は、拾えたとしても「たまたま」でしかない。
+     フリマ禁止品は出品数が常に0なので、この基準では見ない */
+  if(S.lootMinOffers > 0 && !it.types.includes("noFlea") && (it.lastOfferCount || 0) < S.lootMinOffers){
+    LOOT_RARE.push(it); return true;
+  }
+  return false;
+}
+function rowsLoot(){
+  const all = [];
+  LOOT_RARE = [];
+  for(const it of DATA.items){
+    if(lootSkip(it)) continue;
+    const slots = Math.max(1, (it.width || 1) * (it.height || 1));
+    const stack = it.stack || 1;
+    const sell = bestTraderSell(it);
+    const tTotal = sell ? sell.priceRUB * stack : 0;
+
+    const gun = isGun(it);
+    const fleaOk = !gun && !it.types.includes("noFlea") && it.lastLowPrice > 0
+                && (it.minLevelForFlea || 0) <= S.playerLevel;
+    let fTotal = 0, fFee = 0;
+    if(fleaOk){
+      const price = it.lastLowPrice * stack;
+      fFee = fleaFee(it.basePrice * stack, price, DATA.flea);
+      fTotal = Math.max(0, price - fFee);
+    }
+    const best = Math.max(tTotal, fTotal);
+    if(best <= 0) continue;
+    all.push({it, slots, stack, sellTo: sell ? sell.vendor.name : null,
+              tTotal, tPer: tTotal / slots, fTotal, fFee, fPer: fTotal / slots,
+              fleaOk, gun, perSlot: best / slots});
+  }
+  // 段位の境目は、絞り込み前の全体から決める（絞り込んでも段位が動かないように）
+  LOOT_CUT = tierCuts(all);
+  for(const r of all) r.tier = tierOf(r.perSlot, LOOT_CUT);
+
+  const q = (document.getElementById("lootSearch").value || "").trim().toLowerCase();
+  const kind = document.getElementById("lootType").value || "";
+  const cutEl = document.getElementById("lootCut");
+  if(cutEl){
+    cutEl.textContent = S.lootMinOffers > 0 ? (LOOT_RARE.length ? t("lootCutN", {n: LOOT_RARE.length}) : t("lootCutNone")) : "";
+    cutEl.title = LOOT_RARE.slice(0, 60).map(it => nm(it.name) + "（" + (it.lastOfferCount || 0) + "）").join("\n");
+  }
+  return all.filter(r =>
+    (!kind || r.it.types.includes(kind)) &&
+    (!q || (nm(r.it.name) + " " + nm(r.it.shortName) + " " + r.it.name.en).toLowerCase().includes(q)));
+}
+/* 段位の境目。上から何%かで切る。パッチで相場が動いても、そのときの上位が S になる */
+const TIER_P = [["S", .02], ["A", .08], ["B", .20], ["C", .45]];
+let LOOT_CUT = null;
+function tierCuts(rows){
+  const vals = rows.map(r => r.perSlot).filter(v => v > 0).sort((a, b) => b - a);
+  const cut = {};
+  for(const [k, p] of TIER_P) cut[k] = vals.length ? vals[Math.min(vals.length - 1, Math.floor(vals.length * p))] : 0;
+  return cut;
+}
+const tierOf = (v, c) => !c ? "D" : v >= c.S ? "S" : v >= c.A ? "A" : v >= c.B ? "B" : v >= c.C ? "C" : "D";
+
+/* 7日間の推移から「安定して利益が出るか」を採点 */
+function analyzeHistory(row, hist, mode){
+  const tsOf = p => isNaN(+p.timestamp) ? Date.parse(p.timestamp) : +p.timestamp;
+  // 履歴は全期間ぶん持っているので、ここで選んだ日数だけ切り出す（取り直しは不要）
+  const cutoff = Date.now() - S.days * 864e5;
+  const pts = (hist || []).filter(p => p.priceMin > 0).map(p => ({...p, t: tsOf(p)}))
+                          .filter(p => p.t >= cutoff).sort((a,b) => a.t - b.t);
+  if(pts.length < 5){ row.a = {n: pts.length}; return; }
+  const gains = pts.map(p => mode === "f2t"
+    ? row.sellPrice - p.priceMin
+    : (p.priceMin - 1) - fleaFee(row.it.basePrice, p.priceMin - 1, DATA.flea) - row.buy);
+  const ok = gains.filter(g => g >= S.minProfit);
+  const offers = pts.map(p => p.offerCount || 0).sort((a,b) => a - b);
+  const prices = pts.map(p => p.priceMin);
+  const mean = prices.reduce((a,b) => a + b, 0) / prices.length;
+  const sd = Math.sqrt(prices.reduce((a,b) => a + (b - mean) ** 2, 0) / prices.length);
+  const rate = ok.length / pts.length;
+  const avgGain = ok.length ? ok.reduce((a,b) => a + b, 0) / ok.length : 0;
+  row.a = { n: pts.length, rate, avgGain, expected: rate * avgGain, medOffers: offers[Math.floor(offers.length / 2)],
+            cv: mean ? sd / mean : 0, prices, times: pts.map(p => p.t) };
+  row.a.liq = liquidity(row.it, pts, mean, row.a.cv);
+}
+
+/* 1日あたりの傾き（最小二乗法） */
+function slopePerDay(xs, ys){
+  const n = xs.length, mx = xs.reduce((a,b) => a + b, 0) / n, my = ys.reduce((a,b) => a + b, 0) / n;
+  let num = 0, den = 0;
+  for(let i = 0; i < n; i++){ num += (xs[i] - mx) * (ys[i] - my); den += (xs[i] - mx) ** 2; }
+  return den ? (num / den) * 864e5 : 0;
+}
+/* 売れやすさ：出来高データが無いため、価格・出品数の動きと需要の有無から推定する。
+   理由は言語を切り替えても表示できるよう、コードと数値で持つ */
+function liquidity(it, pts, meanPrice, cv){
+  const xs = pts.map(p => p.t);
+  const offers = pts.map(p => p.offerCount || 0);
+  const meanOff = offers.reduce((a,b) => a + b, 0) / offers.length;
+  const priceTrend = meanPrice ? slopePerDay(xs, pts.map(p => p.priceMin)) / meanPrice * 100 : 0;   // %/日
+  const offerTrend = meanOff ? slopePerDay(xs, offers) / meanOff * 100 : 0;                         // %/日
+  const spreads = pts.filter(p => p.price > 0).map(p => (p.price - p.priceMin) / p.price).sort((a,b) => a - b);
+  const spread = spreads.length ? spreads[Math.floor(spreads.length / 2)] : null;
+  const d = it.demand;
+  const kinds = d ? DEMAND_KEYS.filter(k => d[k] > 0) : [];
+
+  // 各要素の加点・減点（pt）を理由と一緒に持ち、画面で内訳を確認できるようにする
+  let score = 50; const why = [];
+  const add = (pt, w) => { pt = Math.round(pt); score += pt; why.push({...w, pt}); };
+  if(priceTrend <= -3) add(-Math.min(25, -priceTrend * 3), {k: "priceDown", v: priceTrend.toFixed(1)});
+  else if(priceTrend >= 2) add(5, {k: "priceUp"});
+  if(offerTrend >= 5) add(-Math.min(20, offerTrend * 1.5), {k: "offersUp", v: offerTrend.toFixed(0)});
+  else if(offerTrend <= -3 && priceTrend > -3) add(10, {k: "offersDown"});
+  // 平均価格は割高な出品に引っ張られやすいため、差が小さいときの加点だけに使う
+  if(spread != null && spread < 0.05) add(10, {k: "spreadSmall"});
+  if(cv > 0.3) add(-10, {k: "volatile"});
+  const medOff = [...offers].sort((a,b) => a - b)[Math.floor(offers.length / 2)];
+  if(medOff < 3) add(-15, {k: "thin"});
+  else if(medOff < 5) add(-5, {k: "fewish"});
+  if(kinds.length) add(Math.min(15, kinds.length * 5), {k: "demand", kinds});
+  // 影響の大きい理由から表示
+  why.sort((a,b) => Math.abs(b.pt) - Math.abs(a.pt));
+  score = Math.max(0, Math.min(100, Math.round(score)));
+  return {score, level: score >= 65 ? "high" : score >= 40 ? "mid" : "low", why, priceTrend, offerTrend};
+}
+const whyText = w => w.k === "demand"
+  ? t("why.demand", {list: w.kinds.map(k => t("demand")[k]).join(t("demandSep"))})
+  : t("why." + w.k, {v: w.v});
+
+/* ================= 表示 ================= */
+const PAGE = "all";   // "top"／"flip"（転売ボード）／"loot"（持ち帰りティア表）／"watch"（売り時通知）／"settings"／"all"（開発用・全部入り）
+const LOOTISH = PAGE === "loot";                          // ティア表の計算を使うページ
+const NEEDS_DATA = !["top", "settings"].includes(PAGE);   // 価格データを読むページ
+let DATA = null, TAB = LOOTISH ? "loot" : "f2t", ROWS = [], SORT = LOOTISH ? {key: "perSlot", dir: -1} : {key: "profit", dir: -1};
+const lootView = () => S.lootView || (PAGE === "loot" ? "tier" : "list");
+const HIST_CACHE = new Map();
+const yen = n => (n == null || isNaN(n)) ? "―" : "₽" + fmt(Math.round(n));
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+const COLS = {
+  f2t: [["item","item","l"],["buy","buyFlea"],["sellPrice","sellTrader"],["profit","profit"],["offers","offers"],["chg","chg"],["rate","rate"],["expected","expected"],["spark","spark","l"]],
+  b2f: [["item","item","l"],["buy","matCost"],["sellPrice","sellFlea"],["fee","fee"],["profit","profit"],["total","total"],["limit","limit"],["offers","offers"],["chg","chg"],["rate","rate"],["expected","expected"],["liq","liq"],["spark","spark","l"]],
+  loot: [["tier","tier"],["item","item","l"],["perSlot","perSlot"],["slots","slots"],["traderPer","traderSell"],["fleaPer","fleaNet"]],
+  t2f: [["item","item","l"],["buy","buyTrader"],["sellPrice","sellFlea"],["fee","fee"],["profit","profit"],["total","total"],["limit","limit"],["offers","offers"],["chg","chg"],["rate","rate"],["expected","expected"],["liq","liq"],["spark","spark","l"]]
+};
+function sortVal(r, k){
+  switch(k){
+    case "item": return nm(r.it.name);
+    case "offers": return r.it.lastOfferCount || 0;
+    case "chg": return r.it.changeLast48hPercent || 0;
+    case "rate": return r.a && r.a.rate != null ? r.a.rate : -1;
+    case "expected": return r.a && r.a.expected != null ? r.a.expected : -1;
+    case "liq": return r.a && r.a.liq ? r.a.liq.score : -1;
+    case "total": return r.limit ? r.profit * r.limit : -1;
+    case "tier": return -"SABCD".indexOf(r.tier);
+    case "perSlot": return r.perSlot;
+    case "slots": return r.slots;
+    case "traderPer": return r.tPer;
+    case "fleaPer": return r.fPer;
+    default: return r[k] ?? 0;
+  }
+}
+function spark(r){
+  if(!r.a || !r.a.prices) return r.a ? `<span class="note">${t("tooFew")}</span>` : "";
+  const W = 150, H = 34, ps = r.a.prices, ts = r.a.times;
+  // 手数料が重すぎて境目が出せない品もあるので、そのときは線と帯を描かない
+  const hasLine = isFinite(r.line);
+  const lo = Math.min(...ps, hasLine ? r.line : Infinity), hi = Math.max(...ps, hasLine ? r.line : -Infinity), span = (hi - lo) || 1;
+  const t0 = ts[0], t1 = ts[ts.length - 1] || t0 + 1;
+  const x = v => ((v - t0) / ((t1 - t0) || 1)) * (W - 2) + 1, y = v => H - 2 - ((v - lo) / span) * (H - 4);
+  const d = ps.map((p,i) => (i ? "L" : "M") + x(ts[i]).toFixed(1) + " " + y(p).toFixed(1)).join(" ");
+  if(!hasLine) return `<svg class="spark" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(t("sparkLabel", {d: S.days, line: ""}))}">
+    <path d="${d}" fill="none" stroke="var(--text)" stroke-width="1.3"/></svg>`;
+  const lyN = Math.max(0, Math.min(H, y(r.line)));
+  const ly = lyN.toFixed(1);
+  // 線より「利益の出ない側」を薄く塗る。線がこの帯に入っている時間が長いほど、出しても損になる
+  const band = r.dir === "max"
+    ? `<rect x="0" y="0" width="${W}" height="${ly}" fill="var(--loss)" opacity=".16"/>`
+    : `<rect x="0" y="${ly}" width="${W}" height="${(H - lyN).toFixed(1)}" fill="var(--loss)" opacity=".16"/>`;
+  const label = t("sparkLabel", {d: S.days, line: t(TAB === "f2t" ? "lineF2T" : "lineT2F")});
+  return `<svg class="spark" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(label)}">
+    ${band}<line x1="0" x2="${W}" y1="${ly}" y2="${ly}" stroke="var(--tan)" stroke-dasharray="3 3"/>
+    <path d="${d}" fill="none" stroke="var(--text)" stroke-width="1.3"/></svg>`;
+}
+function cell(r, k){
+  const it = r.it;
+  switch(k){
+    case "item": {
+      const tags = [];
+      if(r.buyFrom) tags.push(`<span class="tag">${esc(nm(r.buyFrom))} LL${r.ll || 1}</span>`);
+      if(r.sellTo) tags.push(`<span class="tag">${esc(nm(r.sellTo))}</span>`);
+      if(it.depl) tags.push(`<span class="tag warn" title="${esc(t(TAB === "f2t" ? "usesTipF2T" : "usesTipT2F"))}">${t({uses: "usesTag", hp: "hpTag", res: "resTag"}[it.depl.kind], {n: fmt(it.depl.max)})}</span>`);
+      if(r.stack > 1) tags.push(`<span class="tag">${t("stackTag", {n: fmt(r.stack)})}</span>`);
+      if(isGun(it) && TAB !== "loot") tags.push(`<span class="tag warn" title="${esc(t("gunTip"))}">${t("gunTag")}</span>`);
+      if(r.task) tags.push(`<span class="tag warn">${t("taskTag")}</span>`);
+      if(r.matHard) tags.push(`<span class="tag warn" title="${esc(r.mats.filter(m => m.hard).map(m => t("matHardTip", {name: nm(m.it.name), n: m.count, why: t(m.hard.k, {o: m.hard.o})})).join("\n"))}">${t("matHard")}</span>`);
+      if(it.demand) for(const dk of DEMAND_KEYS) if(it.demand[dk]) tags.push(`<span class="tag need" title="${esc(t("needTip", {k: t("demand")[dk], n: it.demand[dk]}))}">${t("demand")[dk]}</span>`);
+      if(it.minLevelForFlea > 15) tags.push(`<span class="tag">${t("fleaLv", {n: it.minLevelForFlea})}</span>`);
+      const name = nm(it.name);
+      return `<td class="l item"><img src="${esc(it.iconLink)}" alt="" loading="lazy"><span><a href="${esc(it.link)}" target="_blank" rel="noopener">${esc(name)}</a>${copyBtn(name)}${tags.join("")}<span class="sub">${esc(nm(it.shortName))}　${it.width}×${it.height}</span>${r.mats ? matsHtml(r) : ""}</span></td>`;
+    }
+    case "buy": case "fee": return `<td>${yen(r[k])}</td>`;
+    case "sellPrice": {
+      // 手数料を引いても最低利益が残る下限。これを下回る値段でしか売れないなら、出すだけ損になる
+      const be = r.dir === "min" && isFinite(r.line) ? r.line : null;
+      return `<td>${yen(r.sellPrice)}${be ? `<span class="sub" title="${esc(t("breakEvenTip", {p: yen(S.minProfit)}))}">${t("breakEven", {v: yen(be)})}</span>` : ""}</td>`;
+    }
+    case "profit": return `<td class="gain">${yen(r.profit)}${r.worst != null ? `<span class="sub ${r.worst < 0 ? "loss" : ""}" title="${esc(t("worstTip"))}">${t("worst", {v: yen(r.worst)})}</span>` : ""}</td>`;
+    case "total": return `<td class="gain"${r.limit ? ` title="${esc(t("totalTip", {n: r.limit, by: t("capBy")[r.capBy] || ""}))}"` : ""}>${r.limit ? yen(r.profit * r.limit) + (r.a && r.a.expected != null ? `<span class="sub">${t("totalExp", {v: yen(r.a.expected * r.limit)})}</span>` : "") : "―"}</td>`;
+    case "limit": return `<td>${r.limit ? t("pcs", {n: r.limit}) + (r.capBy ? `<span class="sub">${t("capBy")[r.capBy]}</span>` : "") : "―"}</td>`;
+    case "offers": return `<td>${fmt(it.lastOfferCount || 0)}${r.a && r.a.medOffers != null ? `<span class="sub">${t("median7", {n: fmt(r.a.medOffers), d: S.days})}</span>` : ""}</td>`;
+    case "chg": { const c = it.changeLast48hPercent || 0; return `<td class="${c >= 0 ? "gain" : "loss"}">${c > 0 ? "+" : ""}${c.toFixed(1)}%</td>`; }
+    case "rate": return `<td>${r.a && r.a.rate != null ? `<span class="opp"><i><b style="width:${Math.round(r.a.rate*100)}%"></b></i>${Math.round(r.a.rate*100)}%</span>` : (r.a ? "―" : "")}</td>`;
+    case "expected": return `<td>${r.a && r.a.expected != null ? yen(r.a.expected) : ""}</td>`;
+    case "spark": return `<td class="l">${spark(r)}</td>`;
+    case "tier": return `<td><span class="tier ${r.tier}">${r.tier}</span></td>`;
+    case "perSlot": return `<td class="gain"><b>${yen(r.perSlot)}</b></td>`;
+    case "slots": return `<td>${t("slotsN", {w: it.width, h: it.height, n: r.slots})}</td>`;
+    case "traderPer": return `<td>${r.tTotal ? yen(r.tPer) + `<span class="sub">${t("lootTotal", {v: yen(r.tTotal), t: esc(nm(r.sellTo))})}</span>` : "―"}</td>`;
+    case "fleaPer": {
+      if(r.gun) return `<td class="note" title="${esc(t("gunTip"))}">${t("gunTag")}</td>`;
+      if(!r.fleaOk){
+        const lv = it.minLevelForFlea || 0;
+        if(!it.types.includes("noFlea") && it.lastLowPrice > 0 && lv > S.playerLevel)
+          return `<td class="note" title="${esc(t("fleaLockTip", {n: lv, c: S.playerLevel}))}">${t("fleaLockTag", {n: lv})}</td>`;
+        return `<td class="note">${t("noFleaTag")}</td>`;
+      }
+      return `<td>${yen(r.fPer)}<span class="sub">${t("lootTotalFlea", {v: yen(r.fTotal), f: yen(r.fFee)})}</span></td>`;
+    }
+    case "liq": {
+      if(!r.a || !r.a.liq) return "<td></td>";
+      const Q = r.a.liq, cls = Q.level === "high" ? "gain" : Q.level === "low" ? "loss" : "";
+      const pt = w => w.pt ? ` (${w.pt > 0 ? "+" : ""}${w.pt})` : "";
+      const tip = [t("liqBase"), ...Q.why.map(w => whyText(w) + pt(w))].join("\n");
+      return `<td class="l liq" title="${esc(tip)}"><b class="${cls}">${t("liqLevel")[Q.level]}</b> <span class="note">${Q.score}</span><span class="sub">${Q.why.slice(0,2).map(w => esc(whyText(w) + pt(w))).join("<br>")}</span></td>`;
+    }
+  }
+  return "<td></td>";
+}
+function matsHtml(r){
+  const parts = r.mats.map(m => {
+    const src = m.src === "flea" ? t("matFlea") : nm(m.name);
+    const ja = S.lang === "ja";
+    return `<span class="${m.hard ? "loss" : ""}">${esc(nm(m.it.shortName))}×${m.count} ${yen(m.unit)}${ja ? "（" : " ("}${esc(src)}${ja ? "）" : ")"}</span>`;
+  });
+  const ja = S.lang === "ja";
+  return `<span class="sub mats" title="${esc(r.mats.some(m => m.count >= 2) ? t("matAvgNote") : "")}">${t("mats")}${ja ? "：" : ": "}${parts.join(ja ? "、" : ", ")}</span>`;
+}
+function render(){
+  paintView();
+  const cols = COLS[TAB];
+  const thead = document.querySelector("#tbl thead"), tbody = document.querySelector("#tbl tbody");
+  const colLabel = l => String(t("cols")[l]).replace("{d}", S.days);
+  thead.innerHTML = "<tr>" + cols.map(([k,l,c]) =>
+    `<th class="${c||""}" data-k="${k}" ${SORT.key===k ? `data-sorted="${SORT.dir<0?" ▼":" ▲"}"` : ""} tabindex="0">${colLabel(l)}</th>`).join("") + "</tr>";
+  const minLiq = {all: -1, mid: 40, high: 65}[S.liqFilter] ?? -1;
+  const useLiq = (TAB === "t2f" || TAB === "b2f") && minLiq >= 0;
+  document.getElementById("liqFilterWrap").hidden = TAB === "f2t" || TAB === "loot";
+  for(const id of ["lootFilterWrap", "lootHideWrap", "lootRareWrap"]){ const el = document.getElementById(id); el.hidden = TAB !== "loot" || !!el.dataset.off; }
+  // 段位の境目は、1マスあたりいくらかを覚えてもらうために数字で出す
+  const leg = document.getElementById("tierLegend");
+  leg.textContent = TAB === "loot" && LOOT_CUT
+    ? t("tierLegend", {s: yen(LOOT_CUT.S), a: yen(LOOT_CUT.A), b: yen(LOOT_CUT.B), c: yen(LOOT_CUT.C)}) : "";
+  const passLiq = r => !useLiq || (r.a && r.a.liq && r.a.liq.score >= minLiq);
+  const hiddenN = ROWS.filter(r => !passLiq(r)).length;
+  const rows = ROWS.filter(passLiq).sort((a,b) => {
+    const va = sortVal(a, SORT.key), vb = sortVal(b, SORT.key);
+    return (typeof va === "string" ? va.localeCompare(vb, locale()) : va - vb) * SORT.dir;
+  });
+  const tierMode = TAB === "loot" && lootView() === "tier";
+  document.getElementById("tierBoard").hidden = !tierMode;
+  document.getElementById("listWrap").hidden = tierMode || !!document.getElementById("listWrap").dataset.off;
+  if(tierMode){ leg.textContent = ""; renderTier(rows); }
+  const msg = m => `<tr><td class="l" colspan="${cols.length}">${m}</td></tr>`;
+  tbody.innerHTML = !DATA ? msg(t("emptyInit"))
+    : rows.length ? rows.map(r => "<tr>" + cols.map(([k]) => cell(r, k)).join("") + "</tr>").join("")
+    : msg(t(useLiq ? "emptyLiq" : "empty", {n: fmt(hiddenN)}));
+  document.getElementById("hiddenNote").textContent = useLiq && hiddenN && rows.length ? t("liqHidden", {n: fmt(hiddenN)}) : "";
+  document.getElementById("explain").textContent = t({f2t: "explainF2T", t2f: "explainT2F", b2f: "explainB2F", loot: "explainLoot"}[TAB], {d: S.days});
+  const b = document.getElementById("banner");
+  b.innerHTML = (TAB === "t2f" || TAB === "b2f") && DATA && DATA.flea && DATA.flea.foundInRaidRequired ? `<div class="banner">${t("firBanner")}</div>` : "";
+}
+/* ティア表：アイコンだけを並べ、カーソルを乗せると値段が出る */
+function lootTipHtml(r){
+  const it = r.it, C = t("cols");
+  let flea;
+  if(r.gun) flea = t("gunTag");
+  else if(!r.fleaOk){
+    const lv = it.minLevelForFlea || 0;
+    flea = !it.types.includes("noFlea") && it.lastLowPrice > 0 && lv > S.playerLevel ? t("fleaLockTag", {n: lv}) : t("noFleaTag");
+  } else flea = yen(r.fPer) + " " + t("lootTotalFlea", {v: yen(r.fTotal), f: yen(r.fFee)});
+  const trader = r.tTotal ? yen(r.tPer) + " " + t("lootTotal", {v: yen(r.tTotal), t: esc(nm(r.sellTo))}) : "―";
+  return `<b class="n">${esc(nm(it.name))}</b>`
+    + `<div><span class="k">${C.perSlot}</span> <b>${yen(r.perSlot)}</b></div>`
+    + `<div><span class="k">${C.slots}</span> ${t("slotsN", {w: it.width, h: it.height, n: r.slots})}${r.stack > 1 ? "（" + t("stackTag", {n: fmt(r.stack)}) + "）" : ""}</div>`
+    + `<div><span class="k">${C.traderSell}</span> ${trader}</div>`
+    + `<div><span class="k">${C.fleaNet}</span> ${flea}</div>`;
+}
+function renderTier(rows){
+  const box = document.getElementById("tierBoard");
+  if(!DATA){ box.innerHTML = `<p class="note">${t("emptyInit")}</p>`; return; }
+  if(!rows.length){ box.innerHTML = `<p class="note">${t("tierEmpty")}</p>`; return; }
+  const by = {S: [], A: [], B: [], C: [], D: []};
+  for(const r of rows) (by[r.tier] || by.D).push(r);
+  const cuts = {S: LOOT_CUT && LOOT_CUT.S, A: LOOT_CUT && LOOT_CUT.A, B: LOOT_CUT && LOOT_CUT.B, C: LOOT_CUT && LOOT_CUT.C};
+  const ja = S.lang === "ja";
+  box.innerHTML = Object.keys(by).map(k => {
+    const list = by[k].sort((a, b) => b.perSlot - a.perSlot);
+    const note = cuts[k] != null ? yen(cuts[k]) + (ja ? "以上" : "+") : (ja ? "それ未満" : "below");
+    const icons = list.map(r => {
+      const it = r.it, id = it.id;
+      const label = esc(nm(it.shortName) || nm(it.name));
+      const img = it.iconLink ? `<img src="${esc(it.iconLink)}" alt="${label}" loading="lazy">` : label;
+      return `<a class="ti" href="${esc(it.link || "#")}" target="_blank" rel="noopener" data-id="${esc(id)}" aria-label="${esc(nm(it.name))}">${img}</a>`;
+    }).join("");
+    return `<div class="trow"><div class="tlab ${k}"><b>${k}</b><small>${note}<br>${ja ? "／マス" : "per slot"}</small></div><div class="ticons">${icons}</div></div>`;
+  }).join("");
+  TIER_ROWS = new Map(rows.map(r => [String(r.it.id), r]));
+}
+let TIER_ROWS = new Map();
+(function(){
+  const tip = document.getElementById("tip"), box = document.getElementById("tierBoard");
+  const show = (el, x, y) => {
+    const r = TIER_ROWS.get(el.dataset.id); if(!r) return;
+    tip.innerHTML = lootTipHtml(r); tip.hidden = false;
+    const w = tip.offsetWidth, h = tip.offsetHeight;
+    tip.style.left = Math.max(4, Math.min(x + 14, innerWidth - w - 6)) + "px";
+    tip.style.top = Math.max(4, (y + 18 + h > innerHeight) ? y - h - 12 : y + 18) + "px";
+  };
+  box.addEventListener("mousemove", e => { const el = e.target.closest(".ti"); if(el) show(el, e.clientX, e.clientY); else tip.hidden = true; });
+  box.addEventListener("mouseleave", () => { tip.hidden = true; });
+  box.addEventListener("focusin", e => { const el = e.target.closest(".ti"); if(el){ const b = el.getBoundingClientRect(); show(el, b.left, b.bottom - 14); } });
+  box.addEventListener("focusout", () => { tip.hidden = true; });
+})();
+function recompute(){
+  if(PAGE === "watch"){ paintMarket(); return; }      // 売り時・買い時は、表もティア表も使わない（自分の一覧を描く）
+  if(!DATA){ render(); return; }
+  ROWS = TAB === "f2t" ? rowsF2T() : TAB === "t2f" ? rowsT2F() : TAB === "b2f" ? rowsB2F() : rowsLoot();
+  for(const r of ROWS){ const h = HIST_CACHE.get(r.it.id); if(h){ r.hist = h; analyzeHistory(r, h, TAB); } }
+  render();
+}
+
+/* 画面の固定文言を現在の言語で描き直す */
+let STATUS = {k: "noData"}, PROGRESS = null;
+function setStatus(k, vars){ STATUS = {k, vars}; paintStatus(); }
+function setProgress(k, vars){ PROGRESS = k ? {k, vars} : null; paintStatus(); }
+function paintStatus(){
+  const v = STATUS.vars ? {...STATUS.vars} : {};
+  if(v.modeKey) v.mode = t("modes")[v.modeKey];
+  if(v.at){ v.time = v.at.toLocaleTimeString(locale(), {hour: "2-digit", minute: "2-digit"}); v.date = v.at.toLocaleDateString(locale(), {month: "numeric", day: "numeric"}); }
+  if(v.count != null) v.n = fmt(v.count);
+  $status.textContent = t(STATUS.k, v);
+  $progress.textContent = PROGRESS ? t(PROGRESS.k, PROGRESS.vars) : "";
+}
+function applyLang(){
+  document.documentElement.lang = S.lang;
+  document.title = t(PAGE_TITLE[PAGE] || "title") + " | EFT Workbench";
+  paintSettingsLine();
+  document.querySelectorAll("[data-i18n]").forEach(el => { el.textContent = t(el.dataset.i18n); });
+  document.querySelectorAll(".lang button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lang === S.lang)));
+  $mode.innerHTML = MODE_KEYS.map(v => `<option value="${v}">${t("modes")[v]}</option>`).join("");
+  $mode.value = S.mode;
+  $days.innerHTML = DAY_OPTS.map(v => `<option value="${v}">${t("dayOpt", {n: v})}</option>`).join("");
+  $days.value = String(S.days);
+  document.getElementById("footer").innerHTML = t("footer", {src: `<a href="https://tarkov.dev" target="_blank" rel="noopener">tarkov.dev</a>`, mode: esc(modeLabel())});
+  buildSettings();
+  buildLootTypes();
+  paintStatus();
+  render();
+}
+
+/* ================= 操作 ================= */
+const $status = document.getElementById("status"), $progress = document.getElementById("progress");
+const $mode = document.getElementById("modeSel"), $liq = document.getElementById("liqFilter"), $days = document.getElementById("daysSel");
+const $lootType = document.getElementById("lootType"), $lootSearch = document.getElementById("lootSearch");
+
+/* 持ち帰りタブの「種類」。実際に出てくる種類だけを並べる */
+const LOOT_KINDS = ["barter","meds","provisions","keys","mods","gun","ammoBox","armor","armorPlate","helmet","rig","backpack","container","poster","grenade","glasses","headphones","injectors","wearable","suppressor"];
+function buildLootTypes(){
+  const have = new Set();
+  for(const it of (DATA ? DATA.items : [])) for(const ty of it.types) have.add(ty);
+  const hidden = [];
+  for(const k in LOOT_HIDE) if(S[k]) hidden.push(...LOOT_HIDE[k]);
+  const keep = LOOT_KINDS.filter(k => have.has(k) && !hidden.includes(k));
+  const cur = $lootType.value;
+  $lootType.innerHTML = `<option value="">${t("lootAll")}</option>`
+    + keep.map(k => `<option value="${k}">${t("kinds")[k] || k}</option>`).join("");
+  if(keep.includes(cur)) $lootType.value = cur;
+  $lootSearch.placeholder = t("lootSearch");
+  document.querySelectorAll("[data-hide]").forEach(el => { el.checked = !S[el.dataset.hide]; });
+  document.getElementById("lootMinOffers").value = S.lootMinOffers;   // チェックあり＝表示
+}
+document.getElementById("lootMinOffers").addEventListener("change", e => {
+  const v = Math.max(0, Math.min(999, parseInt(e.target.value, 10) || 0));
+  S.lootMinOffers = v; e.target.value = v; saveSettings(); recompute();
+});
+document.getElementById("lootHideWrap").addEventListener("change", e => {
+  const k = e.target.dataset.hide; if(!k) return;
+  S[k] = !e.target.checked; saveSettings(); buildLootTypes(); recompute();
+});
+$lootType.addEventListener("change", recompute);
+$lootSearch.addEventListener("input", () => { if(TAB === "loot") recompute(); });
+
+/* 取ったデータを画面に流す（保存データでも、その場で取ったものでも同じ） */
+function applyData(d, statusKey){
+  DATA = d;
+  HIST_CACHE.clear(); ROWS = []; setProgress(null);
+  setStatus(statusKey, {modeKey: S.mode, count: DATA.items.length, at: DATA.at});
+  document.getElementById("analyzeBtn").disabled = false;
+  buildLootTypes();
+  recompute();
+  if(TAB !== "loot" && PAGE !== "watch") analyzeTop();
+}
+/* その場で tarkov.dev から取り直す */
+async function loadLive(){
+  const btn = document.getElementById("loadBtn"); btn.disabled = true; setStatus("loading");
+  try{
+    const d = await loadAll(step => { $status.textContent = t("loading") + " " + step; });
+    applyData({...d, at: new Date()}, "loaded");
+  }catch(err){
+    setStatus("loadFail", {msg: err.message}); console.error(err);
+  }finally{ btn.disabled = false; }
+}
+/* 開いたとき・モードを変えたとき：サーバーの保存データがあれば、すぐそれを出す。無ければその場で取る */
+async function loadInitial(){
+  const btn = document.getElementById("loadBtn"); btn.disabled = true; setStatus("loading");
+  const snap = await loadSnapshot(S.mode);
+  btn.disabled = false;
+  if(snap) applyData(snap, "loadedSnap");
+  else await loadLive();
+}
+document.getElementById("loadBtn").addEventListener("click", loadLive);
+
+/* 上位N件の7日間推移を取得して分析（価格取得後・タブ切り替え後にも自動で実行） */
+let analyzing = false, rerun = false;
+async function analyzeTop(){
+  if(!DATA) return;
+  if(analyzing){ rerun = true; return; }
+  analyzing = true;
+  const btn = document.getElementById("analyzeBtn"); btn.disabled = true;
+  const n = +document.getElementById("topN").value;
+  const tab = TAB;
+  if(TAB === "loot"){ analyzing = false; btn.disabled = false; return; }
+  const targets = [...ROWS].sort((a,b) => b.profit - a.profit).slice(0, n);
+  const need = [...new Map(targets.filter(r => !HIST_CACHE.has(r.it.id)).map(r => [r.it.id, r])).values()];
+  try{
+    setProgress("autoAnalyzing", {n: targets.length});
+    let done = 0;
+    for(let i = 0; i < need.length; i += 6){
+      const chunk = need.slice(i, i + 6);
+      await Promise.all(chunk.map(async r => {
+        const all = await getJson("prices/" + r.it.id, "prices").catch(() => []);
+        HIST_CACHE.set(r.it.id, all || []);          // 全期間ぶん持つ。日数の切り替えで取り直さずに済む
+        setProgress("histProgress", {i: ++done, n: need.length});
+      }));
+    }
+    if(tab === TAB){
+      for(const r of ROWS){ const h = HIST_CACHE.get(r.it.id); if(h){ r.hist = h; analyzeHistory(r, h, TAB); } }
+      SORT = {key: "expected", dir: -1};
+      setProgress("histDone", {n: targets.length});
+      render();
+    }
+  }catch(err){
+    setProgress("histFail", {msg: err.message});
+  }finally{
+    btn.disabled = false; analyzing = false;
+    if(rerun){ rerun = false; analyzeTop(); }
+  }
+}
+document.getElementById("analyzeBtn").addEventListener("click", analyzeTop);
+
+document.querySelector(".tabs").addEventListener("click", e => {
+  const b = e.target.closest("button[data-tab]"); if(!b) return;
+  TAB = b.dataset.tab;
+  document.querySelectorAll(".tabs button").forEach(x => x.setAttribute("aria-selected", String(x === b)));
+  SORT = TAB === "loot" ? {key: "perSlot", dir: -1} : {key: "profit", dir: -1}; ROWS = [];
+  recompute();
+  if(TAB !== "loot") analyzeTop();          // 持ち帰りの判断に7日推移は要らない
+});
+function onSort(th){
+  const k = th.dataset.k; if(k === "spark") return;
+  SORT = SORT.key === k ? {key: k, dir: -SORT.dir} : {key: k, dir: k === "item" ? 1 : -1};
+  render();
+}
+document.querySelector("#tbl thead").addEventListener("click", e => { const th = e.target.closest("th"); if(th) onSort(th); });
+document.querySelector("#tbl thead").addEventListener("keydown", e => { if(e.key === "Enter"){ const th = e.target.closest("th"); if(th) onSort(th); } });
+
+$mode.addEventListener("change", () => {
+  S.mode = $mode.value; saveSettings();
+  DATA = null; ROWS = []; HIST_CACHE.clear();
+  document.getElementById("analyzeBtn").disabled = true; setProgress(null);
+  setStatus("switched", {modeKey: S.mode});
+  applyLang();
+  loadInitial();
+});
+$liq.value = S.liqFilter;
+$liq.addEventListener("change", () => { S.liqFilter = $liq.value; saveSettings(); render(); });
+
+/* 期間を変えても取り直さない。ためた履歴から切り出し直すだけ */
+$days.addEventListener("change", () => { S.days = +$days.value; saveSettings(); recompute(); });
+
+/* ページごとの見え方（転売ボード／持ち帰りティア表） */
+const PAGE_TITLE = {top: "titleTop", flip: "title", loot: "titleLoot", watch: "titleWatch", settings: "titleSettings", all: "title"};
+const PAGE_NAV = {top: "pgTop", flip: "pgFlip", loot: "pgLoot", watch: "pgWatch", settings: "pgSettings"};
+/* ページごとに、そのページの機能だけを見せる（中身の部品は共通） */
+function setupPage(){
+  if(PAGE === "all") return;                                   // 開発・テスト用：全部入り
+  const hide = (...sels) => sels.forEach(sel => document.querySelectorAll(sel).forEach(el => { el.hidden = true; el.dataset.off = "1"; }));
+  const show = id => { const el = document.getElementById(id); el.hidden = false; };
+  show("pages");
+  document.getElementById(PAGE_NAV[PAGE]).setAttribute("aria-current", "page");
+  document.querySelector("header h1").dataset.i18n = PAGE_TITLE[PAGE];
+  hide("#settingsBox");                                        // 設定はプレイヤー設定のページだけ
+  if(PAGE !== "flip") hide("#flipBox");                        // 転売の条件は転売ボードだけ
+  if(PAGE === "top" || PAGE === "settings"){
+    hide("#status", ".bar", ".tabs", "#banner", "#tierLegend", "#tierBoard", "#listWrap", "#hiddenNote", "#explain");
+    if(PAGE === "top") show("topCards");
+    else{ const b = document.getElementById("settingsBox"); b.hidden = false; delete b.dataset.off; b.open = true; show("pageLead"); document.getElementById("pageLead").dataset.i18n = "leadSettings"; }
+    return;
+  }
+  show("settingsLine");
+  if(PAGE === "flip"){
+    hide('.tabs button[data-tab="loot"]');
+    return;
+  }
+  /* 持ち帰りティア表・売り時・買い時 */
+  hide(".tabs", "#analyzeBtn");
+  for(const id of ["topN", "daysSel"]) document.getElementById(id).closest("label").hidden = true;
+  if(PAGE === "watch"){
+    show("pageLead"); document.getElementById("pageLead").dataset.i18n = "leadWatch";
+    hide("#lootFilterWrap", "#lootHideWrap", "#lootRareWrap", "#viewBtn", "#listWrap", "#explain", "#hiddenNote", "#tierLegend", "#tierBoard", "#banner");
+    show("marketPanel");
+  }
+}
+/* 各ツールの上に出す、今のプレイヤー設定の要約（変えるのは設定ページで） */
+function paintSettingsLine(){
+  const el = document.getElementById("settingsLine"); if(!el || el.hidden) return;
+  el.innerHTML = esc(t("setLine", {lv: S.playerLevel, intel: S.intel})) + ` <a href="settings.html">${esc(t("setLink"))}</a>`;
+}
+const $view = document.getElementById("viewBtn");
+function paintView(){
+  $view.hidden = TAB !== "loot" || !!$view.dataset.off;
+  $view.textContent = t(lootView() === "tier" ? "viewList" : "viewTier");
+}
+$view.addEventListener("click", () => { S.lootView = lootView() === "tier" ? "list" : "tier"; saveSettings(); paintView(); render(); });
+document.querySelector(".lang").addEventListener("click", e => {
+  const b = e.target.closest("button[data-lang]"); if(!b || b.dataset.lang === S.lang) return;
+  S.lang = b.dataset.lang; saveSettings(); applyLang();
+});
+
+/* 名前コピー（フリマ検索に貼り付ける用。表示中の言語の名前） */
+/* コピーボタン（転売ボードの表と、売り時・買い時の一覧で共通） */
+function copyBtn(name){
+  return `<button type="button" class="copy" data-copy="${esc(name)}" title="${esc(t("copy"))}" aria-label="${esc(t("copy"))}: ${esc(name)}"><svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><rect x="5" y="5" width="9" height="9" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M3 11V3.5A1.5 1.5 0 0 1 4.5 2H11" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>`;
+}
+/* ボタンを押したら、名前をコピーして色で結果を見せる */
+async function onCopyClick(b){
+  const ok = await copyText(b.dataset.copy);
+  b.classList.add(ok ? "done" : "fail");
+  setTimeout(() => b.classList.remove("done", "fail"), 1200);
+}
+async function copyText(text){
+  try{ await navigator.clipboard.writeText(text); return true; }
+  catch(e){
+    const ta = document.createElement("textarea"); ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select();
+    const ok = document.execCommand("copy"); ta.remove(); return ok;
+  }
+}
+document.querySelector("#tbl tbody").addEventListener("click", e => {
+  const b = e.target.closest("button[data-copy]"); if(b) onCopyClick(b);
+});
+
+/* ================= 売り時・買い時：画面 =================
+   このページ（watch.html）だけで動く。
+   1. 価格一覧（全品）から、上の条件に合い、24時間平均か48時間前より目安以上 安い品・高い品を候補として選ぶ（candScore）
+   2. の判定には、最安値ではなく「安い出品いくつかの平均」を使う（極端に安い1件はすぐ売り切れて、実際には買えないため）
+   2. 候補だけ価格記録（prices/<id>）を取り、過去 N 日の中での位置を確かめる（marketView）
+   3. 底値付近を「買い場」、高値付近を「売り場」として並べ、おすすめの値段を出す
+   品をクリックすると、値動き・移動平均・おすすめの値段のグラフを開く。計算は market.js */
+
+const MK_I18N = {
+  ja: {
+    days: "比べる期間", daysOpt: "過去{n}日", kind: "種類", kindAll: "すべて",
+    needRebound: "底値からおすすめ売値まで戻ったことがない品は外す", cRebound: "底値→売値", reboundSub: "過去{n}日に戻った回数", reboundNone: "一度も戻っていない（底値のあとの最高 {p}）",
+    noneRebound: "条件に合う品がありません（底値付近 {n}品のうち、見込み利益が条件に合う {m}品はどれも、底値からおすすめ売値まで戻ったことがありません）",
+    minProfit: "買い場は見込み利益が", minProfit2: "以上・", minRate2: "%以上の品だけ",
+    cProfit: "見込み利益／個", profitSub: "{via}で {net} で売った場合（1マスあたり {slot}）", viaFlea: "フリマ手取り", viaTrader: "トレーダー",
+    noneProfit: "条件（見込み利益 {p} 以上・{r}%以上）に合う品がありません（底値付近 {n}品を確認）",
+    capped: "候補が多すぎるため、外れ具合の大きい{n}品だけ確認しました（残り{m}品）。条件を絞ってください",
+    th: "候補の目安", thOpt: "{n}%以上", thTip: "24時間平均か48時間前より、この割合以上 安い（高い）品の記録を確かめます。下げるほど候補が増え、確認に時間がかかります",
+    fresh: "値段の更新", freshOpt: "{n}分以内", freshAll: "問わない", minOffers: "出品数", minOffers2: "件以上", search: "名前で探す（2文字以上）",
+    loading: "価格記録を確認中… {i}/{n}", needData: "価格データを読み込み中です",
+    buyTitle: "買い場（過去{d}日の底値付近）", sellTitle: "売り場（過去{d}日の高値付近）", searchTitle: "探した品",
+    buySub: "いまの相場が、過去{d}日の値動きの下のほうにある品のうち、おすすめ売値まで戻れば大きく利益が出る品（利益の大きい順）",
+    sellSub: "いまの相場が、過去{d}日の値動きの上のほうにある品。持っているなら、おすすめの値段以上で売る候補",
+    none: "いまは該当する品がありません（候補{n}品を確認）", fewAll: "記録が少なく判定できない品：{n}品",
+    cName: "品物", cNow: "いまの相場", nowSub: "直近{n}回の読み取り・{ago}", oddLow: "極端に安い出品 {p}（すぐ売り切れることが多い）", cRange: "過去{d}日の幅（底値〜高値）", cPos: "位置", cRec: "おすすめ", cTrend: "流れ", cOffers: "出品",
+    recBuy: "{p} 以下で買う", recSell: "{p} 以上で売る", recNet: "手取り {p}",
+    tagBuy: "底値付近", tagSell: "高値付近", up: "上向き {p}", down: "下向き {p}", flat: "横ばい",
+    legDot: "読み取った相場（安い出品の平均）", legShort: "24時間平均", legLong: "7日平均", legBuy: "おすすめ買値", legSell: "おすすめ売値",
+    detail: "過去{d}日：底値 {low}・中央 {med}・高値 {high}（極端な5%を除く）。24時間平均 {short}／7日平均 {long}。",
+    detailNote: "値段は tarkov.dev が1〜2時間おきに読み取った「安い出品いくつかの平均」です。極端に安い1件はすぐ売り切れることが多いので使っていません。売り買いの前に、ゲームのフリマで実際の値段を確かめてください。",
+    chartTip: "{date}　相場 {price}｜24時間平均 {short}｜7日平均 {long}", ago: "{n}分前", agoH: "{n}時間前",
+    explain: "いまの相場：直近3回の読み取りの中央値（安い出品いくつかの平均。1件だけの極端に安い出品は使わない）。位置：いまの相場が、過去の値動き（極端な5%を除いた底値〜高値）のどこにあるか。0%が底値、100%が高値。おすすめ買値は「過去の4分の3の時間はこれより高かった」値、おすすめ売値は「4分の3の時間はこれより安かった」値です。流れは24時間平均と7日平均の差（上向きなら値上がり中）。全品の記録は取れないため、上の条件に合う品のうち、24時間平均か48時間前より「候補の目安」以上安い（高い）品を候補にして、その記録を確かめています。ずっと底値に張り付いている品は、この目安に掛からず漏れることがあります。",
+  },
+  en: {
+    days: "Compare with", daysOpt: "last {n} days", kind: "Kind", kindAll: "All",
+    needRebound: "Hide items that never recovered from the low to the sell price", cRebound: "Low → sell", reboundSub: "recoveries in the last {n} days", reboundNone: "never recovered (high after the low: {p})",
+    noneRebound: "Nothing here ({n} near the low; the {m} with enough profit never recovered from the low to the sell price)",
+    minProfit: "Buy zone: expected profit ", minProfit2: " or more and ", minRate2: "% or more only",
+    cProfit: "Expected profit / unit", profitSub: "selling at {net} via {via} ({slot} per slot)", viaFlea: "flea (after fee)", viaTrader: "trader",
+    noneProfit: "Nothing meets the profit filter ({p}+, {r}%+) ({n} items near the low checked)",
+    capped: "Too many candidates: only the {n} furthest from usual were checked ({m} more). Narrow the filters",
+    th: "Candidate threshold", thOpt: "{n}%+", thTip: "Checks the history of items at least this far below (above) their 24h average or 48h-ago price. Lower means more candidates and a longer check",
+    fresh: "Price scanned", freshOpt: "within {n} min", freshAll: "any time", minOffers: "Offers", minOffers2: "or more", search: "Search by name (2+ letters)",
+    loading: "Checking price history… {i}/{n}", needData: "Loading price data",
+    buyTitle: "Buy zone (near the {d}-day low)", sellTitle: "Sell zone (near the {d}-day high)", searchTitle: "Search results",
+    buySub: "Items sitting low in their {d}-day range that would make a good profit if they recover to the suggested sell price (largest profit first)",
+    sellSub: "Items whose current lowest price sits high in their {d}-day range. If you hold one, sell at or above the suggested price",
+    none: "Nothing here right now ({n} candidates checked)", fewAll: "Not enough history: {n} items",
+    cName: "Item", cNow: "Market now", nowSub: "last {n} scans, {ago}", oddLow: "a very cheap listing at {p} (usually gone fast)", cRange: "{d}-day range (low–high)", cPos: "Position", cRec: "Suggested", cTrend: "Trend", cOffers: "Offers",
+    recBuy: "buy at {p} or less", recSell: "sell at {p} or more", recNet: "take-home {p}",
+    tagBuy: "near low", tagSell: "near high", up: "rising {p}", down: "falling {p}", flat: "flat",
+    legDot: "scanned price (average of the cheapest listings)", legShort: "24h average", legLong: "7-day average", legBuy: "suggested buy", legSell: "suggested sell",
+    detail: "{d} days: low {low}, median {med}, high {high} (extreme 5% excluded). 24h average {short} / 7-day average {long}.",
+    detailNote: "Prices are the average of the cheapest listings, scanned by tarkov.dev every 1–2 hours. A single very cheap listing is usually gone fast, so it is not used. Check the real flea price in game before you trade.",
+    chartTip: "{date}  price {price} | 24h avg {short} | 7-day avg {long}", ago: "{n} min ago", agoH: "{n} h ago",
+    explain: "Market now: median of the last 3 scans (average of the cheapest listings; a single very cheap listing is ignored). Position: where the market price sits in the past range (low to high, extreme 5% excluded). 0% is the low, 100% the high. The suggested buy price is one the item traded above 3/4 of the time; the suggested sell price one it traded below 3/4 of the time. Trend compares the 24h and 7-day averages. History cannot be fetched for every item, so among items that pass the filters above, those at least the candidate threshold below (above) their 24h average or 48h-ago price are checked. Items sitting flat at their low can be missed.",
+  },
+};
+const mt = (k, v) => String((MK_I18N[S.lang] || MK_I18N.ja)[k] ?? k).replace(/\{(\w+)\}/g, (_, x) => v && v[x] != null ? v[x] : "");
+const MK_PAGE = PAGE === "watch";
+const $mk = document.getElementById("marketPanel");
+const MK_HIST = new Map();                 // id → {hist, at}（30分は使い回す）
+let MK_BUSY = null, MK_OPEN = null, MK_Q = "";
+const MK_KINDS = ["barter", "meds", "provisions", "keys", "mods", "ammoBox", "container", "injectors", "grenade"];
+
+/* 候補にしてよい品：フリマで売れる・銃とプリセット以外・出品数と値段の新しさの条件を満たす */
+/* 候補の母集団：フリマで売れる・銃とプリセット以外・種類。ここで「各○品」に絞る。
+   出品数と値段の更新の条件は、絞ったあと（mkShowOk）に掛ける。先に掛けると、条件を厳しくしたときに
+   上位から外れた品のかわりに別の品が候補に入り、かえって一覧が増えることがあるため */
+function mkEligible(it){
+  if(it.types.includes("noFlea") || it.types.includes("preset") || isGun(it)) return false;
+  if(!(it.lastLowPrice > 0) || !(it.avg24hPrice > 0)) return false;
+  if(S.mkKind && !it.types.includes(S.mkKind)) return false;
+  return true;
+}
+/* 表示の条件：出品数・値段の更新。条件を厳しくすると、一覧は必ず減る（増えない） */
+function mkShowOk(it){
+  if((it.lastOfferCount || 0) < (S.mkMinOffers || 0)) return false;
+  if(S.mkFreshMin > 0 && !isFresh(it.updated || 0, +DATA.at || Date.now(), S.mkFreshMin)) return false;
+  return true;
+}
+/* 候補：上の条件（種類・出品数・値段の更新）をすべて満たし、かつ24時間平均か48時間前より「目安」以上外れている品。
+   上位何品という切り方はしない（切り方によっては、条件を厳しくすると別の品が繰り上がって一覧が増えるため）。
+   そのため、条件を厳しくすれば一覧は必ず減り、「すべて」は個別の種類を必ず含む。
+   多すぎるときだけ、外れ具合の大きい順に MK_MAX 品で止める（そのときは画面に出す） */
+const MK_MAX = 300;
+let MK_CAPPED = {buy: 0, sell: 0};
+function mkCandidates(){
+  const pool = DATA.items.filter(it => mkEligible(it) && mkShowOk(it));
+  const th = (S.mkTh ?? 5) / 100;
+  const pick = side => {
+    const all = pool.map(it => ({it, sc: candScore(it, side, th)})).filter(c => c.sc != null).sort((a, b) => b.sc - a.sc);
+    MK_CAPPED[side] = Math.max(0, all.length - MK_MAX);
+    return all.slice(0, MK_MAX).map(c => c.it);
+  };
+  const buy = pick("buy"), sell = pick("sell");
+  const q = MK_Q.trim().toLowerCase();
+  const found = q.length >= 2 ? DATA.items.filter(it => !it.types.includes("noFlea") && !it.types.includes("preset") && it.lastLowPrice > 0
+      && (nm(it.name) + " " + nm(it.shortName) + " " + (it.name.en || "")).toLowerCase().includes(q)).slice(0, 8) : [];
+  return {buy, sell, found};
+}
+/* 候補のうち、記録をまだ持っていない品だけ取りに行く（6件ずつ） */
+async function mkFetch(items){
+  const need = [...new Map(items.filter(it => { const c = MK_HIST.get(it.id); return !c || Date.now() - c.at > 30 * 60000; }).map(it => [it.id, it])).values()];
+  if(!need.length || MK_BUSY) return;
+  MK_BUSY = {i: 0, n: need.length}; paintMarket();
+  for(let i = 0; i < need.length; i += 6){
+    await Promise.all(need.slice(i, i + 6).map(async it => {
+      const hist = await getJson("prices/" + it.id, "prices").catch(() => null);
+      MK_HIST.set(it.id, {hist: hist || [], at: Date.now()});
+      MK_BUSY.i++;
+    }));
+    paintMarket();
+  }
+  MK_BUSY = null;
+  paintMarket();
+}
+function mkView(it){
+  const c = MK_HIST.get(it.id); if(!c) return null;
+  return marketView(c.hist, {days: S.mkDays || 30, live: {price: it.lastLowPrice, at: it.updated || 0}});
+}
+const pctTxt = r => (r >= 0 ? "+" : "") + Math.round(r * 100) + "%";
+function mkAgo(t){
+  const m = Math.max(0, Math.round((Date.now() - t) / 60000));
+  return m < 90 ? mt("ago", {n: m}) : mt("agoH", {n: Math.round(m / 60)});
+}
+const netOf = (it, price) => price - fleaFee(it.basePrice, price, DATA.flea);
+
+/* 買い場の見込み利益（いまの最安値で買って、おすすめ売値で売る） */
+function mkProfit(it, v){
+  const tr = bestTraderSell(it);
+  const p = buyProfit(v.price, v.sellAt, ask => fleaFee(it.basePrice, ask, DATA.flea), tr ? tr.priceRUB : 0);
+  p.perSlot = p.profit / Math.max(1, (it.width || 1) * (it.height || 1));
+  return p;
+}
+/* ---- 1行 ---- */
+function mkRow(it, v, side, pf){
+  const icon = it.iconLink ? `<img src="${esc(it.iconLink)}" alt="" loading="lazy">` : "";
+  const tag = v.zone === "buy" ? `<span class="mtag buy">${mt("tagBuy")}</span>` : v.zone === "sell" ? `<span class="mtag sell">${mt("tagSell")}</span>` : "";
+  const rec = side === "sell" || (side === "found" && v.zone === "sell")
+    ? `<b>${esc(mt("recSell", {p: yen(v.sellAt)}))}</b><div class="note">${esc(mt("recNet", {p: yen(netOf(it, v.sellAt))}))}</div>`
+    : `<b>${esc(mt("recBuy", {p: yen(v.buyAt)}))}</b>`;
+  const trend = v.trend == null ? "―" : Math.abs(v.trend) < 0.03 ? mt("flat") : mt(v.trend > 0 ? "up" : "down", {p: pctTxt(v.trend)});
+  const open = MK_OPEN === it.id;
+  return `<tr class="mrow${open ? " open" : ""}" data-id="${esc(it.id)}" tabindex="0">`
+    + `<td class="l"><span class="wico">${icon}</span>${esc(nm(it.name))}${copyBtn(nm(it.name))}${tag}${stockTagHtml(it.id)}${side !== "sell" ? stockAddBtn(it.id) : ""}</td>`
+    + `<td>${yen(v.price)}<div class="note">${esc(mt("nowSub", {n: CUR_SCANS, ago: mkAgo(v.at)}))}</div>${v.oddLow ? `<div class="note warn">${esc(mt("oddLow", {p: yen(v.oddLow.price)}))}</div>` : ""}</td>`
+    + `<td><span class="mrange" title="${esc(yen(v.low) + " 〜 " + yen(v.high))}"><i style="left:${(v.pos * 100).toFixed(1)}%"></i></span><div class="mrangeL"><span>${yen(v.low)}</span><span>${yen(v.high)}</span></div></td>`
+    + `<td>${Math.round(v.pos * 100)}%</td>`
+    + `<td class="mrec">${rec}</td>`
+    + (pf ? `<td class="mprofit"><b>${yen(pf.profit)}</b> <span class="note">(${pctTxt(pf.rate)})</span><div class="note">${esc(mt("profitSub", {via: mt(pf.via === "trader" ? "viaTrader" : "viaFlea"), net: yen(pf.sellNet), slot: yen(pf.perSlot)}))}</div></td>` + `<td>${v.rebounds > 0 ? `<b>${v.rebounds}回</b><div class="note">${esc(mt("reboundSub", {n: S.mkDays || 30}))}</div>` : `<span class="note warn">${esc(mt("reboundNone", {p: yen(v.recentHigh)}))}</span>`}</td>` : "")
+    + `<td>${esc(trend)}</td>`
+    + `<td>${fmt(it.lastOfferCount || 0)}</td></tr>`
+    + (open ? `<tr class="mdetail"><td colspan="${pf ? 9 : 7}">${mkDetail(it, v)}</td></tr>` : "");
+}
+/* ---- 開いた行：グラフと説明 ---- */
+const CH = {w: 720, h: 160, padL: 4, padR: 58, padY: 8};
+const MK_CHART = new Map();
+function mkDetail(it, v){
+  const now = Date.now(), from = now - (S.mkDays || 30) * DAY;
+  const pts = v.pts.filter(p => p.t >= from);
+  const lines = trendLines(v.pts, from, now, Math.max(HOUR, (now - from) / 240));
+  const vals = [...pts.map(p => p.price), ...lines.flatMap(l => [l.short, l.long]).filter(x => x != null), v.buyAt, v.sellAt].sort((a, b) => a - b);
+  let lo = quantile(vals, 0.02), hi = quantile(vals, 0.98);
+  if(hi - lo < hi * 0.02){ lo *= 0.99; hi *= 1.01; }
+  const W = CH.w - CH.padL - CH.padR, Hh = CH.h - CH.padY * 2;
+  const x = t => CH.padL + (t - from) / (now - from) * W;
+  const y = val => CH.padY + (1 - (Math.min(hi, Math.max(lo, val)) - lo) / (hi - lo)) * Hh;
+  const path = key => { let d = "", pen = false; for(const l of lines){ const val = l[key]; if(val == null){ pen = false; continue; } d += (pen ? "L" : "M") + x(l.t).toFixed(1) + " " + y(val).toFixed(1); pen = true; } return d; };
+  MK_CHART.set(it.id, {from, to: now, lines, pts});
+  const ref = (val, cls, label) => `<line class="${cls}" x1="${CH.padL}" x2="${CH.padL + W}" y1="${y(val).toFixed(1)}" y2="${y(val).toFixed(1)}"/><text x="${CH.padL + W + 4}" y="${(y(val) + 3).toFixed(1)}">${esc(label)}</text>`;
+  const svg = `<svg class="wchart" data-id="${esc(it.id)}" viewBox="0 0 ${CH.w} ${CH.h}" width="${CH.w}" height="${CH.h}" role="img" aria-label="${esc(nm(it.name))}">`
+    + pts.map(p => `<circle cx="${x(p.t).toFixed(1)}" cy="${y(p.price).toFixed(1)}" r="1.8" class="dot"/>`).join("")
+    + ref(v.buyAt, "ref-buy", yen(v.buyAt)) + ref(v.sellAt, "ref-sell", yen(v.sellAt))
+    + `<path d="${path("long")}" class="ma-long"/><path d="${path("short")}" class="ma-short"/>`
+    + `<line class="cross" x1="0" x2="0" y1="0" y2="${CH.h}" visibility="hidden"/></svg>`;
+  const legend = `<div class="wleg"><span><i class="ld"></i>${mt("legDot")}</span><span><i class="ls"></i>${mt("legShort")}</span><span><i class="ll"></i>${mt("legLong")}</span><span><i class="lb"></i>${mt("legBuy")}</span><span><i class="lh"></i>${mt("legSell")}</span></div>`;
+  const text = mt("detail", {d: S.mkDays || 30, low: yen(v.low), med: yen(v.median), high: yen(v.high), short: yen(v.short), long: yen(v.long)});
+  return legend + svg + `<div class="mtext">${esc(text)}<br>${esc(mt("detailNote"))}</div>`;
+}
+/* ---- 一覧の節 ---- */
+function mkSection(side, items){
+  const d = S.mkDays || 30;
+  let views = items.map(it => ({it, v: mkView(it)})).filter(x => x.v);
+  const few = views.filter(x => x.v.zone === "few").length;
+  views = views.filter(x => x.v.zone !== "few");
+  let lowN = 0, profitN = 0;
+  if(side === "buy"){
+    // 底値寄り（位置40%以下）の品のうち、見込み利益が条件に合うものだけ。利益の大きい順
+    const low = views.filter(x => x.v.pos <= 0.4);
+    lowN = low.length;
+    views = low.map(x => ({...x, pf: mkProfit(x.it, x.v)}))
+               .filter(x => x.pf.profit >= (S.mkMinProfit || 0) && x.pf.rate * 100 >= (S.mkMinRate || 0));
+    profitN = views.length;
+    // 底値（おすすめ買値以下）まで下がったあと、おすすめ売値まで一度も戻ったことがない品は外す（戻る見込みが薄い）
+    if(S.mkNeedRebound !== false) views = views.filter(x => x.v.rebounds > 0);
+    views.sort((a, b) => b.pf.profit - a.pf.profit);
+  }
+  else if(side === "sell") views = views.filter(x => x.v.pos >= 0.6).sort((a, b) => b.v.pos - a.v.pos);
+  const head = `<thead><tr><th class="l">${mt("cName")}</th><th>${mt("cNow")}</th><th>${mt("cRange", {d})}</th><th>${mt("cPos")}</th><th>${mt("cRec")}</th>${side === "buy" ? `<th>${mt("cProfit")}</th><th>${mt("cRebound")}</th>` : ""}<th>${mt("cTrend")}</th><th>${mt("cOffers")}</th></tr></thead>`;
+  const title = side === "found" ? mt("searchTitle") : mt(side === "buy" ? "buyTitle" : "sellTitle", {d});
+  const sub = side === "found" ? "" : `<small>${esc(mt(side === "buy" ? "buySub" : "sellSub", {d}))}</small>`;
+  const body = views.length ? `<table class="mtbl">${head}<tbody>${views.map(x => mkRow(x.it, x.v, side, x.pf)).join("")}</tbody></table>`
+    : `<p class="note">${esc(side === "buy" && profitN ? mt("noneRebound", {n: lowN, m: profitN}) : side === "buy" && lowN ? mt("noneProfit", {p: yen(S.mkMinProfit || 0), r: S.mkMinRate || 0, n: lowN}) : mt("none", {n: items.length}))}</p>`;
+  return `<section class="msec ${side}"><h2>${esc(title)}${sub}</h2>${body}${few ? `<p class="note">${esc(mt("fewAll", {n: few}))}</p>` : ""}${MK_CAPPED[side] ? `<p class="note warn">${esc(mt("capped", {n: MK_MAX, m: MK_CAPPED[side]}))}</p>` : ""}</section>`;
+}
+/* ---- 操作の帯 ---- */
+function mkBar(){
+  const sel = (key, opts) => `<select data-mk="${key}">${opts.map(([v, l]) => `<option value="${v}" ${String(S[key]) === String(v) ? "selected" : ""}>${esc(l)}</option>`).join("")}</select>`;
+  return `<div class="mbar">`
+    + `<label class="note">${mt("days")} ${sel("mkDays", [7, 14, 30].map(n => [n, mt("daysOpt", {n})]))}</label>`
+    + `<label class="note" title="${esc(mt("thTip"))}">${mt("th")} ${sel("mkTh", [3, 5, 10, 15].map(n => [n, mt("thOpt", {n})]))}</label>`
+    + `<label class="note">${mt("kind")} ${sel("mkKind", [["", mt("kindAll")], ...MK_KINDS.map(k => [k, t("kinds")[k] || k])])}</label>`
+    + `<label class="note">${mt("fresh")} ${sel("mkFreshMin", [[30, mt("freshOpt", {n: 30})], [60, mt("freshOpt", {n: 60})], [120, mt("freshOpt", {n: 120})], [0, mt("freshAll")]])}</label>`
+    + `<label class="note">${mt("minOffers")} <input type="number" data-mk="mkMinOffers" min="0" max="999" value="${S.mkMinOffers}">${mt("minOffers2")}</label>`
+    + `<label class="note">${mt("minProfit")}<input type="number" data-mk="mkMinProfit" min="0" step="1000" value="${S.mkMinProfit}" style="width:6.5em">${mt("minProfit2")}<input type="number" data-mk="mkMinRate" min="0" max="500" value="${S.mkMinRate}">${mt("minRate2")}</label>`
+    + `<label class="note"><input type="checkbox" data-mk="mkNeedRebound" ${S.mkNeedRebound !== false ? "checked" : ""}>${mt("needRebound")}</label>`
+    + `<input type="search" data-mk="q" placeholder="${esc(mt("search"))}" value="${esc(MK_Q)}" size="22">`
+    + `<span class="note">${MK_BUSY ? esc(mt("loading", MK_BUSY)) : ""}</span></div>`;
+}
+function paintMarket(){
+  if(!$mk || !MK_PAGE) return;
+  $mk.hidden = false;
+  if(!DATA){ $mk.innerHTML = mkBar() + `<p class="note">${esc(mt("needData"))}</p>`; return; }
+  const c = mkCandidates();
+  const focusQ = document.activeElement && document.activeElement.dataset && document.activeElement.dataset.mk === "q";
+  $mk.innerHTML = mkBar()
+    + stockSection()
+    + (c.found.length ? mkSection("found", c.found) : "")
+    + mkSection("buy", c.buy) + mkSection("sell", c.sell)
+    + `<p class="note">${esc(mt("explain"))}</p>`;
+  if(focusQ){ const q = $mk.querySelector('[data-mk="q"]'); q.focus(); q.setSelectionRange(q.value.length, q.value.length); }
+  mkFetch([...stockItems(), ...c.found, ...c.buy, ...c.sell]);
+}
+
+/* ---- 操作 ---- */
+if($mk){
+  $mk.addEventListener("change", e => {
+    if(onStockChange(e)) return;                                                       // 在庫の数量・買値の書き換え
+    const el = e.target, k = el.dataset.mk; if(!k || k === "q") return;
+    S[k] = k === "mkKind" ? el.value : el.type === "checkbox" ? el.checked : Math.max(0, +el.value || 0);
+    saveSettings(); MK_OPEN = null; paintMarket();
+  });
+  $mk.addEventListener("input", e => { if(e.target.dataset.mk === "q"){ MK_Q = e.target.value; paintMarket(); } });
+  const toggle = row => { MK_OPEN = MK_OPEN === row.dataset.id ? null : row.dataset.id; paintMarket(); };
+  $mk.addEventListener("click", e => {
+    const b = e.target.closest("button[data-copy]"); if(b){ onCopyClick(b); return; }   // 名前のコピー（行は開かない）
+    try{ if(onStockClick(e)) return; }                                                 // 在庫の操作（stock-ui.js）
+    catch(err){ console.error(err); alert("在庫の操作でエラーが起きました：" + err.message); return; }
+    if(e.target.closest("tr.mform, tr.sedit")) return;
+    const row = e.target.closest("tr.mrow"); if(row) toggle(row);
+  });
+  $mk.addEventListener("keydown", e => { if(e.target.closest("button")) return; const row = e.target.closest("tr.mrow"); if(row && (e.key === "Enter" || e.key === " ")){ e.preventDefault(); toggle(row); } });
+  /* グラフにカーソルを乗せると、その時点の値（縦線つき） */
+  $mk.addEventListener("mousemove", e => {
+    const svg = e.target.closest("svg.wchart"), tip = document.getElementById("tip");
+    $mk.querySelectorAll("svg.wchart .cross").forEach(c => { if(!svg || !svg.contains(c)) c.setAttribute("visibility", "hidden"); });
+    if(!svg){ if(tip.dataset.from === "chart"){ tip.hidden = true; delete tip.dataset.from; } return; }
+    const c = MK_CHART.get(svg.dataset.id); if(!c || !c.lines.length) return;
+    const r = svg.getBoundingClientRect(), sx = r.width / CH.w;
+    const fx = Math.min(1, Math.max(0, ((e.clientX - r.left) / sx - CH.padL) / (CH.w - CH.padL - CH.padR)));
+    const tt = c.from + fx * (c.to - c.from);
+    const l = c.lines.reduce((a, b) => Math.abs(b.t - tt) < Math.abs(a.t - tt) ? b : a);
+    const p = c.pts.length ? c.pts.reduce((a, b) => Math.abs(b.t - tt) < Math.abs(a.t - tt) ? b : a) : null;
+    const cross = svg.querySelector(".cross"), cx = CH.padL + fx * (CH.w - CH.padL - CH.padR);
+    cross.setAttribute("x1", cx); cross.setAttribute("x2", cx); cross.setAttribute("visibility", "visible");
+    const date = new Date(l.t).toLocaleString(locale(), {month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit"});
+    tip.textContent = mt("chartTip", {date, price: p ? yen(p.price) : "―", short: yen(l.short), long: yen(l.long)});
+    tip.hidden = false; tip.dataset.from = "chart";
+    tip.style.left = Math.min(e.clientX + 14, innerWidth - tip.offsetWidth - 6) + "px"; tip.style.top = (e.clientY + 18) + "px";
+  });
+  $mk.addEventListener("mouseleave", () => { const tip = document.getElementById("tip"); if(tip.dataset.from === "chart"){ tip.hidden = true; delete tip.dataset.from; } });
+}
+
+/* ================= 売り時・買い時：在庫（仕込んだ品） =================
+   買い場の品に「仕込んだ」を押す → 数量と1個あたりの買値を入れて記録する（このブラウザに保存）
+   在庫の欄で、いまの相場・おすすめ売値・いま売ったときの損益を見せ、売り場になった品を「売り時」として上に出す
+   売ったら「売った」で記録から外す。判定は market.js の stockState、相場の見方は売り時・買い時と同じ（marketView） */
+
+const ST_I18N = {
+  ja: {
+    title: "在庫（仕込んだ品）", sub: "売り場（高値付近）になった品は「売り時」として上に出ます", sellN: "売り時 {n}品",
+    empty: "まだありません。買い場の品の「仕込んだ」を押すと、ここに記録されます。",
+    cName: "品物", cQty: "数量", cCost: "買値／個", cNow: "いまの相場", cTarget: "おすすめ売値", cPL: "いま売ると", cState: "状態",
+    plSub: "1個 {each}（手取り {net}）", targetSub: "手取り {net}・合計 {total}",
+    sell: "売り時", high: "高値付近（売ると赤字）", plus: "売れば利益（まだ上がる余地）", hold: "待ち", few: "記録が少ない", wait: "確認中",
+    sold: "売った", soldAsk: "{name} を在庫から外しますか？",
+    add: "仕込んだ", addTitle: "{name} を在庫に記録", qty: "数量", cost: "1個あたりの買値", save: "記録する", cancel: "やめる",
+    held: "在庫 {n}", otherMode: "ほかのモードの在庫 {n}品（モードを切り替えると表示）",
+    total: "在庫の合計：買値 {cost}・いま売ると {now}（{pl}）",
+  },
+  en: {
+    title: "Stock (items you bought)", sub: "Items that reach the sell zone are listed first as \"Sell\"", sellN: "{n} to sell",
+    empty: "Nothing yet. Press \"Bought\" on a buy-zone item to record it here.",
+    cName: "Item", cQty: "Qty", cCost: "Cost / unit", cNow: "Market now", cTarget: "Suggested sell", cPL: "If sold now", cState: "Status",
+    plSub: "{each} each (take-home {net})", targetSub: "take-home {net}, total {total}",
+    sell: "Sell", high: "Near the high (would be a loss)", plus: "In profit (may rise further)", hold: "Hold", few: "Not enough data", wait: "Checking",
+    sold: "Sold", soldAsk: "Remove {name} from stock?",
+    add: "Bought", addTitle: "Record {name} as stock", qty: "Qty", cost: "Cost per unit", save: "Save", cancel: "Cancel",
+    held: "stock {n}", otherMode: "{n} items in other modes (switch mode to see them)",
+    total: "Stock total: cost {cost}, if sold now {now} ({pl})",
+  },
+};
+const stt = (k, v) => String((ST_I18N[S.lang] || ST_I18N.ja)[k] ?? k).replace(/\{(\w+)\}/g, (_, x) => v && v[x] != null ? v[x] : "");
+
+/* ---- 記録（設定と一緒にブラウザへ保存。モードごと） ---- */
+const stockAll = () => Array.isArray(S.mkStock) ? S.mkStock : [];
+const stockList = () => stockAll().filter(s => (s.mode || "regular") === S.mode);
+const stockOf = id => stockList().filter(s => s.id === id);
+function stockItems(){ return DATA ? stockList().map(s => DATA.items.find(it => it.id === s.id)).filter(Boolean) : []; }
+function stockSave(list){ S.mkStock = list; saveSettings(); }
+function stockAdd(id, qty, cost){ stockSave([...stockAll(), {id, qty, cost, at: Date.now(), mode: S.mode}]); }
+
+/* ---- 買い場の行に付ける部品 ---- */
+function stockTagHtml(id){
+  const n = stockOf(id).reduce((a, s) => a + s.qty, 0);
+  return n ? `<span class="mtag held">${esc(stt("held", {n: fmt(n)}))}</span>` : "";
+}
+function stockAddBtn(id){ return `<button type="button" class="sadd" data-stock-add="${esc(id)}">${esc(stt("add"))}</button>`; }
+/* 「仕込んだ」の入力欄：一覧の外（画面の上に浮かぶ小窓）に出す。
+   一覧は価格記録を取るたびに描き直されるので、その中に置くと入力中に消えたり、開いたのに見えなかったりするため */
+function stockDialog(it, v){
+  let dlg = document.getElementById("stockDlg");
+  if(!dlg){
+    dlg = document.createElement("div"); dlg.id = "stockDlg"; dlg.setAttribute("role", "dialog");
+    document.body.appendChild(dlg);
+    dlg.addEventListener("click", e => {
+      if(e.target.closest("[data-stock-cancel]")){ dlg.hidden = true; return; }
+      const save = e.target.closest("[data-stock-save]"); if(!save) return;
+      const qty = Math.max(1, Math.round(+dlg.querySelector('[data-sf="qty"]').value || 1));
+      const cost = Math.max(1, Math.round(+dlg.querySelector('[data-sf="cost"]').value || 1));
+      stockAdd(save.dataset.stockSave, qty, cost); dlg.hidden = true; paintMarket();
+    });
+    dlg.addEventListener("keydown", e => {
+      if(e.key === "Escape") dlg.hidden = true;
+      if(e.key === "Enter"){ const b = dlg.querySelector("[data-stock-save]"); if(b) b.click(); }
+    });
+  }
+  dlg.innerHTML = `<div class="sform"><b>${esc(stt("addTitle", {name: nm(it.name)}))}</b>`
+    + `<label class="note">${stt("qty")} <input type="number" data-sf="qty" min="1" value="1" style="width:5em"></label>`
+    + `<label class="note">${stt("cost")} <input type="number" data-sf="cost" min="1" value="${Math.round(v ? v.price : it.lastLowPrice || 0)}" style="width:8em"></label>`
+    + `<button type="button" class="primary" data-stock-save="${esc(it.id)}">${stt("save")}</button>`
+    + `<button type="button" data-stock-cancel>${stt("cancel")}</button></div>`;
+  dlg.hidden = false;
+  const q = dlg.querySelector('[data-sf="qty"]'); q.focus(); q.select();
+}
+
+/* ---- 在庫の欄 ---- */
+function stockSection(){
+  const list = stockList(), others = stockAll().length - list.length;
+  const head = `<h2>${esc(stt("title"))}<small>${esc(stt("sub"))}</small></h2>`;
+  if(!list.length) return `<section class="msec stock">${head}<p class="note">${esc(stt("empty"))}</p>${others ? `<p class="note">${esc(stt("otherMode", {n: others}))}</p>` : ""}</section>`;
+  const sgnYen = n => (n >= 0 ? "+" : "-") + yen(Math.abs(n));
+  let costSum = 0, nowSum = 0;
+  const rows = list.map((s, i) => {
+    const idx = stockAll().indexOf(s);
+    const it = DATA.items.find(x => x.id === s.id);
+    const v = it ? mkView(it) : null;
+    const netNow = v && v.zone !== "few" ? netOf(it, v.price) : null;
+    const state = !it ? "few" : !v ? "wait" : stockState(v, s.cost, netNow);
+    costSum += s.cost * s.qty; if(netNow != null) nowSum += netNow * s.qty;
+    return {s, idx, it, v, netNow, state};
+  }).sort((a, b) => (a.state === "sell" ? 0 : 1) - (b.state === "sell" ? 0 : 1));
+  const sellN = rows.filter(r => r.state === "sell").length;
+  const body = rows.map(({s, idx, it, v, netNow, state}) => {
+    const name = it ? nm(it.name) : s.id;
+    const icon = it && it.iconLink ? `<img src="${esc(it.iconLink)}" alt="" loading="lazy">` : "";
+    const ok = v && v.zone !== "few";
+    const pl = ok ? (netNow - s.cost) * s.qty : null;
+    const tag = ok && v.zone === "buy" ? `<span class="mtag buy">${mt("tagBuy")}</span>` : ok && v.zone === "sell" ? `<span class="mtag sell">${mt("tagSell")}</span>` : "";
+    return `<tr class="srow s-${state}" data-id="${esc(s.id)}">`
+      + `<td class="l"><span class="wico">${icon}</span>${esc(name)}${copyBtn(name)}${tag}</td>`
+      + `<td><input type="number" data-stock-qty="${idx}" min="1" value="${s.qty}" style="width:4.5em"></td>`
+      + `<td><input type="number" data-stock-cost="${idx}" min="1" value="${s.cost}" style="width:7em"></td>`
+      + `<td>${ok ? yen(v.price) + `<div class="note">${Math.round(v.pos * 100)}%・${esc(mkAgo(v.at))}</div>` : "―"}</td>`
+      + `<td>${ok ? yen(v.sellAt) + `<div class="note">${esc(stt("targetSub", {net: yen(netOf(it, v.sellAt)), total: yen(netOf(it, v.sellAt) * s.qty)}))}</div>` : "―"}</td>`
+      + `<td class="spl">${pl != null ? `<b class="${pl >= 0 ? "gain" : "loss"}">${sgnYen(pl)}</b><div class="note">${esc(stt("plSub", {each: sgnYen(netNow - s.cost), net: yen(netNow)}))}</div>` : "―"}</td>`
+      + `<td><span class="sstate">${esc(stt(state))}</span></td>`
+      + `<td><button type="button" data-stock-sold="${idx}">${esc(stt("sold"))}</button></td></tr>`;
+  }).join("");
+  const plSum = nowSum - costSum;
+  return `<section class="msec stock">${head}`
+    + (sellN ? `<p class="ssell">${esc(stt("sellN", {n: sellN}))}</p>` : "")
+    + `<table class="mtbl"><thead><tr><th class="l">${stt("cName")}</th><th>${stt("cQty")}</th><th>${stt("cCost")}</th><th>${stt("cNow")}</th><th>${stt("cTarget")}</th><th>${stt("cPL")}</th><th>${stt("cState")}</th><th></th></tr></thead><tbody>${body}</tbody></table>`
+    + `<p class="note">${esc(stt("total", {cost: yen(costSum), now: yen(nowSum), pl: sgnYen(plSum)}))}</p>`
+    + (others ? `<p class="note">${esc(stt("otherMode", {n: others}))}</p>` : "")
+    + `</section>`;
+}
+
+/* ---- 操作（market-ui.js のクリック・変更の受け口から呼ばれる。処理したら true） ---- */
+function onStockClick(e){
+  const add = e.target.closest("[data-stock-add]");
+  if(add){
+    const it = DATA && DATA.items.find(x => x.id === add.dataset.stockAdd);
+    if(it) stockDialog(it, mkView(it));
+    return true;
+  }
+  const sold = e.target.closest("[data-stock-sold]");
+  if(sold){
+    const i = +sold.dataset.stockSold, s = stockAll()[i]; if(!s) return true;
+    const it = DATA && DATA.items.find(x => x.id === s.id);
+    if(confirm(stt("soldAsk", {name: it ? nm(it.name) : s.id}))){ stockSave(stockAll().filter((_, k) => k !== i)); paintMarket(); }
+    return true;
+  }
+  return !!e.target.closest(".stock input");   // 在庫の入力欄のクリックで行を開かない
+}
+function onStockChange(e){
+  const el = e.target, q = el.dataset.stockQty, c = el.dataset.stockCost;
+  if(q == null && c == null) return false;
+  const list = stockAll().slice(), i = +(q ?? c);
+  if(!list[i]) return true;
+  list[i] = {...list[i], [q != null ? "qty" : "cost"]: Math.max(1, Math.round(+el.value || 1))};
+  stockSave(list); paintMarket();
+  return true;
+}
+
+
+setupPage();
+applyLang();
+if(NEEDS_DATA) loadInitial();
+</script>
+</body>
+</html>
