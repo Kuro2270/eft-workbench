@@ -1,0 +1,4 @@
+# 価格データ（手元で snapshot.mjs を動かしたときにできる。公開サイトは Cloudflare の保存場所から返す）
+public/data/
+node_modules/
+test/*.png
