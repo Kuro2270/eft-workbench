@@ -1,0 +1,60 @@
+name: 価格｜価格を取って保存する（自動・1時間おき）
+
+# tarkov.dev から3つのモード（PvP・PvP シーズナル・PvE）の価格を取り、Cloudflare の保存場所（Workers KV）に置く。役割はこれだけ。
+#   公開サイトは /data/<モード>.json（functions/data/[mode].js）でこれを返し、画面は開いたときにまずこれを読む。
+#   リポジトリにはコミットしない（1時間おきに履歴が増えて重くなるため）。
+#   tarkov.dev の値段の読み取りは品物によって1〜2時間おきなので、これより細かく回しても意味はない。
+# 必要な設定（Settings → Secrets and variables → Actions）
+#   Secrets  : CLOUDFLARE_API_TOKEN（Workers KV の編集ができるトークン）、CLOUDFLARE_ACCOUNT_ID
+#   Variables: KV_NAMESPACE_ID（保存場所の ID）
+
+on:
+  schedule:
+    - cron: "23 * * * *"     # 毎時23分（ちょうどの時刻は混み合って遅れやすいため）
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: snapshot
+  cancel-in-progress: false
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: 価格を取る
+        # 取れなかったモードがあっても、取れたモードは置く（失敗したモードは前回の保存がそのまま残る）
+        run: node snapshot.mjs || echo "SNAP_FAILED=1" >> "$GITHUB_ENV"
+
+      - name: Cloudflare に置く
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          KV_NAMESPACE_ID: ${{ vars.KV_NAMESPACE_ID }}
+        run: |
+          [ -n "$KV_NAMESPACE_ID" ] || { echo "::error::Variables に KV_NAMESPACE_ID がありません"; exit 1; }
+          n=0
+          for f in public/data/*.json; do
+            [ -f "$f" ] || continue
+            key="$(basename "$f")"
+            npx --yes wrangler@4 kv key put "$key" --path "$f" --namespace-id "$KV_NAMESPACE_ID" --remote
+            echo "置きました: $key（$(du -h "$f" | cut -f1)）"
+            n=$((n + 1))
+          done
+          echo "## 価格の保存：$n モード" >> "$GITHUB_STEP_SUMMARY"
+          [ "$n" -gt 0 ] || { echo "::error::置けるデータがありませんでした"; exit 1; }
+
+      - name: 取れなかったモードを知らせる
+        if: env.SNAP_FAILED == '1'
+        run: |
+          echo "::warning::取れなかったモードがありました（上の「価格を取る」のログを見てください）。そのモードは前回の保存のままです。"
+          echo "- 取れなかったモードあり（前回の保存のまま）" >> "$GITHUB_STEP_SUMMARY"
