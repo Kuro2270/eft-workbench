@@ -11,7 +11,7 @@ Escape from Tarkov の無料ツール集。tarkov.dev のデータを使う。
 | `loot.html` 持ち帰りティア表 | レイドで持ち帰る品を 1マスあたりの売値で S〜D に |
 | `watch.html` 売り時・買い時 | 底値付近（買い場）・高値付近（売り場）のランキング、おすすめの値段、移動平均のグラフ |
 | `settings.html` プレイヤー設定 | レベル・LL・インテルセンターなど。全ツール共通 |
-| `about.html`・`privacy.html`・`contact.html`・`404.html` | 運営者情報・プライバシーポリシー・お問い合わせ・見つからないとき |
+| `privacy.html`・`contact.html`・`404.html` | プライバシーポリシー（運営者情報・データの出どころ・非公式であることもここだけに書く）・お問い合わせ・見つからないとき。`about.html` は `privacy.html` へ転送するだけ |
 
 マップ作成（`tools/mapmaker.html`）は手元専用。公開するサイトには入れない（入口も出さない）。
 
@@ -20,7 +20,7 @@ Escape from Tarkov の無料ツール集。tarkov.dev のデータを使う。
 | 場所 | 役割 |
 | --- | --- |
 | `src/` | ツールの画面の本体（直すのはここ）。`app.html` に `data.js`・`market.js`・`market-ui.js`・`stock-ui.js` を埋め込む |
-| `site/` | ページを作る処理。`tools.mjs`（ツールの5ページ）・`info.mjs`（運営者情報など）・`seo.mjs`（robots.txt・sitemap.xml）・`config.mjs`（サイト名・URL・お問い合わせフォーム） |
+| `site/` | ページを作る処理。`tools.mjs`（ツールの5ページ）・`info.mjs`（プライバシーポリシーなど）・`seo.mjs`（robots.txt・sitemap.xml）・`config.mjs`（サイト名・URL・お問い合わせフォーム） |
 | `build.mjs` | `site/` の3つを順番に呼んで `public/` を作る |
 | `public/` | 公開するもの（build.mjs が作る。直接は直さない）。Cloudflare Pages がここを配信する |
 | `functions/data/[mode].js` | 公開サイトの `/data/<モード>.json` を返す（Cloudflare の保存場所 Workers KV から） |

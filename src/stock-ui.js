@@ -5,7 +5,7 @@
 
 const ST_I18N = {
   ja: {
-    title: "在庫（仕込んだ品）", sub: "売り場（高値付近）になった品は「売り時」として上に出ます", sellN: "売り時 {n}品",
+    title: "在庫（仕込んだ品）", sellN: "売り時 {n}品",
     empty: "まだありません。買い場の品の「仕込んだ」を押すと、ここに記録されます。",
     cName: "品物", cQty: "数量", cCost: "買値／個", cNow: "いまの相場", cTarget: "おすすめ売値", cPL: "いま売ると", cState: "状態",
     plSub: "1個 {each}（手取り {net}）", targetSub: "手取り {net}・合計 {total}",
@@ -16,7 +16,7 @@ const ST_I18N = {
     total: "在庫の合計：買値 {cost}・いま売ると {now}（{pl}）",
   },
   en: {
-    title: "Stock (items you bought)", sub: "Items that reach the sell zone are listed first as \"Sell\"", sellN: "{n} to sell",
+    title: "Stock (items you bought)", sellN: "{n} to sell",
     empty: "Nothing yet. Press \"Bought\" on a buy-zone item to record it here.",
     cName: "Item", cQty: "Qty", cCost: "Cost / unit", cNow: "Market now", cTarget: "Suggested sell", cPL: "If sold now", cState: "Status",
     plSub: "{each} each (take-home {net})", targetSub: "take-home {net}, total {total}",
@@ -74,7 +74,7 @@ function stockDialog(it, v){
 /* ---- 在庫の欄 ---- */
 function stockSection(){
   const list = stockList(), others = stockAll().length - list.length;
-  const head = `<h2>${esc(stt("title"))}<small>${esc(stt("sub"))}</small></h2>`;
+  const head = `<h2>${esc(stt("title"))}</h2>`;
   if(!list.length) return `<section class="msec stock">${head}<p class="note">${esc(stt("empty"))}</p>${others ? `<p class="note">${esc(stt("otherMode", {n: others}))}</p>` : ""}</section>`;
   const sgnYen = n => (n >= 0 ? "+" : "-") + yen(Math.abs(n));
   let costSum = 0, nowSum = 0;

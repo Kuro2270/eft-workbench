@@ -70,7 +70,7 @@ console.log("\n転売ボード（flip.html）");
   ok(await page.$eval('.tabs button[data-tab="loot"]', n => getComputedStyle(n).display === "none"), "持ち帰りのタブは出ない");
   ok(!(await page.$eval("#pages", n => n.hidden)), "ほかのページへのリンクがある");
   ok(await page.$eval("#pgFlip", n => n.getAttribute("aria-current") === "page"), "今のページが分かる");
-  ok(await page.$eval("#settingsBox", n => n.hidden) && /プレイヤー設定：Lv40/.test(await page.$eval("#settingsLine", n => n.textContent)), "設定は折りたたみではなく、要約と「変更する」リンクだけ");
+  ok(await page.$eval("#settingsBox", n => n.hidden) && !(await page.$("#settingsLine")) && !(await page.$("#explain")), "設定・説明文は出ない");
   ok(await page.$eval("#marketPanel", n => n.hidden), "売り時・買い時の部品は出ない");
     await page.waitForSelector("#tbl tbody td.item", { timeout: 15000 });
   ok(await page.$eval("#viewBtn", n => getComputedStyle(n).display === "none"), "表示切り替えボタンは出ない");

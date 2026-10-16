@@ -163,23 +163,19 @@ footer a{color:var(--muted)}
 <main>
   <div class="phead"><h1 data-i18n="title">EFT 転売ボード</h1><span class="status" id="status"></span></div>
   <section id="topCards" class="cards" hidden>
-    <p class="lead" data-i18n="topLead"></p>
     <a class="card" href="flip.html"><b data-i18n="pageBoard"></b><span data-i18n="topFlip"></span></a>
     <a class="card" href="loot.html"><b data-i18n="pageLoot"></b><span data-i18n="topLoot"></span></a>
     <a class="card" href="watch.html"><b data-i18n="pageWatch"></b><span data-i18n="topWatch"></span></a>
     <a class="card sub" href="settings.html"><b data-i18n="pageSettings"></b><span data-i18n="topSettings"></span></a>
     <a class="card sub" href="mapmaker.html"><b data-i18n="pageMapmaker"></b><span data-i18n="topMapmaker"></span></a>
   </section>
-  <p class="note" id="pageLead" hidden></p>
   <details class="settings" id="flipBox">
     <summary data-i18n="flipSummary"></summary>
     <div class="grid" id="flipGrid"></div>
   </details>
-  <p class="note setline" id="settingsLine" hidden></p>
   <details class="settings" id="settingsBox">
     <summary data-i18n="settingsSummary"></summary>
     <div class="grid" id="settingsGrid"></div>
-    <p class="note" data-i18n="settingsNote"></p>
   </details>
 
   <div class="bar">
@@ -208,7 +204,6 @@ footer a{color:var(--muted)}
   <div id="tierBoard" hidden></div>
   <div class="tablewrap" id="listWrap"><table id="tbl"><thead></thead><tbody></tbody></table></div>
   <p class="note" id="hiddenNote"></p>
-  <p class="note" id="explain"></p>
 </main>
 <footer id="footer"></footer>
 <div id="tip" hidden></div>
@@ -220,17 +215,12 @@ const I18N = {
   ja: {
     title: "EFT 転売ボード", titleLoot: "EFT 持ち帰りティア表", titleTop: "EFT ツール", titleWatch: "EFT 売り時・買い時", titleSettings: "EFT プレイヤー設定",
     pageTop: "トップ", pageBoard: "転売ボード", pageLoot: "持ち帰りティア表", pageWatch: "売り時・買い時", pageSettings: "プレイヤー設定",
-    topLead: "使いたいツールを選んでください。プレイヤー設定は、すべてのツールで共通です。",
     topFlip: "フリマとトレーダーの値段の差で利益が出る品を、売れやすさと一緒に一覧にします。",
     topLoot: "レイドで持ち帰る品を、1マスあたりの売値で S〜D の段に分けます。何を優先して持ち帰るかの目安に。",
     topWatch: "いまの値段が過去の底値付近の品（買い場）と、高値付近の品（売り場）をランキングで並べ、おすすめの買値・売値も出します。品を選ぶと値動きと移動平均のグラフも見られます。",
     topSettings: "プレイヤーレベル・トレーダーのLL・インテルセンターなど。手数料や買える品の判定に使います。",
     pageMapmaker: "マップ作成（手元用）", topMapmaker: "ゲーム内で撮ったスクリーンショットの位置から、道路や建物の見取り図を描きます。",
-    leadWatch: "いまの相場（安い出品いくつかの平均）が、過去の値動きの中でどの位置にあるかを見て、底値付近の品を「買い場」、高値付近の品を「売り場」として並べます。品をクリックすると、値動き・移動平均・おすすめの値段をグラフで確かめられます。",
-    leadSettings: "ここで決めた内容は、転売ボード・持ち帰りティア表・売り時通知のすべてで使います（このブラウザに保存されます）。",
-    setLine: "プレイヤー設定：Lv{lv}・インテルセンターLv{intel}", setLink: "変更する",
     settingsSummary: "プレイヤーの状況（自動で保存されます）", flipSummary: "転売の条件（最低利益・出品数など）",
-    settingsNote: "トレーダーのロイヤリティレベル（LL）は、トレーダーから買う転売で「買える品物」の判定に使います。インテルセンターLv3以上でフリマ手数料が安くなります。",
     mode: "モード", analyze: "上位の推移を分析", topN: "分析する件数", days: "期間", dayOpt: "{n}日",
     liqFilter: "売れやすさ", liqAll: "すべて", liqMid: "中以上", liqHigh: "高のみ",
     tabF2T: "フリマで買ってトレーダーに売る", tabT2F: "トレーダーで買ってフリマで売る", tabB2F: "交換で手に入れてフリマで売る",
@@ -239,13 +229,11 @@ const I18N = {
     slotsN: "{w}×{h}＝{n}マス", stackTag: "1マスに{n}個", noFleaTag: "フリマ不可", fleaLockTag: "フリマLv{n}で解放", fleaLockTip: "フリマで売るにはプレイヤーLv{n}が必要です。いまの設定はLv{c}です。設定の「プレイヤーレベル」を実際のレベルに合わせると、ここにフリマ手取りが出ます。",
     lootTotal: "計 {v}（{t}）", lootTotalFlea: "計 {v}（手数料 {f}）",
     tierLegend: "段位の目安（1マスあたりの手取り）　S：{s}以上／A：{a}以上／B：{b}以上／C：{c}以上／D：それ未満",
-    explainLoot: "マス単価：売ったときの手取りを、そのアイテムが占めるマス数で割った額です。トレーダーはその場で確実に売れる額（手数料なし・FIR不要）、フリマは最安値で出したときの手数料を引いたあとの手取りです。高いほうをマス単価として段位を付けています。弾はばら売りしないので一覧に出していません（弾薬箱は出ます）。アームバンドとドッグタグも出していません。銃はフリマ価格が組み立て済みと混ざっているため、トレーダー側だけで見ています。段位は、そのときの全アイテムの中での位置（上位何%か）で決まります。既定では、ドッグタグは常に出していません。鍵・ケース（当てにできない）、防具・リグ・ヘルメット（耐久が削れていて値段が当てにならない）、バックパック（自分で背負うもの）、マスク・バラクラバなどの顔まわり（ほとんど出回らない）、名前に（）が付く特殊バージョン（柄や色違いの限定品）、武器パーツ（外す手間の割に安い）、ヘッドセット（自分で着けるもの）、帽子・メガネ・ひげなどの身に着ける小物、アリーナの品（本編では拾えない。常に出しません）、銃・近接武器（拾うのが難しい）、ポスター、銃のプリセット（銃と二重になる）を一覧に出していません。出していないぶんは段位の境目を決める数にも入れていません。上の「一覧に表示」にチェックを入れると出せます（プリセットは常に出しません）。入手の難しさはドロップ率のデータが無いため、フリマの出品数で見ています。出品が少ない品は、拾えてもたまたまなので外します（「件未満は外す」で変えられます。外した品は件数の上にマウスを乗せると見えます）。",
     kinds: {barter: "バーター品", meds: "医療品", provisions: "食料・飲料", keys: "鍵", mods: "武器パーツ", poster: "ポスター", gun: "銃", ammo: "弾薬", ammoBox: "弾薬箱", armor: "防具", armorPlate: "装甲板", helmet: "ヘルメット", rig: "リグ", backpack: "バックパック", container: "コンテナ", grenade: "投擲物", glasses: "アイウェア", headphones: "ヘッドセット", injectors: "注射器", wearable: "着用品", suppressor: "サプレッサー"},
     matCost: "材料原価", mats: "材料", matFlea: "フリマ", matHard: "材料が揃いにくい",
     matHardTip: "{name}：必要{n}個に対して{why}", matFewOffers: "フリマの出品が{o}件しかありません", matLimit: "トレーダーの購入上限が{o}個です",
     matAvgNote: "2個以上必要な材料は、最安値だけでは揃わないため最安値と24時間平均の中間で計算しています",
-    explainB2F: "材料原価：交換に必要な材料を、フリマの最安値とトレーダーの現金価格（あなたのLLで買えるもの）の安いほうで揃えた場合の合計です。2個以上必要な材料は最安値と24時間平均の中間で計算しています。「材料が揃いにくい」は、出品数や購入上限が必要数に対して少ない材料がある交換です。利益が出た割合・売れやすさは受け取る品物について計算しています。",
-    footer: "価格データ：{src}（{mode}）。フリマの最安値や出品数は数分〜数十分遅れることがあります。<br>当サイトは非公式のファンサイトで、Battlestate Games とは関係ありません。<br><a href=\"about.html\">運営者情報</a>・<a href=\"privacy.html\">プライバシーポリシー</a>・<a href=\"contact.html\">お問い合わせ</a>",
+    footer: "<a href=\"privacy.html\">プライバシーポリシー</a>・<a href=\"contact.html\">お問い合わせ</a>",
     modes: {regular: "PvP（通常）", "pvp-season": "PvP シーズナル", pve: "PvE"},
     traders: {prapor: "プラパー", therapist: "セラピスト", skier: "スキアー", peacekeeper: "ピースキーパー", mechanic: "メカニック", ragman: "ラグマン", jaeger: "イェーガー", ref: "レフ"},
     sPlayerLevel: "PMCレベル", sIntel: "インテルセンター Lv", sMgmt: "ハイドアウト管理スキル", sMinProfit: "最低利益（₽／1個）", sMinOffers: "最低出品数",
@@ -286,24 +274,17 @@ const I18N = {
     emptyLiq: "売れやすさの条件に合う品物がありません（{n}件を非表示）。「分析する件数」を増やすか、条件を「すべて」に戻してください。",
     liqHidden: "売れやすさの条件で{n}件を非表示", liqBase: "基準点 50", autoAnalyzing: "上位{n}件の推移を分析中…",
     empty: "条件に合う品物がありません。設定の「最低利益」や「最低出品数」を下げると候補が増えます。",
-    explainF2T: "利益が出た割合：過去{d}日間の記録のうち、フリマ最安値で買ってトレーダーに売ると最低利益以上になった時点の割合。期待利益＝割合×その時の平均利益。点線は「この値段以下で買えれば最低利益が残る」上限で、上の帯に入っている時間は買っても損になります。",
-    explainT2F: "利益が出た割合：過去{d}日間の記録のうち、最安値より1₽安く出品して手数料を引いても最低利益以上残った時点の割合。点線は利益が出る下限で、下の帯に入っている時間は出品しても損になります。買える数は、あなたの購入上限とトレーダーの在庫数の小さいほうです。売れやすさ：出来高のデータは無いため、7日間の価格と出品数の動き、最安値と平均価格の差、クエスト納品・ハイドアウト素材・クラフト素材としての用途から推定した目安（0〜100）です。",
     firBanner: "現在のフリマは「レイド中に見つけた（FIR）」品物しか出品できない設定になっています（APIの値）。トレーダーで買った品物はFIRにならないため、この一覧の多くは実際には出品できない可能性があります。安い品物で一度試してから使ってください。",
   },
   en: {
     title: "EFT Flip Board", titleLoot: "EFT Loot Tier List", titleTop: "EFT Tools", titleWatch: "EFT Buy & Sell Signals", titleSettings: "EFT Player Settings",
     pageTop: "Home", pageBoard: "Flip board", pageLoot: "Loot tier list", pageWatch: "Buy & sell signals", pageSettings: "Player settings",
-    topLead: "Pick a tool. Player settings are shared by every tool.",
     topFlip: "Items you can buy on one side and sell on the other (flea ⇄ traders) for a profit, with how easily they sell.",
     topLoot: "Raid loot ranked S–D by take-home per grid slot, so you know what to carry out first.",
     topWatch: "Rankings of items trading near their past lows (buy zone) and near their past highs (sell zone), with suggested buy and sell prices and a moving-average chart.",
     topSettings: "Player level, trader loyalty levels and Intelligence Center. Used for fees and what you can buy.",
     pageMapmaker: "Map maker (private)", topMapmaker: "Draw roads and buildings from the positions in your in-game screenshots.",
-    leadWatch: "Shows where each item's current lowest price sits within its past price range: near the low is a buy zone, near the high a sell zone. Click an item for its chart, moving averages and suggested prices.",
-    leadSettings: "These settings are used by the flip board, the loot tier list and sell alerts (saved in this browser).",
-    setLine: "Player settings: Lv{lv}, Intelligence Center Lv{intel}", setLink: "Change",
     settingsSummary: "Your progress (saved automatically)", flipSummary: "Flip conditions (minimum profit, offers, etc.)",
-    settingsNote: "Trader loyalty levels (LL) decide which trader items you can buy for flipping. Intelligence Center level 3+ lowers flea market fees.",
     mode: "Mode", analyze: "Analyze history of top items", topN: "Items to analyze", days: "History", dayOpt: "{n} d",
     liqFilter: "Sellability", liqAll: "All", liqMid: "Medium or better", liqHigh: "High only",
     tabF2T: "Buy on flea, sell to traders", tabT2F: "Buy from traders, sell on flea", tabB2F: "Barter at traders, sell on flea",
@@ -312,13 +293,11 @@ const I18N = {
     slotsN: "{w}×{h} = {n}", stackTag: "{n} per slot", noFleaTag: "No flea", fleaLockTag: "Flea unlocks at Lv{n}", fleaLockTip: "Selling on the flea needs player level {n}. Your setting is level {c}. Set “Player level” in settings to your real level to see the flea value here.",
     lootTotal: "{v} total ({t})", lootTotalFlea: "{v} total (fee {f})",
     tierLegend: "Tier cut-offs (take-home per slot) — S: {s}+ / A: {a}+ / B: {b}+ / C: {c}+ / D: below",
-    explainLoot: "Per slot: what you take home when you sell it, divided by the grid space it occupies. Trader is the sure, instant sale (no fee, no found-in-raid needed); flea is what is left after fees when listing at the current low price. The higher of the two sets the tier. Loose ammo, armbands and dog tags are not listed (nobody sells single rounds; ammo boxes are still listed). Guns use the trader side only, because their flea price is mixed in with assembled presets. Tiers are percentile-based, so they follow the economy as it shifts. By default this list leaves out keys and cases (never reliable), armor, helmets and rigs (durability makes their value unpredictable), backpacks (you wear them), face masks and balaclavas, special variants with a bracketed name (pattern or colour editions), weapon mods (rarely worth the time to strip), headsets (you wear them), hats, glasses, beards and other wearables, Arena items (never found in raids; always hidden), guns and melee weapons (hard to find in a raid), posters, and gun presets (duplicates of the gun itself). What is left out is also left out of the tier maths. Tick “Show” above to bring any of them back (presets always stay hidden). There is no drop-rate data, so rarity is judged by the number of flea offers: items that barely ever appear are hidden even if you could pick one up (change the threshold next to the checkboxes; hover the count to see what was hidden).",
     kinds: {barter: "Barter items", meds: "Meds", provisions: "Food & drink", keys: "Keys", mods: "Weapon mods", poster: "Posters", gun: "Guns", ammo: "Ammo", ammoBox: "Ammo boxes", armor: "Armor", armorPlate: "Plates", helmet: "Helmets", rig: "Rigs", backpack: "Backpacks", container: "Containers", grenade: "Throwables", glasses: "Eyewear", headphones: "Headsets", injectors: "Injectors", wearable: "Wearables", suppressor: "Suppressors"},
     matCost: "Material cost", mats: "Materials", matFlea: "Flea", matHard: "Materials hard to gather",
     matHardTip: "{name}: need {n}, but {why}", matFewOffers: "only {o} flea offers", matLimit: "trader buy limit is {o}",
     matAvgNote: "Materials needed in quantity are priced between the flea low and the 24h average, since the cheapest offer alone won’t cover them",
-    explainB2F: "Material cost: the total cost of the barter’s materials, each bought at the cheaper of the flea low and the trader cash price you can access at your LL. Materials needed 2+ times are priced between the flea low and the 24h average. “Materials hard to gather” means some material has few offers or a low buy limit for the amount needed. Profitable share and sellability refer to the item you receive.",
-    footer: "Price data: {src} ({mode}). Flea prices and offer counts can lag by several minutes.<br>An unofficial fan site, not affiliated with Battlestate Games.<br><a href=\"about.html\">About</a> · <a href=\"privacy.html\">Privacy</a> · <a href=\"contact.html\">Contact</a>",
+    footer: "<a href=\"privacy.html\">Privacy</a> · <a href=\"contact.html\">Contact</a>",
     modes: {regular: "PvP (regular)", "pvp-season": "PvP seasonal", pve: "PvE"},
     traders: {prapor: "Prapor", therapist: "Therapist", skier: "Skier", peacekeeper: "Peacekeeper", mechanic: "Mechanic", ragman: "Ragman", jaeger: "Jaeger", ref: "Ref"},
     sPlayerLevel: "PMC level", sIntel: "Intelligence Center level", sMgmt: "Hideout Management skill", sMinProfit: "Min. profit (₽ per item)", sMinOffers: "Min. offers",
@@ -359,8 +338,6 @@ const I18N = {
     emptyLiq: "No items match the sellability filter ({n} hidden). Analyze more items or set the filter back to “All”.",
     liqHidden: "{n} hidden by the sellability filter", liqBase: "Base 50", autoAnalyzing: "Analyzing history of top {n}…",
     empty: "No items match. Lower “Min. profit” or “Min. offers” in your settings to see more.",
-    explainF2T: "Profitable share: the share of the last {d} days’ price points where buying at the flea low and selling to a trader cleared your minimum profit. Expected profit = share × average profit at those points. The dashed line is the highest price you can pay and still clear that profit; time spent in the shaded band above it is time you would lose money buying.",
-    explainT2F: "Profitable share: the share of the last {d} days’ price points where listing 1 ₽ under the flea low still cleared your minimum profit after fees. The dashed line is the lowest sell price that still clears it; time in the shaded band below it is time you would lose money listing. The quantity is the smaller of your buy limit and the trader’s stock. Sellability: there is no sales-volume data, so this 0–100 estimate uses 7-day price and offer trends, the gap between low and average price, and use as quest turn-ins, hideout materials and craft materials.",
     firBanner: "The flea market currently only accepts found-in-raid (FIR) items (per the API). Items bought from traders are not FIR, so many items here may not be listable. Test with a cheap item first.",
   }
 };
@@ -399,7 +376,6 @@ function t(key, vars){
 }
 const locale = () => S.lang === "ja" ? "ja-JP" : "en-US";
 const fmt = n => Number(n).toLocaleString(locale());
-const modeLabel = () => t("modes")[S.mode] || S.mode;
 
 /* 設定の入力欄。プレイヤーの状況（全ツール共通）と、転売ボードだけの条件に分けて作る */
 function buildSettings(){
@@ -426,7 +402,7 @@ function onSettingChange(e){
     const STR = new Set(["depletableF2T", "weapons"]), BOOL = new Set(["excludeFence", "hideTaskLocked"]);
     S[k] = STR.has(k) ? el.value : (BOOL.has(k) ? el.value === "true" : +el.value);
   }
-  saveSettings(); buildLootTypes(); recompute(); paintSettingsLine();
+  saveSettings(); buildLootTypes(); recompute();
 }
 document.getElementById("settingsGrid").addEventListener("change", onSettingChange);
 document.getElementById("flipGrid").addEventListener("change", onSettingChange);
@@ -945,7 +921,6 @@ function render(){
     : rows.length ? rows.map(r => "<tr>" + cols.map(([k]) => cell(r, k)).join("") + "</tr>").join("")
     : msg(t(useLiq ? "emptyLiq" : "empty", {n: fmt(hiddenN)}));
   document.getElementById("hiddenNote").textContent = useLiq && hiddenN && rows.length ? t("liqHidden", {n: fmt(hiddenN)}) : "";
-  document.getElementById("explain").textContent = t({f2t: "explainF2T", t2f: "explainT2F", b2f: "explainB2F", loot: "explainLoot"}[TAB], {d: S.days});
   const b = document.getElementById("banner");
   b.innerHTML = (TAB === "t2f" || TAB === "b2f") && DATA && DATA.flea && DATA.flea.foundInRaidRequired ? `<div class="banner">${t("firBanner")}</div>` : "";
 }
@@ -1024,14 +999,13 @@ function paintStatus(){
 function applyLang(){
   document.documentElement.lang = S.lang;
   document.title = t(PAGE_TITLE[PAGE] || "title") + " | EFT Workbench";
-  paintSettingsLine();
   document.querySelectorAll("[data-i18n]").forEach(el => { el.textContent = t(el.dataset.i18n); });
   document.querySelectorAll(".lang button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lang === S.lang)));
   $mode.innerHTML = MODE_KEYS.map(v => `<option value="${v}">${t("modes")[v]}</option>`).join("");
   $mode.value = S.mode; $mode.setAttribute("aria-label", t("mode"));
   $days.innerHTML = DAY_OPTS.map(v => `<option value="${v}">${t("dayOpt", {n: v})}</option>`).join("");
   $days.value = String(S.days);
-  document.getElementById("footer").innerHTML = t("footer", {src: `<a href="https://tarkov.dev" target="_blank" rel="noopener">tarkov.dev</a>`, mode: esc(modeLabel())});
+  document.getElementById("footer").innerHTML = t("footer");
   buildSettings();
   buildLootTypes();
   paintStatus();
@@ -1203,12 +1177,11 @@ function setupPage(){
   hide("#settingsBox");                                        // 設定はプレイヤー設定のページだけ
   if(PAGE !== "flip") hide("#flipBox");                        // 転売の条件は転売ボードだけ
   if(PAGE === "top" || PAGE === "settings"){
-    hide("#status", ".bar", ".tabs", "#banner", "#tierLegend", "#tierBoard", "#listWrap", "#hiddenNote", "#explain");
+    hide("#status", ".bar", ".tabs", "#banner", "#tierLegend", "#tierBoard", "#listWrap", "#hiddenNote");
     if(PAGE === "top") show("topCards");
-    else{ const b = document.getElementById("settingsBox"); b.hidden = false; delete b.dataset.off; b.open = true; show("pageLead"); document.getElementById("pageLead").dataset.i18n = "leadSettings"; }
+    else{ const b = document.getElementById("settingsBox"); b.hidden = false; delete b.dataset.off; b.open = true; }
     return;
   }
-  show("settingsLine");
   if(PAGE === "flip"){
     hide('.tabs button[data-tab="loot"]');
     return;
@@ -1217,16 +1190,11 @@ function setupPage(){
   hide(".tabs", "#analyzeBtn");
   for(const id of ["topN", "daysSel"]) document.getElementById(id).closest("label").hidden = true;
   if(PAGE === "watch"){
-    show("pageLead"); document.getElementById("pageLead").dataset.i18n = "leadWatch";
-    hide(".bar", "#lootFilterWrap", "#lootHideWrap", "#lootRareWrap", "#viewBtn", "#listWrap", "#explain", "#hiddenNote", "#tierLegend", "#tierBoard", "#banner");   // モードはヘッダーにあるので、この段には何も残らない
+    hide(".bar", "#lootFilterWrap", "#lootHideWrap", "#lootRareWrap", "#viewBtn", "#listWrap", "#hiddenNote", "#tierLegend", "#tierBoard", "#banner");   // モードはヘッダーにあるので、この段には何も残らない
     show("marketPanel");
   }
 }
 /* 各ツールの上に出す、今のプレイヤー設定の要約（変えるのは設定ページで） */
-function paintSettingsLine(){
-  const el = document.getElementById("settingsLine"); if(!el || el.hidden) return;
-  el.innerHTML = esc(t("setLine", {lv: S.playerLevel, intel: S.intel})) + ` <a href="settings.html">${esc(t("setLink"))}</a>`;
-}
 const $view = document.getElementById("viewBtn");
 function paintView(){
   $view.hidden = TAB !== "loot" || !!$view.dataset.off;

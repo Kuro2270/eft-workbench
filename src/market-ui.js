@@ -19,18 +19,14 @@ const MK_I18N = {
     minOffers: "出品数", minOffers2: "件以上", search: "名前で探す（2文字以上）",
     loading: "価格記録を確認中… {i}/{n}", needData: "価格データを読み込み中です",
     buyTitle: "買い場（過去{d}日の底値付近）", sellTitle: "売り場（過去{d}日の高値付近）", searchTitle: "探した品",
-    buySub: "いまの相場が、過去{d}日の値動きの下のほうにある品のうち、おすすめ売値まで戻れば大きく利益が出る品（利益の大きい順）",
-    sellSub: "いまの相場が、過去{d}日の値動きの上のほうにある品。持っているなら、おすすめの値段以上で売る候補",
     none: "いまは該当する品がありません（候補{n}品を確認）", fewAll: "記録が少なく判定できない品：{n}品",
     cName: "品物", cNow: "いまの相場", nowSub: "直近{n}回の読み取り・{ago}", oddLow: "極端に安い出品 {p}（すぐ売り切れることが多い）", cRange: "過去{d}日の幅（底値〜高値）", cPos: "位置", cRec: "おすすめ", cTrend: "流れ", cOffers: "出品",
     recBuy: "{p} 以下で買う", recSell: "{p} 以上で売る", recNet: "手取り {p}",
     tagBuy: "底値付近", tagSell: "高値付近", up: "上向き {p}", down: "下向き {p}", flat: "横ばい",
     legDot: "読み取った相場（安い出品の平均）", legShort: "24時間平均", legLong: "7日平均", legBuy: "おすすめ買値", legSell: "おすすめ売値",
     detail: "過去{d}日：底値 {low}・中央 {med}・高値 {high}（極端な5%を除く）。24時間平均 {short}／7日平均 {long}。",
-    detailNote: "値段は tarkov.dev が1〜2時間おきに読み取った「安い出品いくつかの平均」です。極端に安い1件はすぐ売り切れることが多いので使っていません。売り買いの前に、ゲームのフリマで実際の値段を確かめてください。",
     chartTip: "{date}　相場 {price}｜24時間平均 {short}｜7日平均 {long}", ago: "{n}分前", agoH: "{n}時間前",
-    explain: "いまの相場：直近3回の読み取りの中央値（安い出品いくつかの平均。1件だけの極端に安い出品は使わない）。位置：いまの相場が、過去の値動き（極端な5%を除いた底値〜高値）のどこにあるか。0%が底値、100%が高値。おすすめ買値は「過去の4分の3の時間はこれより高かった」値、おすすめ売値は「4分の3の時間はこれより安かった」値です。流れは24時間平均と7日平均の差（上向きなら値上がり中）。全品の記録は取れないため、上の条件に合う品のうち、24時間平均か48時間前より「候補の目安」以上安い（高い）品を候補にして、その記録を確かめています。ずっと底値に張り付いている品は、この目安に掛からず漏れることがあります。",
-  },
+    },
   en: {
     days: "Compare with", daysOpt: "last {n} days", kind: "Kind", kindAll: "All",
     needRebound: "Hide items that never recovered from the low to the sell price", cRebound: "Low → sell", reboundSub: "recoveries in the last {n} days", reboundNone: "never recovered (high after the low: {p})",
@@ -43,18 +39,14 @@ const MK_I18N = {
     minOffers: "Offers", minOffers2: "or more", search: "Search by name (2+ letters)",
     loading: "Checking price history… {i}/{n}", needData: "Loading price data",
     buyTitle: "Buy zone (near the {d}-day low)", sellTitle: "Sell zone (near the {d}-day high)", searchTitle: "Search results",
-    buySub: "Items sitting low in their {d}-day range that would make a good profit if they recover to the suggested sell price (largest profit first)",
-    sellSub: "Items whose current lowest price sits high in their {d}-day range. If you hold one, sell at or above the suggested price",
     none: "Nothing here right now ({n} candidates checked)", fewAll: "Not enough history: {n} items",
     cName: "Item", cNow: "Market now", nowSub: "last {n} scans, {ago}", oddLow: "a very cheap listing at {p} (usually gone fast)", cRange: "{d}-day range (low–high)", cPos: "Position", cRec: "Suggested", cTrend: "Trend", cOffers: "Offers",
     recBuy: "buy at {p} or less", recSell: "sell at {p} or more", recNet: "take-home {p}",
     tagBuy: "near low", tagSell: "near high", up: "rising {p}", down: "falling {p}", flat: "flat",
     legDot: "scanned price (average of the cheapest listings)", legShort: "24h average", legLong: "7-day average", legBuy: "suggested buy", legSell: "suggested sell",
     detail: "{d} days: low {low}, median {med}, high {high} (extreme 5% excluded). 24h average {short} / 7-day average {long}.",
-    detailNote: "Prices are the average of the cheapest listings, scanned by tarkov.dev every 1–2 hours. A single very cheap listing is usually gone fast, so it is not used. Check the real flea price in game before you trade.",
     chartTip: "{date}  price {price} | 24h avg {short} | 7-day avg {long}", ago: "{n} min ago", agoH: "{n} h ago",
-    explain: "Market now: median of the last 3 scans (average of the cheapest listings; a single very cheap listing is ignored). Position: where the market price sits in the past range (low to high, extreme 5% excluded). 0% is the low, 100% the high. The suggested buy price is one the item traded above 3/4 of the time; the suggested sell price one it traded below 3/4 of the time. Trend compares the 24h and 7-day averages. History cannot be fetched for every item, so among items that pass the filters above, those at least the candidate threshold below (above) their 24h average or 48h-ago price are checked. Items sitting flat at their low can be missed.",
-  },
+    },
 };
 const mt = (k, v) => String((MK_I18N[S.lang] || MK_I18N.ja)[k] ?? k).replace(/\{(\w+)\}/g, (_, x) => v && v[x] != null ? v[x] : "");
 const MK_PAGE = PAGE === "watch";
@@ -179,7 +171,7 @@ function mkDetail(it, v){
     + `<line class="cross" x1="0" x2="0" y1="0" y2="${CH.h}" visibility="hidden"/></svg>`;
   const legend = `<div class="wleg"><span><i class="ld"></i>${mt("legDot")}</span><span><i class="ls"></i>${mt("legShort")}</span><span><i class="ll"></i>${mt("legLong")}</span><span><i class="lb"></i>${mt("legBuy")}</span><span><i class="lh"></i>${mt("legSell")}</span></div>`;
   const text = mt("detail", {d: S.mkDays || 30, low: yen(v.low), med: yen(v.median), high: yen(v.high), short: yen(v.short), long: yen(v.long)});
-  return legend + svg + `<div class="mtext">${esc(text)}<br>${esc(mt("detailNote"))}</div>`;
+  return legend + svg + `<div class="mtext">${esc(text)}</div>`;
 }
 /* ---- 一覧の節 ---- */
 function mkSection(side, items){
@@ -202,10 +194,9 @@ function mkSection(side, items){
   else if(side === "sell") views = views.filter(x => x.v.pos >= 0.6).sort((a, b) => b.v.pos - a.v.pos);
   const head = `<thead><tr><th class="l">${mt("cName")}</th><th>${mt("cNow")}</th><th>${mt("cRange", {d})}</th><th>${mt("cPos")}</th><th>${mt("cRec")}</th>${side === "buy" ? `<th>${mt("cProfit")}</th><th>${mt("cRebound")}</th>` : ""}<th>${mt("cTrend")}</th><th>${mt("cOffers")}</th></tr></thead>`;
   const title = side === "found" ? mt("searchTitle") : mt(side === "buy" ? "buyTitle" : "sellTitle", {d});
-  const sub = side === "found" ? "" : `<small>${esc(mt(side === "buy" ? "buySub" : "sellSub", {d}))}</small>`;
   const body = views.length ? `<table class="mtbl">${head}<tbody>${views.map(x => mkRow(x.it, x.v, side, x.pf)).join("")}</tbody></table>`
     : `<p class="note">${esc(side === "buy" && profitN ? mt("noneRebound", {n: lowN, m: profitN}) : side === "buy" && lowN ? mt("noneProfit", {p: yen(S.mkMinProfit || 0), r: S.mkMinRate || 0, n: lowN}) : mt("none", {n: items.length}))}</p>`;
-  return `<section class="msec ${side}"><h2>${esc(title)}${sub}</h2>${body}${few ? `<p class="note">${esc(mt("fewAll", {n: few}))}</p>` : ""}${MK_CAPPED[side] ? `<p class="note warn">${esc(mt("capped", {n: MK_MAX, m: MK_CAPPED[side]}))}</p>` : ""}</section>`;
+  return `<section class="msec ${side}"><h2>${esc(title)}</h2>${body}${few ? `<p class="note">${esc(mt("fewAll", {n: few}))}</p>` : ""}${MK_CAPPED[side] ? `<p class="note warn">${esc(mt("capped", {n: MK_MAX, m: MK_CAPPED[side]}))}</p>` : ""}</section>`;
 }
 /* ---- 操作の帯 ---- */
 function mkBar(){
@@ -230,7 +221,7 @@ function paintMarket(){
     + stockSection()
     + (c.found.length ? mkSection("found", c.found) : "")
     + mkSection("buy", c.buy) + mkSection("sell", c.sell)
-    + `<p class="note">${esc(mt("explain"))}</p>`;
+;
   if(focusQ){ const q = $mk.querySelector('[data-mk="q"]'); q.focus(); q.setSelectionRange(q.value.length, q.value.length); }
   mkFetch([...stockItems(), ...c.found, ...c.buy, ...c.sell]);
 }

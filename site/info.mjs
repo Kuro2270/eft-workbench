@@ -1,4 +1,5 @@
-/* 運営者情報・プライバシーポリシー・お問い合わせ・404 のページを作る（日本語）。
+/* プライバシーポリシー（運営者情報・データの出どころ・非公式であることもここにまとめる）・お問い合わせ・404 のページを作る（日本語）。
+   運営者情報・非公式・データの出どころは、ほかのページには書かない（このページの1か所だけ）。
    見た目はツールのページ（src/app.html）の色に合わせた、文章だけの簡単なページ。
    お問い合わせのフォームの URL は site/config.mjs の FORM_URL */
 import { writeFileSync, mkdirSync } from "node:fs";
@@ -48,7 +49,7 @@ footer a{color:var(--muted)}
 <main>
 ${body}
 </main>
-<footer>当サイトは非公式のファンサイトで、Battlestate Games とは関係ありません。<br><a href="index.html">トップ</a>・<a href="about.html">運営者情報</a>・<a href="privacy.html">プライバシーポリシー</a>・<a href="contact.html">お問い合わせ</a></footer>
+<footer><a href="index.html">トップ</a>・<a href="privacy.html">プライバシーポリシー</a>・<a href="contact.html">お問い合わせ</a></footer>
 </body>
 </html>
 `;
@@ -56,43 +57,32 @@ ${body}
 
 const PAGES = [
   {
-    file: "about.html", title: "運営者情報",
-    desc: "EFT Workbench の運営者情報です。運営の目的、データの出どころ、連絡先をまとめています。",
-    body: `<h1>運営者情報</h1>
-<p class="lead">このサイトを運営している人と、運営の目的・方針をまとめています。</p>
+    file: "privacy.html", title: "プライバシーポリシー",
+    desc: "EFT Workbench の運営者情報とプライバシーポリシーです。データの出どころ、ブラウザに保存する情報、アクセス解析、お問い合わせの扱いをまとめています。",
+    body: `<h1>プライバシーポリシー</h1>
+<h2>運営者情報</h2>
 <table class="info">
-<tr><th>サイト名</th><td>${SITE_NAME}</td></tr>
+<tr><th>サイト名</th><td>${SITE_NAME}（Escape from Tarkov の無料ツール集）</td></tr>
 <tr><th>URL</th><td>${SITE}</td></tr>
 <tr><th>運営者</th><td>Kurokon（個人運営）</td></tr>
 <tr><th>開設</th><td>2026年10月</td></tr>
 <tr><th>お問い合わせ</th><td><a href="contact.html">お問い合わせフォーム</a></td></tr>
 </table>
-<h2>このサイトについて</h2>
-<p>EFT Workbench は、Escape from Tarkov（タルコフ）を遊ぶ人のための、無料のツール集です。タルコフを遊ぶ運営者が、自分で使うために作った道具を公開しています。</p>
-<p>フリマとトレーダーの値段の差で利益が出る品の一覧（転売ボード）、レイドで持ち帰る品の目安（持ち帰りティア表）、値動きから見た買い場・売り場のランキング（売り時・買い時）を、日本語で使えるようにしています。</p>
-<h2>情報の出どころ</h2>
-<p>アイテムの値段・情報は <a href="https://tarkov.dev" target="_blank" rel="noopener">tarkov.dev</a> のデータを使い、当サイトが独自に計算しています。値段はゲーム内のフリマより遅れて反映されることがあり、正確さを保証するものではありません。</p>
-<p>当サイトは非公式のファンサイトです。Escape from Tarkov の開発元である Battlestate Games の認可を受けたものではなく、関係もありません。ゲーム内のアイテム名・画像などの権利は、Battlestate Games に帰属します。</p>
-<h2>関連ページ</h2>
-<p><a href="privacy.html">プライバシーポリシー</a> ／ <a href="contact.html">お問い合わせ</a></p>`
-  },
-  {
-    file: "privacy.html", title: "プライバシーポリシー",
-    desc: "EFT Workbench のプライバシーポリシーです。ブラウザに保存する情報、アクセス解析、お問い合わせの扱いをまとめています。",
-    body: `<h1>プライバシーポリシー</h1>
-<p class="lead">当サイトで扱う情報と、その使い方をまとめています。</p>
+<h2>データの出どころ</h2>
+<p>アイテムの値段・情報は <a href="https://tarkov.dev" target="_blank" rel="noopener">tarkov.dev</a> のデータを使い、当サイトが独自に計算しています。</p>
+<h2>非公式のファンサイトです</h2>
+<p>当サイトは非公式のファンサイトで、Escape from Tarkov の開発元である Battlestate Games とは関係ありません。ゲーム内のアイテム名・画像などの権利は、Battlestate Games に帰属します。</p>
 <h2>ブラウザに保存する情報</h2>
 <p>プレイヤー設定（レベル・トレーダーのロイヤリティレベル・インテルセンターなど）、表示の設定、売り時・買い時の「在庫」に記録した品と数量は、お使いのブラウザの<b>ローカルストレージ</b>に保存します。次に開いたときに同じ状態で使えるようにするためのものです。</p>
 <p>これらは当サイトの運営者を含む誰かに送信されることはありません。ブラウザの設定から削除できます。</p>
 <h2>外部のデータの読み込み</h2>
-<p>最新の値段に更新するときや、値動きを表示するときは、お使いのブラウザから <a href="https://tarkov.dev" target="_blank" rel="noopener">tarkov.dev</a> のデータを直接読み込みます。このとき tarkov.dev に、IPアドレスなどの通信情報が送られます。取り扱いは tarkov.dev の方針に従います。</p>
+<p>値動きを表示するときや、当サイトに保存した価格が無いときは、お使いのブラウザから <a href="https://tarkov.dev" target="_blank" rel="noopener">tarkov.dev</a> のデータを直接読み込みます。このとき tarkov.dev に、IPアドレスなどの通信情報が送られます。取り扱いは tarkov.dev の方針に従います。</p>
 <h2>アクセス解析</h2>
 <p>サイトの改善のため、Cloudflare Web Analytics でアクセス数などを集計しています。Cookie を使わず、個人を特定する情報は集めません。</p>
 <h2>お問い合わせ</h2>
 <p>お問い合わせには <b>Google フォーム</b>を使っています。入力された内容（本文と、任意で入力されたメールアドレス）は、Google のサービス上で保存され、運営者が確認します。いただいた情報は、お返事と、不具合の確認・サイトの改善のためだけに使います。法令に基づく場合を除き、本人の同意なく第三者に提供することはありません。</p>
 <h2>免責事項</h2>
-<p>当サイトの値段や計算結果は、tarkov.dev のデータを当サイトが独自に計算したもので、正確さを保証するものではありません。当サイトの利用によって生じた損害（ゲーム内の損失を含む）について、運営者は責任を負いかねます。</p>
-<p>当サイトは非公式のファンサイトで、Battlestate Games とは関係ありません。</p>
+<p>当サイトの値段や計算結果は、正確さを保証するものではありません。当サイトの利用によって生じた損害（ゲーム内の損失を含む）について、運営者は責任を負いかねます。</p>
 <h2>改定</h2>
 <p>本ポリシーは、必要に応じて予告なく改定することがあります。広告を載せるなど、扱う情報が変わるときは、このページを更新してお知らせします。</p>
 <p class="lead">最終更新：2026年10月</p>`
@@ -127,11 +117,29 @@ document.getElementById("openForm").addEventListener("click", function(){
   }
 ];
 
+/* 以前あった運営者情報（about.html）は、プライバシーポリシーにまとめた。古いリンクやブックマークから来た人は移す */
+const MOVED = { "about.html": "privacy.html" };
+function movedPage(to){
+  return `<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="robots" content="noindex"><link rel="canonical" href="${SITE}/${to.replace(/\.html$/, "")}">
+<meta http-equiv="refresh" content="0; url=${to}"><title>${SITE_NAME}</title></head>
+<body><a href="${to}">${to}</a></body></html>
+`;
+}
+
 export function buildInfo(){
   mkdirSync(join(ROOT, "public"), { recursive: true });
   for(const p of PAGES){
     writeFileSync(join(ROOT, "public", p.file), layout(p));
     console.log("作成:", "public/" + p.file);
   }
+  const redirects = [];
+  for(const [from, to] of Object.entries(MOVED)){
+    writeFileSync(join(ROOT, "public", from), movedPage(to));
+    const a = "/" + from.replace(/\.html$/, ""), b = "/" + to.replace(/\.html$/, "");
+    redirects.push(`${a} ${b} 301`, `/${from} ${b} 301`);
+  }
+  writeFileSync(join(ROOT, "public", "_redirects"), redirects.join("\n") + "\n");   // Cloudflare Pages の転送設定
+  console.log("作成: public/_redirects");
   return PAGES.filter(p => !p.noindex).map(p => ({ file: p.file, priority: "0.3" }));
 }
