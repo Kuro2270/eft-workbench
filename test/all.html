@@ -184,9 +184,8 @@ footer a{color:var(--muted)}
     <label class="note"><span data-i18n="days"></span> <select id="daysSel"></select></label>
     <label class="note" id="liqFilterWrap" hidden><span data-i18n="liqFilter"></span> <select id="liqFilter">
       <option value="all" data-i18n="liqAll"></option><option value="mid" data-i18n="liqMid"></option><option value="high" data-i18n="liqHigh"></option></select></label>
-    <label class="note" id="lootFilterWrap" hidden><span data-i18n="lootType"></span> <select id="lootType"></select>
-      <input type="search" id="lootSearch" placeholder="" size="14"></label>
-    <span class="note hides" id="lootHideWrap" hidden><span data-i18n="lootHide"></span><label><input type="checkbox" data-hide="hideLootKeys"><span data-i18n="lootHideKeys"></span></label><label><input type="checkbox" data-hide="hideLootArmor"><span data-i18n="lootHideArmor"></span></label><label><input type="checkbox" data-hide="hideLootHelmets"><span data-i18n="lootHideHelmets"></span></label><label><input type="checkbox" data-hide="hideLootBalaclava"><span data-i18n="lootHideBalaclava"></span></label><label><input type="checkbox" data-hide="hideLootVariants"><span data-i18n="lootHideVariants"></span></label><label><input type="checkbox" data-hide="hideLootMods"><span data-i18n="lootHideMods"></span></label><label><input type="checkbox" data-hide="hideLootWearables"><span data-i18n="lootHideWearables"></span></label><label><input type="checkbox" data-hide="hideLootHeadsets"><span data-i18n="lootHideHeadsets"></span></label><label><input type="checkbox" data-hide="hideLootGuns"><span data-i18n="lootHideGuns"></span></label><label><input type="checkbox" data-hide="hideLootPosters"><span data-i18n="lootHidePosters"></span></label></span>
+    <label class="note" id="lootFilterWrap" hidden><input type="search" id="lootSearch" placeholder="" size="14"></label>
+    <span class="note hides" id="lootHideWrap" hidden></span>
     <span class="note hides" id="lootRareWrap" hidden><label><span data-i18n="lootRare1"></span><input type="number" id="lootMinOffers" min="0" max="999" style="width:4.5em"><span data-i18n="lootRare2"></span></label> <span id="lootCut"></span></span>
     <button id="viewBtn" hidden></button>
     <span class="note" id="progress"></span>
@@ -225,7 +224,7 @@ const I18N = {
     liqFilter: "売れやすさ", liqAll: "すべて", liqMid: "中以上", liqHigh: "高のみ",
     tabF2T: "フリマで買ってトレーダーに売る", tabT2F: "トレーダーで買ってフリマで売る", tabB2F: "交換で手に入れてフリマで売る",
     tabLoot: "レイドで持ち帰る",
-    lootType: "種類", lootAll: "すべて", lootSearch: "名前で絞り込み",
+    lootSearch: "名前で絞り込み",
     slotsN: "{w}×{h}＝{n}マス", stackTag: "1マスに{n}個", noFleaTag: "フリマ不可", fleaLockTag: "フリマLv{n}で解放", fleaLockTip: "フリマで売るにはプレイヤーLv{n}が必要です。いまの設定はLv{c}です。設定の「プレイヤーレベル」を実際のレベルに合わせると、ここにフリマ手取りが出ます。",
     lootTotal: "計 {v}（{t}）", lootTotalFlea: "計 {v}（手数料 {f}）",
     tierLegend: "段位の目安（1マスあたりの手取り）　S：{s}以上／A：{a}以上／B：{b}以上／C：{c}以上／D：それ未満",
@@ -241,7 +240,7 @@ const I18N = {
     sTaskLocked: "クエスト解放が必要な品", hide: "隠す", show: "表示",
     sKeys: "残量のある品（鍵・カード・医薬品・燃料など）：フリマ→トレーダー", keysWarn: "注意付きで表示", keysExclude: "除外（おすすめ）",
     sWeapons: "銃本体・プリセット", gunsWarn: "注意付きで表示", gunsExclude: "除外（おすすめ）",
-    lootHide: "一覧に表示：", lootHideKeys: "鍵・ケース", lootHideArmor: "防具・リグ・バッグ", lootHideHelmets: "ヘルメット・パーツ", lootHideBalaclava: "マスク・バラクラバ", lootHideVariants: "特殊バージョン（名前に（）付き）", lootHideMods: "武器パーツ", lootHideHeadsets: "ヘッドセット", lootHideWearables: "帽子・メガネ・ひげなど", lootHideGuns: "銃・近接武器", lootHidePosters: "ポスター", lootRare1: "フリマの出品数が", lootRare2: "件未満の品は外す（0で外さない）", lootCutN: "{n}品を外しています", lootCutNone: "外した品はありません", viewList: "一覧で見る", viewTier: "ティア表で見る",
+    lootShow: "分類：", lootGroups: {barter: "バーター品", meds: "医療品", provisions: "食料・飲料", ammoBox: "弾薬箱", grenade: "投擲物", keys: "鍵・ケース", mods: "武器パーツ", gun: "銃・近接武器", armor: "防具・リグ・バッグ", helmet: "ヘルメット・パーツ", headset: "ヘッドセット", face: "マスク・バラクラバ", wear: "帽子・メガネなど", poster: "ポスター", other: "その他"}, lootRare1: "フリマの出品数が", lootRare2: "件未満の品は外す（0で外さない）", lootCutN: "{n}品を外しています", lootCutNone: "外した品はありません", viewList: "一覧で見る", viewTier: "ティア表で見る",
     gunTag: "組み立て済みの値段",
     gunTip: "銃のフリマ最安値は、その銃の組み立て済み（プリセット）の出品も含めた最安値です。トレーダーが売るのは素の本体なので、この差額はそのままでは取れません。素の本体を出品しても、この値段では売れないと考えてください。",
     stepItems: "アイテムと価格（数十MBあるため少し時間がかかります）",
@@ -289,7 +288,7 @@ const I18N = {
     liqFilter: "Sellability", liqAll: "All", liqMid: "Medium or better", liqHigh: "High only",
     tabF2T: "Buy on flea, sell to traders", tabT2F: "Buy from traders, sell on flea", tabB2F: "Barter at traders, sell on flea",
     tabLoot: "What to bring back",
-    lootType: "Kind", lootAll: "All", lootSearch: "Filter by name",
+    lootSearch: "Filter by name",
     slotsN: "{w}×{h} = {n}", stackTag: "{n} per slot", noFleaTag: "No flea", fleaLockTag: "Flea unlocks at Lv{n}", fleaLockTip: "Selling on the flea needs player level {n}. Your setting is level {c}. Set “Player level” in settings to your real level to see the flea value here.",
     lootTotal: "{v} total ({t})", lootTotalFlea: "{v} total (fee {f})",
     tierLegend: "Tier cut-offs (take-home per slot) — S: {s}+ / A: {a}+ / B: {b}+ / C: {c}+ / D: below",
@@ -305,7 +304,7 @@ const I18N = {
     sTaskLocked: "Quest-locked trader items", hide: "Hide", show: "Show",
     sKeys: "Items with uses/charges (keys, cards, meds, fuel): flea → trader", keysWarn: "Show with warning", keysExclude: "Exclude (recommended)",
     sWeapons: "Guns and presets", gunsWarn: "Show with warning", gunsExclude: "Exclude (recommended)",
-    lootHide: "Show:", lootHideKeys: "Keys & cases", lootHideArmor: "Armor, rigs & bags", lootHideHelmets: "Helmets & parts", lootHideBalaclava: "Masks & balaclavas", lootHideVariants: "Special variants (name with brackets)", lootHideMods: "Weapon mods", lootHideHeadsets: "Headsets", lootHideWearables: "Hats, glasses, beards etc.", lootHideGuns: "Guns & melee", lootHidePosters: "Posters", lootRare1: "Hide items with fewer than ", lootRare2: " flea offers (0 = off)", lootCutN: "{n} items hidden", lootCutNone: "Nothing hidden", viewList: "View as list", viewTier: "View as tiers",
+    lootShow: "Show:", lootGroups: {barter: "Barter items", meds: "Meds", provisions: "Food & drink", ammoBox: "Ammo boxes", grenade: "Throwables", keys: "Keys & cases", mods: "Weapon mods", gun: "Guns & melee", armor: "Armor, rigs & bags", helmet: "Helmets & parts", headset: "Headsets", face: "Masks & balaclavas", wear: "Hats, glasses etc.", poster: "Posters", other: "Other"}, lootRare1: "Hide items with fewer than ", lootRare2: " flea offers (0 = off)", lootCutN: "{n} items hidden", lootCutNone: "Nothing hidden", viewList: "View as list", viewTier: "View as tiers",
     gunTag: "Built-gun price",
     gunTip: "For guns, the flea low price includes offers for assembled presets of that gun, not just the stripped weapon. Traders sell the stripped weapon, so this gap is not a profit you can actually take: a bare gun will not sell at that price.",
     stepItems: "items and prices (tens of MB, this takes a moment)",
@@ -348,7 +347,8 @@ const DEMAND_KEYS = ["quest","hideout","craft"];
 const DEFAULTS = {
   lang: (navigator.language || "ja").startsWith("ja") ? "ja" : "en",
   mode: "regular", playerLevel: 30, intel: 3, mgmt: 0, minProfit: 3000, minOffers: 5, excludeFence: false, hideTaskLocked: true, liqFilter: "all", depletableF2T: "exclude", weapons: "exclude", days: 7,
-  hideLootKeys: true, hideLootArmor: true, hideLootMods: true, hideLootGuns: true, hideLootPosters: true, hideLootHelmets: true, hideLootBalaclava: true, hideLootVariants: true, hideLootHeadsets: true, hideLootWearables: true, mkDays: 30, mkTh: 5, mkMinOffers: 10, mkMinProfit: 10000, mkMinRate: 15, mkNeedRebound: true, mkStock: [], lootMinOffers: 10, _lmo10: true,
+  lootOff: ["keys", "mods", "gun", "armor", "helmet", "headset", "face", "wear", "poster"],   // 持ち帰りティア表で出さない分類（LOOT_GROUPS のキー）
+  mkDays: 30, mkTh: 5, mkMinOffers: 10, mkMinProfit: 10000, mkMinRate: 15, mkNeedRebound: true, mkStock: [], lootMinOffers: 10, _lmo10: true,
   ll: Object.fromEntries(TRADER_KEYS.map(k => [k, 4]))
 };
 
@@ -357,6 +357,10 @@ function migrate(s){
   if(!s._lmo10){ s.lootMinOffers = 10; s._lmo10 = true; }   // 出品数の既定値を3→10にした（初回だけ切り替える）
   if(s.hideLowLiq && !s.liqFilter) s.liqFilter = "mid";
   if(s.lootKeys !== undefined && s.hideLootKeys === undefined) s.hideLootKeys = s.lootKeys !== "show";
+  /* 持ち帰りティア表の「一覧に表示」のチェック（品の種類ごと）を、分類（lootOff）に置き換えた */
+  const OLD_HIDE = {hideLootKeys: "keys", hideLootArmor: "armor", hideLootMods: "mods", hideLootHelmets: "helmet", hideLootGuns: "gun", hideLootPosters: "poster", hideLootHeadsets: "headset", hideLootBalaclava: "face", hideLootWearables: "wear"};
+  if(!Array.isArray(s.lootOff) && Object.keys(OLD_HIDE).some(k => k in s)) s.lootOff = Object.keys(OLD_HIDE).filter(k => s[k]).map(k => OLD_HIDE[k]);
+  for(const k of [...Object.keys(OLD_HIDE), "hideLootVariants"]) delete s[k];
   delete s.hideLowLiq; delete s.keyMode; delete s.lootKeys;
   return s;
 }
@@ -402,7 +406,7 @@ function onSettingChange(e){
     const STR = new Set(["depletableF2T", "weapons"]), BOOL = new Set(["excludeFence", "hideTaskLocked"]);
     S[k] = STR.has(k) ? el.value : (BOOL.has(k) ? el.value === "true" : +el.value);
   }
-  saveSettings(); buildLootTypes(); recompute();
+  saveSettings(); buildLootGroups(); recompute();
 }
 document.getElementById("settingsGrid").addEventListener("change", onSettingChange);
 document.getElementById("flipGrid").addEventListener("change", onSettingChange);
@@ -820,69 +824,67 @@ function rowsB2F(){
    ・フリマ　　 … 最安値で出したときの手取り（手数料を引いたあと）
    銃はフリマ価格が組み立て済みと混ざっているので、トレーダー側だけで見る。
    弾薬は1マスにまとまるぶん、1マスあたりの価値が上がる。 */
-/* 持ち帰り一覧から外すもの。
-   ・プリセット … 銃そのものと二重に並ぶだけで、レイドで拾う対象ではない
-   ・鍵・ケース … 落ちていることはあっても当てにはできない。これが混ざると
-                  段位の境目が現実離れするので、既定では数にも入れない */
-const LOOT_HIDE = {
-  hideLootKeys:  ["keys", "container"],          // 落ちていても当てにできない
-  hideLootArmor: ["armor", "armorPlate", "rig", "backpack"],   // 防具・リグは耐久で値段が当てにならない。バッグは大きくてマス単価が出ない（自分で背負うもの）
-  hideLootMods:  ["mods", "suppressor", "pistolGrip"],       // 銃から外す手間の割に安い
-  hideLootHelmets: ["helmet"],                               // 耐久が削れていて値段が当てにならない
-  hideLootGuns:  ["gun"],                                    // 拾うのが相当難しい
-  hideLootPosters: ["poster"],
-  hideLootHeadsets: ["headphones"]                           // 自分で着けるもので、売るために持ち帰る品ではない
-};
-/* 近接武器は「銃本体」と同じスイッチで扱う（種類の名前がAPIに無いので、性能の種別で見分ける） */
-let LOOT_RARE = [];   // 出品数が少なくて外した品（画面に件数と名前を出す）
-/* マスク・バラクラバなどの顔まわり。種類の名前がAPIに無いので、カテゴリか名前で見分ける。
-   「帽子・メガネ・ひげなど」とは別のチェック（マスク・バラクラバ）で出し入れする */
+/* ===== 持ち帰りティア表の分類 =====
+   品物は、下の LOOT_GROUPS のどれか1つに必ず入る（上から順に見て、最初に当てはまった分類）。
+   画面の「分類」のチェックは、この分類だけで出し入れする（1つの品が2つの分類に入ることはない）。
+   段位の境目は、表示している分類の品から決める */
+const nameOf = it => ((it.name && it.name.en) || "") + " " + ((it.name && it.name.ja) || "");
+const hasT = (it, ...tys) => tys.some(ty => it.types.includes(ty));
+/* 名前で見分けるとき、売り物の種類が付いた品（バーター品・医療品・食料・鍵）は巻き込まない */
+const notGoods = it => !hasT(it, "barter", "meds", "provisions", "keys");
+const LOOT_GROUPS = [
+  {k: "ammoBox",  test: it => hasT(it, "ammoBox")},
+  {k: "gun",      test: it => isGun(it) || !!it.melee},                                   // 拾うのが相当難しい
+  {k: "keys",     test: it => hasT(it, "keys", "container")},                             // 落ちていても当てにできない
+  /* ヘルメット本体と、そのオプションパーツ（フェイスシールド・マンディブルなど）。種類が無くても性能の種別で見る。防弾プレートは防具 */
+  {k: "helmet",   test: it => hasT(it, "helmet") || it.pt === "ItemPropertiesHelmet" || (it.pt === "ItemPropertiesArmorAttachment" && !hasT(it, "armorPlate"))},
+  /* 防具・リグは耐久で値段が当てにならない。バッグは自分で背負うもの。種類が付いていない防具（Ops-Core SOTR など）はカテゴリか名前で */
+  {k: "armor",    test: it => hasT(it, "armor", "armorPlate", "rig", "backpack")
+                    || !!(it.cats && it.cats.some(c => /^(armored-equipment|armor|body-armor|armor-vests|chest-rig|tactical-rigs)$/.test(c)))
+                    || (notGoods(it) && /\bSOTR\b|respirator|レスピレーター/i.test(nameOf(it)))},
+  /* ヘッドセット：イヤープラグ型（ProFlex など）は種類が違って返ることがあるので名前でも */
+  {k: "headset",  test: it => hasT(it, "headphones") || (notGoods(it) && /headset|earplug|proflex|ヘッドセット|イヤープラグ|イヤーマフ/i.test(nameOf(it)))},
+  {k: "face",     test: it => isFaceCover(it)},
+  /* 帽子・メガネ・ひげなどの身に着ける小物 */
+  {k: "wear",     test: it => hasT(it, "glasses", "wearable")
+                    || !!(it.cats && it.cats.some(c => /headwear|eyewear|vis-?observ|cosmetic/.test(c)))
+                    || (notGoods(it) && (/\b(sunglasses|glasses|goggles|cap|hat|beanie|beret|bandana|beard|mustache|moustache)\b/i.test((it.name && it.name.en) || "")
+                        || /サングラス|メガネ|眼鏡|ゴーグル|キャップ|帽子|ニット帽|ベレー|バンダナ|ひげ|ヒゲ|髭/.test((it.name && it.name.ja) || "")))},
+  {k: "mods",     test: it => hasT(it, "mods", "suppressor", "pistolGrip")},               // 銃から外す手間の割に安い
+  {k: "poster",   test: it => hasT(it, "poster")},
+  {k: "grenade",  test: it => hasT(it, "grenade")},
+  {k: "meds",     test: it => hasT(it, "meds", "injectors")},
+  {k: "provisions", test: it => hasT(it, "provisions")},
+  {k: "barter",   test: it => hasT(it, "barter")},
+  {k: "other",    test: () => true}
+];
+/* 画面に並べる順（よく使うものを先に） */
+const LOOT_GROUP_VIEW = ["barter", "meds", "provisions", "ammoBox", "grenade", "keys", "mods", "gun", "armor", "helmet", "headset", "face", "wear", "poster", "other"];
+function lootGroup(it){ return LOOT_GROUPS.find(g => g.test(it)).k; }
+/* マスク・バラクラバなどの顔まわり。種類の名前がAPIに無いので、カテゴリか名前で見分ける */
 function isFaceCover(it){
-  const nmAll = (it.name && (it.name.en || "")) + " " + (it.name && (it.name.ja || ""));
   if(it.cats && it.cats.some(c => /face-?cover|facecover|face cover/.test(c))) return true;          // APIがカテゴリを返す場合はこちら
-  return /balaclava|バラクラバ|mask|マスク|メンポ|shemagh|シュマグ|scarf|スカーフ|neck gaiter|ネックゲーター/i.test(nmAll) && !/filter|フィルター/i.test(nmAll);   // 返さない場合は名前で
+  const n = nameOf(it);
+  return notGoods(it) && /balaclava|バラクラバ|mask|マスク|メンポ|shemagh|シュマグ|scarf|スカーフ|neck gaiter|ネックゲーター/i.test(n) && !/filter|フィルター/i.test(n);
 }
+let LOOT_RARE = [];   // 出品数が少なくて外した品（画面に件数と名前を出す）
 function lootSkip(it){
-  if(it.types.includes("preset")) return true;   // 銃そのものと二重に並ぶだけ
-  if(it.types.includes("ammo") && !it.types.includes("ammoBox")) return true;     // 弾をばら売りすることはないので、常に出さない（弾薬箱は残す）
-  if(/armband|アームバンド|腕章/i.test((it.name && (it.name.en || "")) + " " + (it.name && (it.name.ja || "")))) return true;   // アームバンドも常に出さない
-  for(const k in LOOT_HIDE) if(S[k] && it.types.some(ty => LOOT_HIDE[k].includes(ty))) return true;
-  /* 特殊バージョン：「Neoprene mask (ONI)」のように、名前の後ろに（）で柄や色が付く品。
-     アリーナの限定品などで、拾えるものではない */
-  if(S.hideLootVariants && /[(（][^)）]+[)）]/.test((it.name && (it.name.en || "")) + " " + (it.name && (it.name.ja || "")))) return true;
-  /* アリーナ（EFT: ARENA）の品：本編のレイドには落ちていないので、常に出さない */
-  if(/EFT: ?ARENA|^ARENA |アリーナ/i.test((it.name && (it.name.en || "")) + " " + (it.name && (it.name.ja || "")))) return true;
-  /* 帽子・メガネ・ひげなどの身に着ける小物。防具・リグ・バッグ・ヘルメット・ヘッドセットは、それぞれ別のチェックで見る */
-  if(S.hideLootWearables && !isFaceCover(it) && !it.types.some(ty => ["armor", "armorPlate", "rig", "backpack", "helmet", "headphones"].includes(ty))){
-    const en = (it.name && it.name.en) || "", ja = (it.name && it.name.ja) || "";
-    if(it.types.includes("glasses") || it.types.includes("wearable")) return true;
-    if(it.cats && it.cats.some(c => /headwear|eyewear|vis-?observ|cosmetic/.test(c))) return true;      // 種類が付いていない場合はカテゴリで
-    if(/\b(sunglasses|glasses|goggles|cap|hat|beanie|beret|bandana|beard|mustache|moustache)\b/i.test(en)
-       || /サングラス|メガネ|眼鏡|ゴーグル|キャップ|帽子|ニット帽|ベレー|バンダナ|ひげ|ヒゲ|髭/.test(ja)) return true;   // 最後は名前で
-  }
-  /* 画像が無い品（tarkov.dev が「unknown-item」の仮の画像を返す品）は常に出さない。
-     ゲームに入ったばかりで情報がそろっていない品が多く、ティア表ではアイコンで見分けられないため */
-  if(/unknown-item/.test(it.iconLink || "")) return true;
-  /* ドッグタグは常に出さない */
-  if(/dog ?tag|ドッグタグ/i.test((it.name && (it.name.en || "")) + " " + (it.name && (it.name.ja || "")))) return true;
-  /* ヘルメット本体と、そのオプションパーツ（フェイスシールド・マンディブルなど）。
-     「種類」だけでは取りこぼすので、性能の種別でも見る。防弾プレートは「防具」側 */
-  if(S.hideLootHelmets && (it.pt === "ItemPropertiesHelmet" || (it.pt === "ItemPropertiesArmorAttachment" && !it.types.includes("armorPlate")))) return true;
-  if(S.hideLootGuns && it.melee) return true;
-  /* 防具の取りこぼし：種類が付いていない防具（例：Ops-Core SOTR）。カテゴリか名前で見分けて「防具・リグ・バッグ」に含める */
-  if(S.hideLootArmor){
-    const nmA = ((it.name && it.name.en) || "") + " " + ((it.name && it.name.ja) || "");
-    if(it.cats && it.cats.some(c => /^(armored-equipment|armor|body-armor|armor-vests|chest-rig|tactical-rigs)$/.test(c))) return true;
-    if(/\bSOTR\b|respirator|レスピレーター/i.test(nmA)) return true;
-  }
-  /* ヘッドセット：イヤープラグ型（ProFlex など）も種類が違って返ることがあるので、名前でも見分ける */
-  if(S.hideLootHeadsets && /headset|earplug|proflex|ヘッドセット|イヤープラグ|イヤーマフ/i.test((it.name && (it.name.en || "")) + " " + (it.name && (it.name.ja || "")))) return true;
-  /* バラクラバ：種類の名前がAPIに無いので、名前で見分ける（ヘッドセットは別のチェック） */
-  if(S.hideLootBalaclava && isFaceCover(it)) return true;
+  const n = nameOf(it);
+  /* 分類に関係なく、常に出さないもの */
+  if(hasT(it, "preset")) return true;                                // 銃そのものと二重に並ぶだけ
+  if(hasT(it, "ammo") && !hasT(it, "ammoBox")) return true;          // 弾をばら売りすることはない（弾薬箱は残す）
+  if(/armband|アームバンド|腕章/i.test(n)) return true;
+  if(/EFT: ?ARENA|^ARENA |アリーナ/i.test(n)) return true;            // アリーナの品は本編のレイドに落ちていない
+  if(/dog ?tag|ドッグタグ/i.test(n)) return true;
+  if(/unknown-item/.test(it.iconLink || "")) return true;            // 画像が無い品（ゲームに入ったばかりで情報がそろっていない）
+  const g = lootGroup(it);
+  /* 身に着ける小物・顔まわりで、名前の後ろに（）で柄や色が付く品（「Neoprene mask (ONI)」など）は、アリーナなどの限定品で拾えない。
+     弾薬箱「(30 pcs)」や食料「(Large)」のような普通の品は、この分類に入らないので外れない */
+  if((g === "wear" || g === "face") && /[(（][^)）]+[)）]/.test(n)) return true;
+  if((S.lootOff || []).includes(g)) return true;
   /* 入手の難しさ：ドロップ率はAPIに無いので、フリマの出品数で代用する。
-     出回っていない品は、拾えたとしても「たまたま」でしかない。
      フリマ禁止品は出品数が常に0なので、この基準では見ない */
-  if(S.lootMinOffers > 0 && !it.types.includes("noFlea") && (it.lastOfferCount || 0) < S.lootMinOffers){
+  if(S.lootMinOffers > 0 && !hasT(it, "noFlea") && (it.lastOfferCount || 0) < S.lootMinOffers){
     LOOT_RARE.push(it); return true;
   }
   return false;
@@ -917,14 +919,12 @@ function rowsLoot(){
   for(const r of all) r.tier = tierOf(r.perSlot, LOOT_CUT);
 
   const q = (document.getElementById("lootSearch").value || "").trim().toLowerCase();
-  const kind = document.getElementById("lootType").value || "";
   const cutEl = document.getElementById("lootCut");
   if(cutEl){
     cutEl.textContent = S.lootMinOffers > 0 ? (LOOT_RARE.length ? t("lootCutN", {n: LOOT_RARE.length}) : t("lootCutNone")) : "";
     cutEl.title = LOOT_RARE.slice(0, 60).map(it => nm(it.name) + "（" + (it.lastOfferCount || 0) + "）").join("\n");
   }
   return all.filter(r =>
-    (!kind || r.it.types.includes(kind)) &&
     (!q || (nm(r.it.name) + " " + nm(r.it.shortName) + " " + r.it.name.en).toLowerCase().includes(q)));
 }
 /* 段位の境目。上から何%かで切る。パッチで相場が動いても、そのときの上位が S になる */
@@ -1239,7 +1239,7 @@ function applyLang(){
   $days.value = String(S.days);
   document.getElementById("footer").innerHTML = t("footer");
   buildSettings();
-  buildLootTypes();
+  buildLootGroups();
   paintStatus();
   render();
 }
@@ -1247,33 +1247,27 @@ function applyLang(){
 /* ================= 操作 ================= */
 const $status = document.getElementById("status"), $progress = document.getElementById("progress");
 const $mode = document.getElementById("modeSel"), $liq = document.getElementById("liqFilter"), $days = document.getElementById("daysSel");
-const $lootType = document.getElementById("lootType"), $lootSearch = document.getElementById("lootSearch");
+const $lootSearch = document.getElementById("lootSearch");
 
-/* 持ち帰りタブの「種類」。実際に出てくる種類だけを並べる */
-const LOOT_KINDS = ["barter","meds","provisions","keys","mods","gun","ammoBox","armor","armorPlate","helmet","rig","backpack","container","poster","grenade","glasses","headphones","injectors","wearable","suppressor"];
-function buildLootTypes(){
-  const have = new Set();
-  for(const it of (DATA ? DATA.items : [])) for(const ty of it.types) have.add(ty);
-  const hidden = [];
-  for(const k in LOOT_HIDE) if(S[k]) hidden.push(...LOOT_HIDE[k]);
-  const keep = LOOT_KINDS.filter(k => have.has(k) && !hidden.includes(k));
-  const cur = $lootType.value;
-  $lootType.innerHTML = `<option value="">${t("lootAll")}</option>`
-    + keep.map(k => `<option value="${k}">${t("kinds")[k] || k}</option>`).join("");
-  if(keep.includes(cur)) $lootType.value = cur;
+/* 持ち帰りティア表の「分類」のチェック。データに実際に出てくる分類だけを並べる（チェックあり＝表示） */
+function buildLootGroups(){
+  const have = new Set((DATA ? DATA.items : []).map(lootGroup));
+  const off = S.lootOff || [];
+  document.getElementById("lootHideWrap").innerHTML = `<span>${esc(t("lootShow"))}</span>`
+    + LOOT_GROUP_VIEW.filter(k => have.has(k)).map(k => `<label><input type="checkbox" data-group="${k}"${off.includes(k) ? "" : " checked"}><span>${esc(t("lootGroups")[k])}</span></label>`).join("");
   $lootSearch.placeholder = t("lootSearch");
-  document.querySelectorAll("[data-hide]").forEach(el => { el.checked = !S[el.dataset.hide]; });
-  document.getElementById("lootMinOffers").value = S.lootMinOffers;   // チェックあり＝表示
+  document.getElementById("lootMinOffers").value = S.lootMinOffers;
 }
 document.getElementById("lootMinOffers").addEventListener("change", e => {
   const v = Math.max(0, Math.min(999, parseInt(e.target.value, 10) || 0));
   S.lootMinOffers = v; e.target.value = v; saveSettings(); recompute();
 });
 document.getElementById("lootHideWrap").addEventListener("change", e => {
-  const k = e.target.dataset.hide; if(!k) return;
-  S[k] = !e.target.checked; saveSettings(); buildLootTypes(); recompute();
+  const k = e.target.dataset.group; if(!k) return;
+  const off = new Set(S.lootOff || []);
+  if(e.target.checked) off.delete(k); else off.add(k);
+  S.lootOff = [...off]; saveSettings(); recompute();
 });
-$lootType.addEventListener("change", recompute);
 $lootSearch.addEventListener("input", () => { if(TAB === "loot") recompute(); });
 
 /* 取ったデータを画面に流す（保存データでも、その場で取ったものでも同じ） */
@@ -1282,7 +1276,7 @@ function applyData(d, statusKey){
   HIST_CACHE.clear(); ROWS = []; setProgress(null);
   setStatus(statusKey, {modeKey: S.mode, count: DATA.items.length, at: DATA.at});
   document.getElementById("analyzeBtn").disabled = false;
-  buildLootTypes();
+  buildLootGroups();
   recompute();
   if(TAB !== "loot" && PAGE !== "watch") analyzeTop();
 }
