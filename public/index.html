@@ -880,7 +880,8 @@ function isFaceCover(it){
   return notGoods(it) && /balaclava|バラクラバ|mask|マスク|メンポ|shemagh|シュマグ|scarf|スカーフ|neck gaiter|ネックゲーター/i.test(n) && !/filter|フィルター/i.test(n);
 }
 let LOOT_RARE = [];   // 出品数が少なくて外した品（画面に件数と名前を出す）
-function lootSkip(it, byId){
+/* 分類やチェックに関係なく、常に出さないもの */
+function lootExcluded(it, g){
   const n = nameOf(it);
   /* 分類に関係なく、常に出さないもの */
   if(hasT(it, "preset")) return true;                                // 銃そのものと二重に並ぶだけ
@@ -889,20 +890,17 @@ function lootSkip(it, byId){
   if(/EFT: ?ARENA|^ARENA |アリーナ/i.test(n)) return true;            // アリーナの品は本編のレイドに落ちていない
   if(/dog ?tag|ドッグタグ/i.test(n)) return true;
   if(/unknown-item/.test(it.iconLink || "")) return true;            // 画像が無い品（ゲームに入ったばかりで情報がそろっていない）
-  const g = lootGroup(it);
   /* 身に着ける小物・顔まわりで、名前の後ろに（）で柄や色が付く品（「Neoprene mask (ONI)」など）は、アリーナなどの限定品で拾えない。
      弾薬箱「(30 pcs)」や食料「(Large)」のような普通の品は、この分類に入らないので外れない */
   if((g === "wear" || g === "face") && /[(（][^)）]+[)）]/.test(n)) return true;
-  if((S.lootOff || []).includes(g)) return true;
-  /* 入手の難しさ：ドロップ率はAPIに無いので、フリマの出品数で代用する。
-     フリマ禁止品は出品数が常に0なので、この基準では見ない */
-  /* 弾薬箱は箱のままの出品が少ないので、中の弾の出品数で見る */
-  const inner = it.contains && it.contains[0] && byId && byId.get(it.contains[0].id);
-  const offers = Math.max(it.lastOfferCount || 0, inner ? inner.lastOfferCount || 0 : 0);
-  if(S.lootMinOffers > 0 && !hasT(it, "noFlea") && offers < S.lootMinOffers){
-    LOOT_RARE.push(it); return true;
-  }
   return false;
+}
+/* 入手の難しさ：ドロップ率はAPIに無いので、フリマの出品数で代用する（min 件未満なら珍品）。
+   フリマ禁止品は出品数が常に0なので、この基準では見ない。弾薬箱は箱のままの出品が少ないので、中の弾の出品数で見る */
+function lootRare(it, byId, min){
+  if(!(min > 0) || hasT(it, "noFlea")) return false;
+  const inner = it.contains && it.contains[0] && byId.get(it.contains[0].id);
+  return Math.max(it.lastOfferCount || 0, inner ? inner.lastOfferCount || 0 : 0) < min;
 }
 /* 品物を n 個まとめて売ったときの手取り（トレーダー・フリマのそれぞれ） */
 function sellValue(it, n){
@@ -923,7 +921,8 @@ function rowsLoot(){
   LOOT_RARE = [];
   const byId = new Map(DATA.items.map(x => [x.id, x]));
   for(const it of DATA.items){
-    if(lootSkip(it, byId)) continue;
+    const group = lootGroup(it);
+    if(lootExcluded(it, group)) continue;
     const slots = Math.max(1, (it.width || 1) * (it.height || 1));
     const stack = it.stack || 1;
     let v = sellValue(it, stack), contents = null;
@@ -935,13 +934,21 @@ function rowsLoot(){
     }
     const best = Math.max(v.tTotal, v.fTotal);
     if(best <= 0) continue;
-    all.push({it, slots, stack, contents, sellTo: v.sellTo,
+    all.push({it, group, slots, stack, contents, sellTo: v.sellTo,
               tTotal: v.tTotal, tPer: v.tTotal / slots, fTotal: v.fTotal, fFee: v.fFee, fPer: v.fTotal / slots,
               fleaOk: v.fleaOk, gun: isGun(it), perSlot: best / slots});
   }
-  // 段位の境目は、絞り込み前の全体から決める（絞り込んでも段位が動かないように）
-  LOOT_CUT = tierCuts(all);
+  /* 段位の境目は、既定の分類・既定の出品数の条件の品から決める。
+     分類のチェックや出品数を変えても境目は動かない（同じ品の段位が絞り込みで変わらないように） */
+  LOOT_CUT = tierCuts(all.filter(r => !DEFAULTS.lootOff.includes(r.group) && !lootRare(r.it, byId, DEFAULTS.lootMinOffers)));
   for(const r of all) r.tier = tierOf(r.perSlot, LOOT_CUT);
+  /* 表示するもの：チェックの入った分類で、出品数の条件を満たす品 */
+  const off = S.lootOff || [];
+  const shown = all.filter(r => {
+    if(off.includes(r.group)) return false;
+    if(lootRare(r.it, byId, S.lootMinOffers)){ LOOT_RARE.push(r.it); return false; }
+    return true;
+  });
 
   const q = (document.getElementById("lootSearch").value || "").trim().toLowerCase();
   const cutEl = document.getElementById("lootCut");
@@ -949,7 +956,7 @@ function rowsLoot(){
     cutEl.textContent = S.lootMinOffers > 0 ? (LOOT_RARE.length ? t("lootCutN", {n: LOOT_RARE.length}) : t("lootCutNone")) : "";
     cutEl.title = LOOT_RARE.slice(0, 60).map(it => nm(it.name) + "（" + (it.lastOfferCount || 0) + "）").join("\n");
   }
-  return all.filter(r =>
+  return shown.filter(r =>
     (!q || (nm(r.it.name) + " " + nm(r.it.shortName) + " " + r.it.name.en).toLowerCase().includes(q)));
 }
 /* 段位の境目。上から何%かで切る。パッチで相場が動いても、そのときの上位が S になる */
