@@ -238,7 +238,7 @@ const I18N = {
     footer: "<a href=\"privacy.html\">プライバシーポリシー</a>・<a href=\"contact.html\">お問い合わせ</a>",
     modes: {regular: "PvP（通常）", "pvp-season": "PvP シーズナル", pve: "PvE"},
     traders: {prapor: "プラパー", therapist: "セラピスト", skier: "スキアー", peacekeeper: "ピースキーパー", mechanic: "メカニック", ragman: "ラグマン", jaeger: "イェーガー", ref: "レフ"},
-    sPlayerLevel: "PMCレベル", sIntel: "インテルセンター Lv", sMgmt: "ハイドアウト管理スキル", sMinProfit: "最低利益（₽／1個）", sMinOffers: "最低出品数", sMaxBuy: "買う数の上限（個・0でなし）",
+    sPlayerLevel: "PMCレベル", sIntel: "インテルセンター Lv", sMgmt: "ハイドアウト管理スキル", sMinProfit: "最低利益（₽／1個）", sMinOffers: "最低出品数", sMinBuy: "購入上限（個以上・0で問わない）",
     sFence: "フェンスへの売却", include: "含める", exclude: "含めない",
     sTaskLocked: "クエスト解放が必要な品", hide: "隠す", show: "表示",
     sKeys: "残量のある品（鍵・カード・医薬品・燃料など）：フリマ→トレーダー", keysWarn: "注意付きで表示", keysExclude: "除外（おすすめ）",
@@ -255,7 +255,7 @@ const I18N = {
       tier: "段位", perSlot: "マス単価", slots: "サイズ", traderSell: "トレーダー売却", fleaNet: "フリマ手取り",
       rate: "利益が出た割合", expected: "期待利益／個", spark: "{d}日間の最安値", buyTrader: "トレーダー価格", matCost: "材料原価", sellFlea: "フリマ売値", fee: "手数料", limit: "購入上限", liq: "売れやすさ", total: "想定総利益（上限まで）"},
     totalExp: "期待値なら {v}", totalTip: "利益／個 × {n}個（{by}）。トレーダーが補充するたびに、また同じだけ買えます",
-    capBy: {limit: "購入上限", stock: "在庫数", mine: "買う数の上限"},
+    capBy: {limit: "購入上限", stock: "在庫数"},
     breakEven: "下限 {v}", breakEvenTip: "この売値を下回ると、手数料を引いたあとに最低利益（{p}）が残りません",
     pcs: "{n}個", median7: "{d}日中央値 {n}", tooFew: "データ不足",
     worst: "残り1回なら {v}", worstTip: "最安の出品が残り1回の鍵だった場合",
@@ -301,7 +301,7 @@ const I18N = {
     footer: "<a href=\"privacy.html\">Privacy</a> · <a href=\"contact.html\">Contact</a>",
     modes: {regular: "PvP (regular)", "pvp-season": "PvP seasonal", pve: "PvE"},
     traders: {prapor: "Prapor", therapist: "Therapist", skier: "Skier", peacekeeper: "Peacekeeper", mechanic: "Mechanic", ragman: "Ragman", jaeger: "Jaeger", ref: "Ref"},
-    sPlayerLevel: "PMC level", sIntel: "Intelligence Center level", sMgmt: "Hideout Management skill", sMinProfit: "Min. profit (₽ per item)", sMinOffers: "Min. offers", sMaxBuy: "Max to buy per item (0 = none)",
+    sPlayerLevel: "PMC level", sIntel: "Intelligence Center level", sMgmt: "Hideout Management skill", sMinProfit: "Min. profit (₽ per item)", sMinOffers: "Min. offers", sMinBuy: "Buy limit at least (0 = any)",
     sFence: "Selling to Fence", include: "Include", exclude: "Exclude",
     sTaskLocked: "Quest-locked trader items", hide: "Hide", show: "Show",
     sKeys: "Items with uses/charges (keys, cards, meds, fuel): flea → trader", keysWarn: "Show with warning", keysExclude: "Exclude (recommended)",
@@ -318,7 +318,7 @@ const I18N = {
       tier: "Tier", perSlot: "Per slot", slots: "Size", traderSell: "Trader", fleaNet: "Flea (after fee)",
       rate: "Profitable share", expected: "Expected profit / item", spark: "{d}-day low price", buyTrader: "Trader price", matCost: "Material cost", sellFlea: "Flea sell price", fee: "Fee", limit: "Buy limit", liq: "Sellability", total: "Total profit (up to limit)"},
     totalExp: "Expected: {v}", totalTip: "Profit per item × {n} ({by}). You can buy that many again at every trader restock.",
-    capBy: {limit: "buy limit", stock: "in stock", mine: "your max"},
+    capBy: {limit: "buy limit", stock: "in stock"},
     breakEven: "Floor {v}", breakEvenTip: "Below this price, fees leave less than your minimum profit ({p}).",
     pcs: "{n}", median7: "{d}-day median {n}", tooFew: "Not enough data",
     worst: "If 1 use left: {v}", worstTip: "If the cheapest offer is a key with only one use left",
@@ -348,7 +348,7 @@ const DAY_OPTS = [7, 14, 30, 60, 90];
 const DEMAND_KEYS = ["quest","hideout","craft"];
 const DEFAULTS = {
   lang: (navigator.language || "ja").startsWith("ja") ? "ja" : "en",
-  mode: "regular", playerLevel: 30, intel: 3, mgmt: 0, minProfit: 3000, minOffers: 5, excludeFence: false, hideTaskLocked: true, maxBuy: 0, depletableF2T: "exclude", weapons: "exclude", days: 7,
+  mode: "regular", playerLevel: 30, intel: 3, mgmt: 0, minProfit: 3000, minOffers: 5, excludeFence: false, hideTaskLocked: true, minBuy: 0, depletableF2T: "exclude", weapons: "exclude", days: 7,
   lootOff: ["grenade", "keys"],   // 持ち帰りティア表で、チェックを外している分類（LOOT_GROUP_VIEW のキー）
   mkDays: 30, mkTh: 5, mkMinOffers: 10, mkMinProfit: 10000, mkMinRate: 15, mkNeedRebound: true, mkStock: [], lootMinOffers: 15, _lmo10: true, _loot15: true,
   ll: Object.fromEntries(TRADER_KEYS.map(k => [k, 4]))
@@ -364,6 +364,7 @@ function migrate(s){
   if(!Array.isArray(s.lootOff) && Object.keys(OLD_HIDE).some(k => k in s)) s.lootOff = Object.keys(OLD_HIDE).filter(k => s[k]).map(k => OLD_HIDE[k]);
   for(const k of [...Object.keys(OLD_HIDE), "hideLootVariants"]) delete s[k];
   if(Array.isArray(s.lootOff)) s.lootOff = s.lootOff.filter(k => ["barter", "meds", "provisions", "ammoBox", "grenade", "keys"].includes(k));   // 選べなくなった分類は消す
+  delete s.maxBuy;   // 「買う数の上限」は「購入上限が○個以上の品だけ」に置き換えた
   delete s.hideLowLiq; delete s.liqFilter; delete s.keyMode; delete s.lootKeys;   // 売れやすさは「中以上」で固定にした
   return s;
 }
@@ -396,7 +397,7 @@ function buildSettings(){
   }
   document.getElementById("settingsGrid").innerHTML = h;
   // 転売ボードの条件：利益・出品数・クエスト解放・残量のある品・銃
-  document.getElementById("flipGrid").innerHTML = num("minProfit",t("sMinProfit"),0,1000000) + num("minOffers",t("sMinOffers"),0,1000) + num("maxBuy",t("sMaxBuy"),0,999)
+  document.getElementById("flipGrid").innerHTML = num("minProfit",t("sMinProfit"),0,1000000) + num("minOffers",t("sMinOffers"),0,1000) + num("minBuy",t("sMinBuy"),0,999)
     + sel("hideTaskLocked", t("sTaskLocked"), [["true",t("hide")],["false",t("show")]])
     + sel("depletableF2T", t("sKeys"), [["exclude",t("keysExclude")],["warn",t("keysWarn")]])
     + sel("weapons", t("sWeapons"), [["exclude",t("gunsExclude")],["warn",t("gunsWarn")]]);
@@ -732,11 +733,9 @@ function cheapestTraderBuy(it){
    restockAmount は「トレーダーが並べる在庫数」。どちらも効くので、小さいほうが実際の上限になる。
    以前は buyLimit だけを見ていたため、無制限に買える品の想定総利益が空欄になり、
    いちばん稼げるはずの品が並べ替えで最下位に沈んでいた。 */
-/* 自分が1品あたり買う数の上限（転売の条件。0なら決めない）。トレーダーの上限・在庫より小さければ、こちらで数える */
-function myCap(n, by){
-  const m = S.maxBuy || 0;
-  return m > 0 && (!n || m < n) ? {n: m, by: "mine"} : {n, by};
-}
+/* 転売の条件「購入上限が○個以上の品だけ」（0なら問わない）。トレーダーで1回に買える数が足りない品は外す。
+   買える数が分からない品（上限も在庫も無い）は、たくさん買えるものとして残す */
+const enoughBuy = n => !(S.minBuy > 0) || !n || n >= S.minBuy;
 function buyCap(v){
   const lim = +v.buyLimit || 0, stock = +v.restockAmount || 0;
   if(lim && stock) return {n: Math.min(lim, stock), by: lim <= stock ? "limit" : "stock"};
@@ -780,7 +779,8 @@ function rowsT2F(){
     const fee = fleaFee(it.basePrice, sellPrice, DATA.flea);
     const profit = sellPrice - fee - b.priceRUB;
     if(profit < S.minProfit || (it.lastOfferCount || 0) < S.minOffers) continue;
-    const c0 = buyCap(b.vendor), cap = myCap(c0.n, c0.by);
+    const cap = buyCap(b.vendor);
+    if(!enoughBuy(cap.n)) continue;
     out.push({it, buy: b.priceRUB, buyFrom: b.vendor.name, ll: b.vendor.minTraderLevel, limit: cap.n, capBy: cap.by,
               task: b.vendor.taskUnlock, sellPrice, fee, profit,
               line: breakEvenPrice(it.basePrice, b.priceRUB + S.minProfit, DATA.flea), dir: "min"});
@@ -824,7 +824,8 @@ function rowsB2F(){
     const fee = fleaFee(it.basePrice, sellPrice, DATA.flea);
     const profit = sellPrice - fee - unitCost;
     if(profit < S.minProfit || (it.lastOfferCount || 0) < S.minOffers) continue;
-    const cap = myCap(b.limit ? b.limit * b.rewardCount : 0, "limit");
+    const cap = {n: b.limit ? b.limit * b.rewardCount : 0, by: "limit"};
+    if(!enoughBuy(cap.n)) continue;
     out.push({key: b.id, it, buy: unitCost, buyFrom: b.trader.name, ll: b.ll, limit: cap.n, capBy: cap.by, task: b.task,
               sellPrice, fee, profit, line: breakEvenPrice(it.basePrice, unitCost + S.minProfit, DATA.flea), dir: "min",
               mats, matHard: mats.some(m => m.hard)});
