@@ -79,6 +79,8 @@ ITEMS.cap = loot("cap", "EFT: ARENA Baseball cap", 1, 1, 1806, 0, { types: ["wea
 ITEMS.glasses = loot("glasses", "Round frame sunglasses", 1, 1, 5000, 9000, { types: ["glasses", "wearable"] });
 ITEMS.beard = loot("beard", "Fake beard", 1, 1, 3000, 6000, { types: ["wearable"] });
 /* 値段の読み取りがまばらな品（3時間前）：売り時通知の候補には既定で出ない */
+/* 画像が無い品（tarkov.dev の仮の画像）：持ち帰りティア表には出ない */
+ITEMS.noImage = loot("noImage", "PMC Hardened figurine", 1, 2, 19125, 0, { iconLink: "https://assets.tarkov.dev/unknown-item-icon.jpg" });
 ITEMS.slowScan = loot("slowScan", "Slow Scan Trophy", 1, 1, 60000, 100000, { updated: new Date(Date.now() - 3 * 3600e3).toISOString() });
 ITEMS.sotr = loot("sotr", "Gentex Ops-Core SOTR", 2, 2, 3192, 0, { types: ["noFlea"] });
 ITEMS.shades = loot("shades", "Fiigray sunglasses", 2, 1, 3350, 0, { types: ["noFlea"] });   // 種類が付いていなくても名前で外れる

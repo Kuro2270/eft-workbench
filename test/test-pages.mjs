@@ -41,6 +41,7 @@ console.log("持ち帰りティア表（loot.html）");
   const rows = await page.$$eval(".trow", ns => ns.map(n => n.querySelector(".tlab b").textContent + ":" + n.querySelectorAll(".ti").length));
   ok(rows.length === 5 && rows.map(r => r[0]).join("") === "SABCD", "S〜Dの5段 / " + rows.join(" "));
   ok(!/\₽/.test(await page.$eval(".ticons", n => n.innerText)), "アイコン側には値段の文字が出ない");
+  ok(!(await page.$$eval("#tierBoard .ti img", ns => ns.some(n => /unknown-item/.test(n.src)))) && !/Hardened/.test(await page.$eval("#tierBoard", n => n.innerHTML)), "画像が無い品は出ない");
   const first = await page.$(".ti");
   const box = await first.boundingBox();
   await page.mouse.move(box.x + 10, box.y + 10);

@@ -644,6 +644,9 @@ function lootSkip(it){
     if(/\b(sunglasses|glasses|goggles|cap|hat|beanie|beret|bandana|beard|mustache|moustache)\b/i.test(en)
        || /サングラス|メガネ|眼鏡|ゴーグル|キャップ|帽子|ニット帽|ベレー|バンダナ|ひげ|ヒゲ|髭/.test(ja)) return true;   // 最後は名前で
   }
+  /* 画像が無い品（tarkov.dev が「unknown-item」の仮の画像を返す品）は常に出さない。
+     ゲームに入ったばかりで情報がそろっていない品が多く、ティア表ではアイコンで見分けられないため */
+  if(/unknown-item/.test(it.iconLink || "")) return true;
   /* ドッグタグは常に出さない */
   if(/dog ?tag|ドッグタグ/i.test((it.name && (it.name.en || "")) + " " + (it.name && (it.name.ja || "")))) return true;
   /* ヘルメット本体と、そのオプションパーツ（フェイスシールド・マンディブルなど）。
