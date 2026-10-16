@@ -347,14 +347,15 @@ const DEMAND_KEYS = ["quest","hideout","craft"];
 const DEFAULTS = {
   lang: (navigator.language || "ja").startsWith("ja") ? "ja" : "en",
   mode: "regular", playerLevel: 30, intel: 3, mgmt: 0, minProfit: 3000, minOffers: 5, excludeFence: false, hideTaskLocked: true, liqFilter: "all", depletableF2T: "exclude", weapons: "exclude", days: 7,
-  lootOff: ["keys"],   // 持ち帰りティア表で、チェックを外している分類（LOOT_GROUP_VIEW のキー）
-  mkDays: 30, mkTh: 5, mkMinOffers: 10, mkMinProfit: 10000, mkMinRate: 15, mkNeedRebound: true, mkStock: [], lootMinOffers: 10, _lmo10: true,
+  lootOff: ["grenade", "keys"],   // 持ち帰りティア表で、チェックを外している分類（LOOT_GROUP_VIEW のキー）
+  mkDays: 30, mkTh: 5, mkMinOffers: 10, mkMinProfit: 10000, mkMinRate: 15, mkNeedRebound: true, mkStock: [], lootMinOffers: 15, _lmo10: true, _loot15: true,
   ll: Object.fromEntries(TRADER_KEYS.map(k => [k, 4]))
 };
 
 /* ================= 設定 ================= */
 function migrate(s){
   if(!s._lmo10){ s.lootMinOffers = 10; s._lmo10 = true; }   // 出品数の既定値を3→10にした（初回だけ切り替える）
+  if(!s._loot15){ s.lootMinOffers = 15; s.lootOff = ["grenade", "keys"]; s._loot15 = true; }   // 持ち帰りティア表の既定を「出品数15件・投擲物と鍵は外す」にした（初回だけ切り替える）
   if(s.hideLowLiq && !s.liqFilter) s.liqFilter = "mid";
   if(s.lootKeys !== undefined && s.hideLootKeys === undefined) s.hideLootKeys = s.lootKeys !== "show";
   /* 持ち帰りティア表の「一覧に表示」のチェック（品の種類ごと）を、分類（lootOff）に置き換えた */

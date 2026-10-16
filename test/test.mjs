@@ -170,7 +170,7 @@ ok(rows.some(r => /Rare Hologram/.test(r.item || "")), "0にすると珍品も�
 ok(/フリマ不可/.test(L("Quest Only Item").fleaPer), "0にするとフリマに出せない品も出て、トレーダーだけで見る / " + L("Quest Only Item").fleaPer);
 ok(num(L("Quest Only Item").perSlot) === num(L("Quest Only Item").traderPer), "その場合の単価はトレーダー額と一致");
 ok(await page.$eval("#tierLegend", n => n.textContent) === legBefore && (rows.find(r => /Graphics Card/.test(r.item || "")) || {}).tier === tierGpu, "出品数の条件を変えても、段位の境目と段位は変わらない");
-await page.evaluate(() => { S.lootMinOffers = 10; saveSettings(); recompute(); });
+await page.evaluate(() => { S.lootMinOffers = 15; saveSettings(); recompute(); });
 await page.waitForTimeout(200);
 rows = await readRows();
 const tiers = rows.map(r => r.tier);
@@ -188,6 +188,7 @@ ok(!rows.some(r => /Rail Mount|Suppressor/.test(r.item || "")), "武器パーツ
 const cutBefore = await page.$eval("#tierLegend", n => n.textContent);
 ok(!(await page.$("#lootType")), "「種類」の選択はなく、分け方は「分類」の1つだけ");
 ok(!(await page.$eval('[data-group="keys"]', n => n.checked)), "鍵・ケースのチェックは既定で外れている");
+ok(await page.evaluate(() => DEFAULTS.lootMinOffers === 15 && DEFAULTS.lootOff.join() === "grenade,keys"), "既定は 出品数15件未満を外す・投擲物と鍵・ケースは表示しない");
 await page.click('[data-group="keys"]');
 await page.waitForTimeout(400);
 rows = await readRows();
@@ -207,7 +208,7 @@ rows = await readRows();
 const dropped = /Assault Rifle Body|Test Knife|Body Armor|Pilgrim|SOTR|Chest Rig|Combat Helmet|Typeless Helmet|Test Face Shield|Test Headset|ProFlex|Test Balaclava|Test Samurai Mask|Round frame|Fake beard|Fiigray|Rail Mount|Suppressor/;
 ok(!rows.some(r => dropped.test(r.item || "")), "銃・近接武器・防具・ヘルメット・ヘッドセット・マスク・小物・武器パーツは、どうしても出ない / " + rows.filter(r => dropped.test(r.item || "")).map(r => r.item).join(", "));
 ok(rows.some(r => /Gas mask air filter/.test(r.item || "")), "マスク用のフィルター（バーター品）は出る");
-await page.evaluate(() => { S.lootMinOffers = 10; S.lootOff = ["keys"]; saveSettings(); buildLootGroups(); recompute(); });
+await page.evaluate(() => { S.lootMinOffers = 15; S.lootOff = ["grenade", "keys"]; saveSettings(); buildLootGroups(); recompute(); });
 await page.waitForTimeout(300);
 console.log("  境目: " + cutBefore.slice(0, 48));
 rows = await readRows();
@@ -224,7 +225,7 @@ for (const k of ["meds", "provisions", "ammoBox", "grenade", "other"]) { const e
 await page.waitForTimeout(300);
 rows = await readRows();
 ok(rows.length > 0 && rows.length < totalRows, `分類を1つ（バーター品）だけにすると、その分類だけになる / ${rows.length} of ${totalRows}`);
-await page.evaluate(() => { S.lootOff = ["keys"]; saveSettings(); buildLootGroups(); recompute(); });
+await page.evaluate(() => { S.lootOff = ["grenade", "keys"]; saveSettings(); buildLootGroups(); recompute(); });
 await page.waitForTimeout(200);
 await page.screenshot({ path: "/home/claude/tarkov/board/test/shot-loot.png", clip: { x: 0, y: 120, width: 1500, height: 480 } });
 
