@@ -37,7 +37,7 @@ const ok = (c, m) => { console.log((c ? "  ok " : "  NG ") + m); if (!c) fail++;
 /* 日本語・設定をそろえる */
 await page.evaluate(() => {
   const s = { lang: "ja", mode: "regular", playerLevel: 40, intel: 3, mgmt: 0, minProfit: 3000, minOffers: 5,
-              excludeFence: false, hideTaskLocked: true, liqFilter: "all", depletableF2T: "exclude", days: 7,
+              excludeFence: false, hideTaskLocked: true, depletableF2T: "exclude", days: 7,
               ll: { prapor: 4, therapist: 4, skier: 4, peacekeeper: 4, mechanic: 4, ragman: 4, jaeger: 4, ref: 4 } };
   localStorage.setItem("eftflip.settings", JSON.stringify(s));
 });
@@ -78,6 +78,23 @@ const calc = await page.evaluate(() => {
 ok(calc.limit === 12, "上限は12");
 ok(calc.total === calc.profit * 12, `利益/個 × 12 になっている（${calc.profit} × 12 = ${calc.total}）`);
 
+console.log("\n買う数の上限（転売の条件）");
+await page.evaluate(() => { document.getElementById("flipBox").open = true; });
+ok(await page.$('[data-k="maxBuy"]') && (await page.$eval('[data-k="maxBuy"]', n => n.value)) === "0", "転売の条件に「買う数の上限」があり、既定は0（決めない）");
+await page.fill('[data-k="maxBuy"]', "5"); await page.press('[data-k="maxBuy"]', "Tab");
+await page.waitForTimeout(600);
+rows = await readRows();
+ok(/5個/.test(by("Unlimited").limit) && /買う数の上限/.test(by("Unlimited").limit), "在庫12でも、上限5なら5個で数える / " + by("Unlimited").limit);
+ok(/3個/.test(by("Limited").limit) && /購入上限/.test(by("Limited").limit), "トレーダーの上限（3個）のほうが小さければ、そちら / " + by("Limited").limit);
+ok(/5個/.test(by("Unknown Cap").limit) && by("Unknown Cap").total !== "―", "上限が不明な品も、5個で想定総利益が出る / " + by("Unknown Cap").total);
+const calc5 = await page.evaluate(() => { const r = ROWS.find(x => x.it.id === "unlimited"); return { p: Math.round(r.profit), l: r.limit }; });
+ok(calc5.l === 5, "計算に使う数も5");
+await page.fill('[data-k="maxBuy"]', "0"); await page.press('[data-k="maxBuy"]', "Tab");
+await page.waitForTimeout(600);
+rows = await readRows();
+ok(/12個/.test(by("Unlimited").limit), "0に戻すと、トレーダーの在庫どおり（12個）に戻る");
+ok(!(await page.$("#analyzeBtn")) && !(await page.$("#liqFilter")), "「上位の推移を分析」ボタンと「売れやすさ」の選択はない");
+
 console.log("\n損益分岐の売値");
 ok(/下限/.test(by("Unlimited").sellPrice), "売値の下に「下限」が出る / " + by("Unlimited").sellPrice);
 const be = await page.evaluate(() => {
@@ -112,8 +129,8 @@ await page.waitForTimeout(400);
 rows = await readRows();
 ok(!rows.some(r => /Assault Rifle Body/.test(r.item || "")), "既定では銃本体が出てこない");
 ok(!rows.some(r => /Assault Rifle Default/.test(r.item || "")), "既定ではプリセットも出てこない");
-await page.evaluate(() => { S.weapons = "warn"; saveSettings(); recompute(); });
-await page.waitForTimeout(400);
+await page.evaluate(() => { S.weapons = "warn"; saveSettings(); recompute(); analyzeTop(false); });   // 画面で条件を変えたときと同じ（自動で分析が動く）
+await page.waitForTimeout(1500);
 rows = await readRows();
 const gun = rows.find(r => /Assault Rifle Body/.test(r.item || "")) || {};
 ok(!!gun.item, "「注意付きで表示」にすると出てくる");

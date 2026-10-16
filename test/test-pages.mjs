@@ -34,7 +34,7 @@ console.log("持ち帰りティア表（loot.html）");
   const { page, errs } = await open("loot.html");
   ok(/持ち帰りティア表/.test(await page.title()), "タイトル / " + await page.title());
   ok(await page.$eval(".tabs", n => getComputedStyle(n).display === "none"), "タブは出ない");
-  ok(await page.$eval("#analyzeBtn", n => getComputedStyle(n).display === "none") && await page.$eval("#topN", n => getComputedStyle(n.closest("label")).display === "none"), "転売用の分析ボタン・件数・日数は出ない");
+  ok(!(await page.$("#analyzeBtn")) && await page.$eval("#topN", n => getComputedStyle(n.closest("label")).display === "none"), "転売用の分析ボタン・件数・日数は出ない");
   ok(await page.$eval("#pgLoot", n => n.getAttribute("aria-current") === "page"), "上のリンクで今のページが分かる");
     await page.waitForSelector("#tierBoard .ti", { timeout: 15000 });
   ok(await page.$eval("#listWrap", n => n.hidden), "一覧表は隠れ、ティア表が出る");

@@ -179,11 +179,8 @@ footer a{color:var(--muted)}
   </details>
 
   <div class="bar">
-    <button id="analyzeBtn" disabled data-i18n="analyze"></button>
     <label class="note"><span data-i18n="topN"></span> <select id="topN"><option>20</option><option selected>30</option><option>50</option></select></label>
     <label class="note"><span data-i18n="days"></span> <select id="daysSel"></select></label>
-    <label class="note" id="liqFilterWrap" hidden><span data-i18n="liqFilter"></span> <select id="liqFilter">
-      <option value="all" data-i18n="liqAll"></option><option value="mid" data-i18n="liqMid"></option><option value="high" data-i18n="liqHigh"></option></select></label>
     <label class="note" id="lootFilterWrap" hidden><input type="search" id="lootSearch" placeholder="" size="14"></label>
     <span class="note hides" id="lootHideWrap" hidden></span>
     <span class="note hides" id="lootRareWrap" hidden><label><span data-i18n="lootRare1"></span><input type="number" id="lootMinOffers" min="0" max="999" style="width:4.5em"><span data-i18n="lootRare2"></span></label> <span id="lootCut"></span></span>
@@ -202,7 +199,6 @@ footer a{color:var(--muted)}
   <p class="note" id="tierLegend"></p>
   <div id="tierBoard" hidden></div>
   <div class="tablewrap" id="listWrap"><table id="tbl"><thead></thead><tbody></tbody></table></div>
-  <p class="note" id="hiddenNote"></p>
 </main>
 <footer id="footer"></footer>
 <div id="tip" hidden></div>
@@ -220,8 +216,7 @@ const I18N = {
     topSettings: "プレイヤーレベル・トレーダーのLL・インテルセンターなど。手数料や買える品の判定に使います。",
     pageMapmaker: "マップ作成（手元用）", topMapmaker: "ゲーム内で撮ったスクリーンショットの位置から、道路や建物の見取り図を描きます。",
     settingsSummary: "プレイヤーの状況（自動で保存されます）", flipSummary: "転売の条件（最低利益・出品数など）",
-    mode: "モード", analyze: "上位の推移を分析", topN: "分析する件数", days: "期間", dayOpt: "{n}日",
-    liqFilter: "売れやすさ", liqAll: "すべて", liqMid: "中以上", liqHigh: "高のみ",
+    mode: "モード", topN: "分析する件数", days: "期間", dayOpt: "{n}日",
     tabF2T: "フリマで買ってトレーダーに売る", tabT2F: "トレーダーで買ってフリマで売る", tabB2F: "交換で手に入れてフリマで売る",
     tabLoot: "レイドで持ち帰る",
     lootSearch: "名前で絞り込み",
@@ -235,7 +230,7 @@ const I18N = {
     footer: "<a href=\"privacy.html\">プライバシーポリシー</a>・<a href=\"contact.html\">お問い合わせ</a>",
     modes: {regular: "PvP（通常）", "pvp-season": "PvP シーズナル", pve: "PvE"},
     traders: {prapor: "プラパー", therapist: "セラピスト", skier: "スキアー", peacekeeper: "ピースキーパー", mechanic: "メカニック", ragman: "ラグマン", jaeger: "イェーガー", ref: "レフ"},
-    sPlayerLevel: "PMCレベル", sIntel: "インテルセンター Lv", sMgmt: "ハイドアウト管理スキル", sMinProfit: "最低利益（₽／1個）", sMinOffers: "最低出品数",
+    sPlayerLevel: "PMCレベル", sIntel: "インテルセンター Lv", sMgmt: "ハイドアウト管理スキル", sMinProfit: "最低利益（₽／1個）", sMinOffers: "最低出品数", sMaxBuy: "買う数の上限（個・0でなし）",
     sFence: "フェンスへの売却", include: "含める", exclude: "含めない",
     sTaskLocked: "クエスト解放が必要な品", hide: "隠す", show: "表示",
     sKeys: "残量のある品（鍵・カード・医薬品・燃料など）：フリマ→トレーダー", keysWarn: "注意付きで表示", keysExclude: "除外（おすすめ）",
@@ -252,7 +247,7 @@ const I18N = {
       tier: "段位", perSlot: "マス単価", slots: "サイズ", traderSell: "トレーダー売却", fleaNet: "フリマ手取り",
       rate: "利益が出た割合", expected: "期待利益／個", spark: "{d}日間の最安値", buyTrader: "トレーダー価格", matCost: "材料原価", sellFlea: "フリマ売値", fee: "手数料", limit: "購入上限", liq: "売れやすさ", total: "想定総利益（上限まで）"},
     totalExp: "期待値なら {v}", totalTip: "利益／個 × {n}個（{by}）。トレーダーが補充するたびに、また同じだけ買えます",
-    capBy: {limit: "購入上限", stock: "在庫数"},
+    capBy: {limit: "購入上限", stock: "在庫数", mine: "買う数の上限"},
     breakEven: "下限 {v}", breakEvenTip: "この売値を下回ると、手数料を引いたあとに最低利益（{p}）が残りません",
     pcs: "{n}個", median7: "{d}日中央値 {n}", tooFew: "データ不足",
     worst: "残り1回なら {v}", worstTip: "最安の出品が残り1回の鍵だった場合",
@@ -271,7 +266,7 @@ const I18N = {
     sparkLabel: "{d}日間のフリマ最安値の推移と{line}", lineF2T: "買ってよい上限", lineT2F: "利益が出る下限",
     emptyInit: "データを読み込むと、今フリマとトレーダーの間で利益が出る品物を一覧にします。",
     emptyLiq: "売れやすさの条件に合う品物がありません（{n}件を非表示）。「分析する件数」を増やすか、条件を「すべて」に戻してください。",
-    liqHidden: "売れやすさの条件で{n}件を非表示", liqBase: "基準点 50", autoAnalyzing: "上位{n}件の推移を分析中…",
+    liqBase: "基準点 50", autoAnalyzing: "上位{n}件の推移を分析中…",
     empty: "条件に合う品物がありません。設定の「最低利益」や「最低出品数」を下げると候補が増えます。",
     firBanner: "現在のフリマは「レイド中に見つけた（FIR）」品物しか出品できない設定になっています（APIの値）。トレーダーで買った品物はFIRにならないため、この一覧の多くは実際には出品できない可能性があります。安い品物で一度試してから使ってください。",
   },
@@ -284,8 +279,7 @@ const I18N = {
     topSettings: "Player level, trader loyalty levels and Intelligence Center. Used for fees and what you can buy.",
     pageMapmaker: "Map maker (private)", topMapmaker: "Draw roads and buildings from the positions in your in-game screenshots.",
     settingsSummary: "Your progress (saved automatically)", flipSummary: "Flip conditions (minimum profit, offers, etc.)",
-    mode: "Mode", analyze: "Analyze history of top items", topN: "Items to analyze", days: "History", dayOpt: "{n} d",
-    liqFilter: "Sellability", liqAll: "All", liqMid: "Medium or better", liqHigh: "High only",
+    mode: "Mode", topN: "Items to analyze", days: "History", dayOpt: "{n} d",
     tabF2T: "Buy on flea, sell to traders", tabT2F: "Buy from traders, sell on flea", tabB2F: "Barter at traders, sell on flea",
     tabLoot: "What to bring back",
     lootSearch: "Filter by name",
@@ -299,7 +293,7 @@ const I18N = {
     footer: "<a href=\"privacy.html\">Privacy</a> · <a href=\"contact.html\">Contact</a>",
     modes: {regular: "PvP (regular)", "pvp-season": "PvP seasonal", pve: "PvE"},
     traders: {prapor: "Prapor", therapist: "Therapist", skier: "Skier", peacekeeper: "Peacekeeper", mechanic: "Mechanic", ragman: "Ragman", jaeger: "Jaeger", ref: "Ref"},
-    sPlayerLevel: "PMC level", sIntel: "Intelligence Center level", sMgmt: "Hideout Management skill", sMinProfit: "Min. profit (₽ per item)", sMinOffers: "Min. offers",
+    sPlayerLevel: "PMC level", sIntel: "Intelligence Center level", sMgmt: "Hideout Management skill", sMinProfit: "Min. profit (₽ per item)", sMinOffers: "Min. offers", sMaxBuy: "Max to buy per item (0 = none)",
     sFence: "Selling to Fence", include: "Include", exclude: "Exclude",
     sTaskLocked: "Quest-locked trader items", hide: "Hide", show: "Show",
     sKeys: "Items with uses/charges (keys, cards, meds, fuel): flea → trader", keysWarn: "Show with warning", keysExclude: "Exclude (recommended)",
@@ -316,7 +310,7 @@ const I18N = {
       tier: "Tier", perSlot: "Per slot", slots: "Size", traderSell: "Trader", fleaNet: "Flea (after fee)",
       rate: "Profitable share", expected: "Expected profit / item", spark: "{d}-day low price", buyTrader: "Trader price", matCost: "Material cost", sellFlea: "Flea sell price", fee: "Fee", limit: "Buy limit", liq: "Sellability", total: "Total profit (up to limit)"},
     totalExp: "Expected: {v}", totalTip: "Profit per item × {n} ({by}). You can buy that many again at every trader restock.",
-    capBy: {limit: "buy limit", stock: "in stock"},
+    capBy: {limit: "buy limit", stock: "in stock", mine: "your max"},
     breakEven: "Floor {v}", breakEvenTip: "Below this price, fees leave less than your minimum profit ({p}).",
     pcs: "{n}", median7: "{d}-day median {n}", tooFew: "Not enough data",
     worst: "If 1 use left: {v}", worstTip: "If the cheapest offer is a key with only one use left",
@@ -335,7 +329,7 @@ const I18N = {
     sparkLabel: "{d}-day flea low price with {line}", lineF2T: "max buy price", lineT2F: "break-even sell price",
     emptyInit: "Press “Fetch prices” to list items you can currently flip between the flea market and traders.",
     emptyLiq: "No items match the sellability filter ({n} hidden). Analyze more items or set the filter back to “All”.",
-    liqHidden: "{n} hidden by the sellability filter", liqBase: "Base 50", autoAnalyzing: "Analyzing history of top {n}…",
+    liqBase: "Base 50", autoAnalyzing: "Analyzing history of top {n}…",
     empty: "No items match. Lower “Min. profit” or “Min. offers” in your settings to see more.",
     firBanner: "The flea market currently only accepts found-in-raid (FIR) items (per the API). Items bought from traders are not FIR, so many items here may not be listable. Test with a cheap item first.",
   }
@@ -346,7 +340,7 @@ const DAY_OPTS = [7, 14, 30, 60, 90];
 const DEMAND_KEYS = ["quest","hideout","craft"];
 const DEFAULTS = {
   lang: (navigator.language || "ja").startsWith("ja") ? "ja" : "en",
-  mode: "regular", playerLevel: 30, intel: 3, mgmt: 0, minProfit: 3000, minOffers: 5, excludeFence: false, hideTaskLocked: true, liqFilter: "all", depletableF2T: "exclude", weapons: "exclude", days: 7,
+  mode: "regular", playerLevel: 30, intel: 3, mgmt: 0, minProfit: 3000, minOffers: 5, excludeFence: false, hideTaskLocked: true, maxBuy: 0, depletableF2T: "exclude", weapons: "exclude", days: 7,
   lootOff: ["grenade", "keys"],   // 持ち帰りティア表で、チェックを外している分類（LOOT_GROUP_VIEW のキー）
   mkDays: 30, mkTh: 5, mkMinOffers: 10, mkMinProfit: 10000, mkMinRate: 15, mkNeedRebound: true, mkStock: [], lootMinOffers: 15, _lmo10: true, _loot15: true,
   ll: Object.fromEntries(TRADER_KEYS.map(k => [k, 4]))
@@ -356,14 +350,13 @@ const DEFAULTS = {
 function migrate(s){
   if(!s._lmo10){ s.lootMinOffers = 10; s._lmo10 = true; }   // 出品数の既定値を3→10にした（初回だけ切り替える）
   if(!s._loot15){ s.lootMinOffers = 15; s.lootOff = ["grenade", "keys"]; s._loot15 = true; }   // 持ち帰りティア表の既定を「出品数15件・投擲物と鍵は外す」にした（初回だけ切り替える）
-  if(s.hideLowLiq && !s.liqFilter) s.liqFilter = "mid";
   if(s.lootKeys !== undefined && s.hideLootKeys === undefined) s.hideLootKeys = s.lootKeys !== "show";
   /* 持ち帰りティア表の「一覧に表示」のチェック（品の種類ごと）を、分類（lootOff）に置き換えた */
   const OLD_HIDE = {hideLootKeys: "keys", hideLootArmor: "armor", hideLootMods: "mods", hideLootHelmets: "helmet", hideLootGuns: "gun", hideLootPosters: "poster", hideLootHeadsets: "headset", hideLootBalaclava: "face", hideLootWearables: "wear"};
   if(!Array.isArray(s.lootOff) && Object.keys(OLD_HIDE).some(k => k in s)) s.lootOff = Object.keys(OLD_HIDE).filter(k => s[k]).map(k => OLD_HIDE[k]);
   for(const k of [...Object.keys(OLD_HIDE), "hideLootVariants"]) delete s[k];
   if(Array.isArray(s.lootOff)) s.lootOff = s.lootOff.filter(k => ["barter", "meds", "provisions", "ammoBox", "grenade", "keys"].includes(k));   // 選べなくなった分類は消す
-  delete s.hideLowLiq; delete s.keyMode; delete s.lootKeys;
+  delete s.hideLowLiq; delete s.liqFilter; delete s.keyMode; delete s.lootKeys;   // 売れやすさは「中以上」で固定にした
   return s;
 }
 function loadSettings(){
@@ -395,7 +388,7 @@ function buildSettings(){
   }
   document.getElementById("settingsGrid").innerHTML = h;
   // 転売ボードの条件：利益・出品数・クエスト解放・残量のある品・銃
-  document.getElementById("flipGrid").innerHTML = num("minProfit",t("sMinProfit"),0,1000000) + num("minOffers",t("sMinOffers"),0,1000)
+  document.getElementById("flipGrid").innerHTML = num("minProfit",t("sMinProfit"),0,1000000) + num("minOffers",t("sMinOffers"),0,1000) + num("maxBuy",t("sMaxBuy"),0,999)
     + sel("hideTaskLocked", t("sTaskLocked"), [["true",t("hide")],["false",t("show")]])
     + sel("depletableF2T", t("sKeys"), [["exclude",t("keysExclude")],["warn",t("keysWarn")]])
     + sel("weapons", t("sWeapons"), [["exclude",t("gunsExclude")],["warn",t("gunsWarn")]]);
@@ -409,6 +402,7 @@ function onSettingChange(e){
     S[k] = STR.has(k) ? el.value : (BOOL.has(k) ? el.value === "true" : +el.value);
   }
   saveSettings(); buildLootGroups(); recompute();
+  if(PAGE === "flip") analyzeTop(false);          // 条件が変わると上位の品も変わるので、まだ分析していない品を分析する
 }
 document.getElementById("settingsGrid").addEventListener("change", onSettingChange);
 document.getElementById("flipGrid").addEventListener("change", onSettingChange);
@@ -497,6 +491,11 @@ function cheapestTraderBuy(it){
    restockAmount は「トレーダーが並べる在庫数」。どちらも効くので、小さいほうが実際の上限になる。
    以前は buyLimit だけを見ていたため、無制限に買える品の想定総利益が空欄になり、
    いちばん稼げるはずの品が並べ替えで最下位に沈んでいた。 */
+/* 自分が1品あたり買う数の上限（転売の条件。0なら決めない）。トレーダーの上限・在庫より小さければ、こちらで数える */
+function myCap(n, by){
+  const m = S.maxBuy || 0;
+  return m > 0 && (!n || m < n) ? {n: m, by: "mine"} : {n, by};
+}
 function buyCap(v){
   const lim = +v.buyLimit || 0, stock = +v.restockAmount || 0;
   if(lim && stock) return {n: Math.min(lim, stock), by: lim <= stock ? "limit" : "stock"};
@@ -540,7 +539,7 @@ function rowsT2F(){
     const fee = fleaFee(it.basePrice, sellPrice, DATA.flea);
     const profit = sellPrice - fee - b.priceRUB;
     if(profit < S.minProfit || (it.lastOfferCount || 0) < S.minOffers) continue;
-    const cap = buyCap(b.vendor);
+    const c0 = buyCap(b.vendor), cap = myCap(c0.n, c0.by);
     out.push({it, buy: b.priceRUB, buyFrom: b.vendor.name, ll: b.vendor.minTraderLevel, limit: cap.n, capBy: cap.by,
               task: b.vendor.taskUnlock, sellPrice, fee, profit,
               line: breakEvenPrice(it.basePrice, b.priceRUB + S.minProfit, DATA.flea), dir: "min"});
@@ -584,7 +583,8 @@ function rowsB2F(){
     const fee = fleaFee(it.basePrice, sellPrice, DATA.flea);
     const profit = sellPrice - fee - unitCost;
     if(profit < S.minProfit || (it.lastOfferCount || 0) < S.minOffers) continue;
-    out.push({key: b.id, it, buy: unitCost, buyFrom: b.trader.name, ll: b.ll, limit: b.limit ? b.limit * b.rewardCount : 0, capBy: "limit", task: b.task,
+    const cap = myCap(b.limit ? b.limit * b.rewardCount : 0, "limit");
+    out.push({key: b.id, it, buy: unitCost, buyFrom: b.trader.name, ll: b.ll, limit: cap.n, capBy: cap.by, task: b.task,
               sellPrice, fee, profit, line: breakEvenPrice(it.basePrice, unitCost + S.minProfit, DATA.flea), dir: "min",
               mats, matHard: mats.some(m => m.hard)});
   }
@@ -926,9 +926,8 @@ function render(){
   const colLabel = l => String(t("cols")[l]).replace("{d}", S.days);
   thead.innerHTML = "<tr>" + cols.map(([k,l,c]) =>
     `<th class="${c||""}" data-k="${k}" ${SORT.key===k ? `data-sorted="${SORT.dir<0?" ▼":" ▲"}"` : ""} tabindex="0">${colLabel(l)}</th>`).join("") + "</tr>";
-  const minLiq = {all: -1, mid: 40, high: 65}[S.liqFilter] ?? -1;
+  const minLiq = 40;                      // 売れやすさは「中」以上だけを出す（固定）
   const useLiq = (TAB === "t2f" || TAB === "b2f") && minLiq >= 0;
-  document.getElementById("liqFilterWrap").hidden = TAB === "f2t" || TAB === "loot";
   for(const id of ["lootFilterWrap", "lootHideWrap", "lootRareWrap"]){ const el = document.getElementById(id); el.hidden = TAB !== "loot" || !!el.dataset.off; }
   // 段位の境目は、1マスあたりいくらかを覚えてもらうために数字で出す
   const leg = document.getElementById("tierLegend");
@@ -948,7 +947,6 @@ function render(){
   tbody.innerHTML = !DATA ? msg(t("emptyInit"))
     : rows.length ? rows.map(r => "<tr>" + cols.map(([k]) => cell(r, k)).join("") + "</tr>").join("")
     : msg(t(useLiq ? "emptyLiq" : "empty", {n: fmt(hiddenN)}));
-  document.getElementById("hiddenNote").textContent = useLiq && hiddenN && rows.length ? t("liqHidden", {n: fmt(hiddenN)}) : "";
   const b = document.getElementById("banner");
   b.innerHTML = (TAB === "t2f" || TAB === "b2f") && DATA && DATA.flea && DATA.flea.foundInRaidRequired ? `<div class="banner">${t("firBanner")}</div>` : "";
 }
@@ -1043,7 +1041,7 @@ function applyLang(){
 
 /* ================= 操作 ================= */
 const $status = document.getElementById("status"), $progress = document.getElementById("progress");
-const $mode = document.getElementById("modeSel"), $liq = document.getElementById("liqFilter"), $days = document.getElementById("daysSel");
+const $mode = document.getElementById("modeSel"), $days = document.getElementById("daysSel");
 const $lootSearch = document.getElementById("lootSearch");
 
 /* 持ち帰りティア表の「分類」のチェック。データに実際に出てくる分類だけを並べる（チェックあり＝表示） */
@@ -1072,7 +1070,6 @@ function applyData(d, statusKey){
   DATA = d;
   HIST_CACHE.clear(); ROWS = []; setProgress(null);
   setStatus(statusKey, {modeKey: S.mode, count: DATA.items.length, at: DATA.at});
-  document.getElementById("analyzeBtn").disabled = false;
   buildLootGroups();
   recompute();
   if(TAB !== "loot" && PAGE !== "watch") analyzeTop();
@@ -1119,16 +1116,16 @@ async function refreshIfStale(){
 setInterval(refreshIfStale, 60 * 1000);
 document.addEventListener("visibilitychange", refreshIfStale);
 
-/* 上位N件の7日間推移を取得して分析（価格取得後・タブ切り替え後にも自動で実行） */
+/* 上位N件の推移を取得して分析する。ボタンは無く、価格を読んだとき・タブや条件・件数を変えたときに自動で動く。
+   resort が true のときだけ、分析後に「期待利益」順に並べ直す（条件を変えたときは、利用者が選んだ並び順を崩さない） */
 let analyzing = false, rerun = false;
-async function analyzeTop(){
+async function analyzeTop(resort = true){
   if(!DATA) return;
   if(analyzing){ rerun = true; return; }
   analyzing = true;
-  const btn = document.getElementById("analyzeBtn"); btn.disabled = true;
   const n = +document.getElementById("topN").value;
   const tab = TAB;
-  if(TAB === "loot"){ analyzing = false; btn.disabled = false; return; }
+  if(TAB === "loot"){ analyzing = false; return; }
   const targets = [...ROWS].sort((a,b) => b.profit - a.profit).slice(0, n);
   const need = [...new Map(targets.filter(r => !HIST_CACHE.has(r.it.id)).map(r => [r.it.id, r])).values()];
   try{
@@ -1144,18 +1141,18 @@ async function analyzeTop(){
     }
     if(tab === TAB){
       for(const r of ROWS){ const h = HIST_CACHE.get(r.it.id); if(h){ r.hist = h; analyzeHistory(r, h, TAB); } }
-      SORT = {key: "expected", dir: -1};
+      if(resort) SORT = {key: "expected", dir: -1};
       setProgress("histDone", {n: targets.length});
       render();
     }
   }catch(err){
     setProgress("histFail", {msg: err.message});
   }finally{
-    btn.disabled = false; analyzing = false;
-    if(rerun){ rerun = false; analyzeTop(); }
+    analyzing = false;
+    if(rerun){ rerun = false; analyzeTop(resort); }
   }
 }
-document.getElementById("analyzeBtn").addEventListener("click", analyzeTop);
+document.getElementById("topN").addEventListener("change", () => analyzeTop(false));
 
 document.querySelector(".tabs").addEventListener("click", e => {
   const b = e.target.closest("button[data-tab]"); if(!b) return;
@@ -1176,12 +1173,10 @@ document.querySelector("#tbl thead").addEventListener("keydown", e => { if(e.key
 $mode.addEventListener("change", () => {
   S.mode = $mode.value; saveSettings();
   DATA = null; ROWS = []; HIST_CACHE.clear();
-  document.getElementById("analyzeBtn").disabled = true; setProgress(null);
+  setProgress(null);
   applyLang();
   if(NEEDS_DATA) loadInitial();
 });
-$liq.value = S.liqFilter;
-$liq.addEventListener("change", () => { S.liqFilter = $liq.value; saveSettings(); render(); });
 
 /* 期間を変えても取り直さない。ためた履歴から切り出し直すだけ */
 $days.addEventListener("change", () => { S.days = +$days.value; saveSettings(); recompute(); });
@@ -1200,7 +1195,7 @@ function setupPage(){
   hide("#settingsBox");                                        // 設定はプレイヤー設定のページだけ
   if(PAGE !== "flip") hide("#flipBox");                        // 転売の条件は転売ボードだけ
   if(PAGE === "top" || PAGE === "settings"){
-    hide("#status", ".bar", ".tabs", "#banner", "#tierLegend", "#tierBoard", "#listWrap", "#hiddenNote");
+    hide("#status", ".bar", ".tabs", "#banner", "#tierLegend", "#tierBoard", "#listWrap");
     if(PAGE === "top") show("topCards");
     else{ const b = document.getElementById("settingsBox"); b.hidden = false; delete b.dataset.off; b.open = true; }
     return;
@@ -1210,10 +1205,10 @@ function setupPage(){
     return;
   }
   /* 持ち帰りティア表・売り時・買い時 */
-  hide(".tabs", "#analyzeBtn");
+  hide(".tabs");
   for(const id of ["topN", "daysSel"]) document.getElementById(id).closest("label").hidden = true;
   if(PAGE === "watch"){
-    hide(".bar", "#lootFilterWrap", "#lootHideWrap", "#lootRareWrap", "#viewBtn", "#listWrap", "#hiddenNote", "#tierLegend", "#tierBoard", "#banner");   // モードはヘッダーにあるので、この段には何も残らない
+    hide(".bar", "#lootFilterWrap", "#lootHideWrap", "#lootRareWrap", "#viewBtn", "#listWrap", "#tierLegend", "#tierBoard", "#banner");   // モードはヘッダーにあるので、この段には何も残らない
     show("marketPanel");
   }
 }
