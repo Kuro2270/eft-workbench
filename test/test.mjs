@@ -158,6 +158,11 @@ ok(rows.length > 0, `一覧が出る / ${rows.length} 行`);
 ok(num(L("Graphics Card").perSlot) > num(L("Wooden Crate").perSlot),
    `小さくて高い品が、大きくて安い品より上 / GPU ${L("Graphics Card").perSlot} > 木箱 ${L("Wooden Crate").perSlot}`);
 ok(/1×2＝2マス/.test(L("Graphics Card").slots), "サイズが出る / " + L("Graphics Card").slots);
+{
+  const g = await page.evaluate(() => { const r = ROWS.find(x => x.it.name.en === "Graphics Card"); return { f: Math.round(r.fTotal), t: Math.round(r.tTotal), per: Math.round(r.perSlot) }; });
+  ok(num(L("Graphics Card").fleaPer) === g.f && num(L("Graphics Card").traderPer) === g.t, `2マスの品でも、フリマ手取り・トレーダー売却は1個を売った額で出す（1マスあたりの額ではない） / ${L("Graphics Card").fleaPer}`);
+  ok(num(L("Graphics Card").perSlot) === g.per && g.per < Math.max(g.f, g.t), "1マスあたりの額は「マス単価」だけに出る");
+}
 ok(!rows.some(r => /Rifle Round/.test(r.item || "")), "弾（ばら）は一覧に出さない");
 ok(!rows.some(r => /Test Armband/.test(r.item || "")), "アームバンドも出さない");
 ok(rows.some(r => /Test Ammo Pack \(120 pcs\)/.test(r.item || "")), "弾パック（弾薬箱）は、名前に（）が付いていても、箱のままの出品が少なくても出る");

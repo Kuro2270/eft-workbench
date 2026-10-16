@@ -221,7 +221,7 @@ const I18N = {
     tabLoot: "レイドで持ち帰る",
     lootSearch: "名前で絞り込み",
     slotsN: "{w}×{h}＝{n}マス", stackTag: "1マスに{n}個", contentsTag: "中身 {name}×{n}発で計算", noFleaTag: "フリマ不可", fleaLockTag: "フリマLv{n}で解放", fleaLockTip: "フリマで売るにはプレイヤーLv{n}が必要です。いまの設定はLv{c}です。設定の「プレイヤーレベル」を実際のレベルに合わせると、ここにフリマ手取りが出ます。",
-    lootTotal: "計 {v}（{t}）", lootTotalFlea: "計 {v}（手数料 {f}）",
+    lootTrader: "{v}（{t}）", lootFlea: "{v}（手数料 {f}）", lootFee: "手数料 {f}",
     tierLegend: "段位の目安（1マスあたりの手取り）　S：{s}以上／A：{a}以上／B：{b}以上／C：{c}以上／D：それ未満",
     kinds: {barter: "バーター品", meds: "医療品", provisions: "食料・飲料", keys: "鍵", mods: "武器パーツ", poster: "ポスター", gun: "銃", ammo: "弾薬", ammoBox: "弾薬箱", armor: "防具", armorPlate: "装甲板", helmet: "ヘルメット", rig: "リグ", backpack: "バックパック", container: "コンテナ", grenade: "投擲物", glasses: "アイウェア", headphones: "ヘッドセット", injectors: "注射器", wearable: "着用品", suppressor: "サプレッサー"},
     matCost: "材料原価", mats: "材料", matFlea: "フリマ", matHard: "材料が揃いにくい",
@@ -284,7 +284,7 @@ const I18N = {
     tabLoot: "What to bring back",
     lootSearch: "Filter by name",
     slotsN: "{w}×{h} = {n}", stackTag: "{n} per slot", contentsTag: "Valued by contents: {name} ×{n}", noFleaTag: "No flea", fleaLockTag: "Flea unlocks at Lv{n}", fleaLockTip: "Selling on the flea needs player level {n}. Your setting is level {c}. Set “Player level” in settings to your real level to see the flea value here.",
-    lootTotal: "{v} total ({t})", lootTotalFlea: "{v} total (fee {f})",
+    lootTrader: "{v} ({t})", lootFlea: "{v} (fee {f})", lootFee: "fee {f}",
     tierLegend: "Tier cut-offs (take-home per slot) — S: {s}+ / A: {a}+ / B: {b}+ / C: {c}+ / D: below",
     kinds: {barter: "Barter items", meds: "Meds", provisions: "Food & drink", keys: "Keys", mods: "Weapon mods", poster: "Posters", gun: "Guns", ammo: "Ammo", ammoBox: "Ammo boxes", armor: "Armor", armorPlate: "Plates", helmet: "Helmets", rig: "Rigs", backpack: "Backpacks", container: "Containers", grenade: "Throwables", glasses: "Eyewear", headphones: "Headsets", injectors: "Injectors", wearable: "Wearables", suppressor: "Suppressors"},
     matCost: "Material cost", mats: "Materials", matFlea: "Flea", matHard: "Materials hard to gather",
@@ -1060,8 +1060,8 @@ function sortVal(r, k){
     case "tier": return -"SABCD".indexOf(r.tier);
     case "perSlot": return r.perSlot;
     case "slots": return r.slots;
-    case "traderPer": return r.tPer;
-    case "fleaPer": return r.fPer;
+    case "traderPer": return r.tTotal;
+    case "fleaPer": return r.fTotal;
     default: return r[k] ?? 0;
   }
 }
@@ -1122,7 +1122,7 @@ function cell(r, k){
     case "tier": return `<td><span class="tier ${r.tier}">${r.tier}</span></td>`;
     case "perSlot": return `<td class="gain"><b>${yen(r.perSlot)}</b></td>`;
     case "slots": return `<td>${t("slotsN", {w: it.width, h: it.height, n: r.slots})}</td>`;
-    case "traderPer": return `<td>${r.tTotal ? yen(r.tPer) + `<span class="sub">${t("lootTotal", {v: yen(r.tTotal), t: esc(nm(r.sellTo))})}</span>` : "―"}</td>`;
+    case "traderPer": return `<td>${r.tTotal ? yen(r.tTotal) + `<span class="sub">${esc(nm(r.sellTo))}</span>` : "―"}</td>`;   // 1個（1スタック）を売った額。1マスあたりは「マス単価」の列
     case "fleaPer": {
       if(r.gun) return `<td class="note" title="${esc(t("gunTip"))}">${t("gunTag")}</td>`;
       if(!r.fleaOk){
@@ -1131,7 +1131,7 @@ function cell(r, k){
           return `<td class="note" title="${esc(t("fleaLockTip", {n: lv, c: S.playerLevel}))}">${t("fleaLockTag", {n: lv})}</td>`;
         return `<td class="note">${t("noFleaTag")}</td>`;
       }
-      return `<td>${yen(r.fPer)}<span class="sub">${t("lootTotalFlea", {v: yen(r.fTotal), f: yen(r.fFee)})}</span></td>`;
+      return `<td>${yen(r.fTotal)}<span class="sub">${t("lootFee", {f: yen(r.fFee)})}</span></td>`;
     }
     case "liq": {
       if(!r.a || !r.a.liq) return "<td></td>";
@@ -1191,8 +1191,9 @@ function lootTipHtml(r){
   else if(!r.fleaOk){
     const lv = it.minLevelForFlea || 0;
     flea = !it.types.includes("noFlea") && it.lastLowPrice > 0 && lv > S.playerLevel ? t("fleaLockTag", {n: lv}) : t("noFleaTag");
-  } else flea = yen(r.fPer) + " " + t("lootTotalFlea", {v: yen(r.fTotal), f: yen(r.fFee)});
-  const trader = r.tTotal ? yen(r.tPer) + " " + t("lootTotal", {v: yen(r.tTotal), t: esc(nm(r.sellTo))}) : "―";
+  } else flea = t("lootFlea", {v: yen(r.fTotal), f: yen(r.fFee)});
+  /* 売ったときに受け取る額（1個・1スタックぶん）。1マスあたりの額は「マス単価」の行だけに出す（2つ並べると、どちらが手取りか分かりにくい） */
+  const trader = r.tTotal ? t("lootTrader", {v: yen(r.tTotal), t: esc(nm(r.sellTo))}) : "―";
   return `<b class="n">${esc(nm(it.name))}</b>`
     + `<div><span class="k">${C.perSlot}</span> <b>${yen(r.perSlot)}</b></div>`
     + `<div><span class="k">${C.slots}</span> ${t("slotsN", {w: it.width, h: it.height, n: r.slots})}${r.stack > 1 ? "（" + t("stackTag", {n: fmt(r.stack)}) + "）" : ""}</div>`
