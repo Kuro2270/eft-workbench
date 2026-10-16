@@ -143,7 +143,8 @@ ok(num(L("Graphics Card").perSlot) > num(L("Wooden Crate").perSlot),
 ok(/1×2＝2マス/.test(L("Graphics Card").slots), "サイズが出る / " + L("Graphics Card").slots);
 ok(!rows.some(r => /Rifle Round/.test(r.item || "")), "弾（ばら）は一覧に出さない");
 ok(!rows.some(r => /Test Armband/.test(r.item || "")), "アームバンドも出さない");
-ok(rows.some(r => /Test Ammo Pack \(30 pcs\)/.test(r.item || "")), "弾パック（弾薬箱）は、名前に（）が付いていても出る");
+ok(rows.some(r => /Test Ammo Pack \(120 pcs\)/.test(r.item || "")), "弾パック（弾薬箱）は、名前に（）が付いていても、箱のままの出品が少なくても出る");
+ok(num(L("Test Ammo Pack").traderPer) === 48000 && /中身/.test(L("Test Ammo Pack").item), "弾薬箱は中の弾の数で値段を見る（120発×₽400＝₽48,000） / " + L("Test Ammo Pack").traderPer);
 ok(rows.some(r => /beef stew \(Large\)/.test(r.item || "")), "食料も、名前に（）が付いていても出る");
 ok(!rows.some(r => /Test Headset|ProFlex/.test(r.item || "")), "ヘッドセット（イヤープラグ型も）は既定で出ない");
 ok(!rows.some(r => /Pilgrim|SOTR/.test(r.item || "")), "バックパック・種類の無い防具（SOTR）は既定で出ない");

@@ -110,7 +110,8 @@ ITEMS.knife = loot("knife", "Test Knife", 1, 2, 60000, 80000, { types: ["barter"
 ITEMS.rareHolo = loot("rareHolo", "Rare Hologram", 1, 1, 500000, 900000, { lastOfferCount: 1 });
 /* フリマ禁止品は出品数0でも外さない */
 ITEMS.armband = loot("armband", "Test Armband (red)", 1, 1, 20000, 30000, { types: ["wearable"] });
-ITEMS.ammoBox = loot("ammoBox", "Test Ammo Pack (30 pcs)", 1, 1, 30000, 45000, { types: ["ammoBox"] });   // 名前に（）が付いても弾薬箱は出る
+/* 弾薬箱：箱のままの値段は安い（₽300）。中の弾120発（1発 トレーダー₽400・フリマ₽520）で見ると高い */
+ITEMS.ammoBox = loot("ammoBox", "Test Ammo Pack (120 pcs)", 1, 1, 300, 900, { types: ["ammoBox"], containsItems: [{ item: "ammo", count: 120, attributes: [] }], lastOfferCount: 2 });   // 箱のままの出品は少ない（中の弾は40件）   // 名前に（）が付いても弾薬箱は出る
 ITEMS.stew = loot("stew", "Can of beef stew (Large)", 1, 1, 25000, 38000, { types: ["provisions"] });          // 名前に（）が付いても食料は出る
 ITEMS.headset = loot("headset", "Test Headset", 1, 1, 50000, 70000, { types: ["headphones"] });
 ITEMS.earplug = loot("earplug", "CENS ProFlex DX5 tactical earplugs", 1, 1, 150000, 200000, { types: ["wearable"] });   // 種類がヘッドセットで返らない場合

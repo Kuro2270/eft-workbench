@@ -81,6 +81,10 @@ function buildData(raw){
     pt: (raw.properties && raw.properties.propertiesType) || "",
     cats: [raw.category, ...(raw.categories || []), ...(raw.handbookCategories || [])].filter(Boolean).map(c => String(c.normalizedName || c.name || c.id || c).toLowerCase()),
     stack: stackSize(raw.properties),
+    /* 弾薬箱の中身（弾の ID と数）。箱のままより、開けて弾を売るほうが高いことが多い。ほかの品は持たない（保存データを小さくするため） */
+    contains: (raw.types || []).includes("ammoBox")
+      ? (raw.containsItems || []).map(c => ({id: typeof c.item === "string" ? c.item : (c.item && c.item.id), count: c.count || 1})).filter(c => c.id)
+      : undefined,
   }));
   const ids = new Set(list.map(it => it.id));
   const bartersList = (Array.isArray(barters) ? barters : barters ? Object.values(barters) : []).map(b => {
