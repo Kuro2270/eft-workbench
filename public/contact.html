@@ -35,7 +35,16 @@ footer a{color:var(--muted)}
 <main>
 <h1>お問い合わせ</h1>
 <p class="lead">不具合のご連絡、ご質問、ご提案は、こちらのフォームからどうぞ。</p>
-<p class="notice">フォームは準備中です。もうしばらくお待ちください。</p>
+<p><button type="button" class="btn" id="openForm">フォームを開く</button> <a href="https://docs.google.com/forms/d/e/1FAIpQLScGu6dTNtRU_1ds4l6m3XMce5IAK7R94ltfczKSv9ZLxK1rxg/viewform" target="_blank" rel="noopener">別のタブで開く</a></p>
+<div class="formbox" id="formBox"></div>
+<script>
+document.getElementById("openForm").addEventListener("click", function(){
+  var f = document.createElement("iframe");
+  f.src = "https://docs.google.com/forms/d/e/1FAIpQLScGu6dTNtRU_1ds4l6m3XMce5IAK7R94ltfczKSv9ZLxK1rxg/viewform" + ("https://docs.google.com/forms/d/e/1FAIpQLScGu6dTNtRU_1ds4l6m3XMce5IAK7R94ltfczKSv9ZLxK1rxg/viewform".indexOf("?") < 0 ? "?" : "&") + "embedded=true";
+  f.title = "contact"; f.loading = "lazy";
+  document.getElementById("formBox").appendChild(f); this.hidden = true;
+});
+</script>
 <h2>送る前に</h2>
 <p>不具合のご連絡は、次の内容を添えていただけると、確認しやすくなります。</p>
 <ul><li>どのページか（転売ボード、持ち帰りティア表など）</li><li>使っている端末とブラウザ（例：Windows の Chrome）</li><li>モード（PvP・PvE）と、何が起きたか</li></ul>
