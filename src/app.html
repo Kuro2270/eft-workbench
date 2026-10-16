@@ -656,10 +656,11 @@ function lootExcluded(it, g){
   if(LOOT_DROP.includes(g)) return true;
   return false;
 }
-/* 入手の難しさ：ドロップ率はAPIに無いので、フリマの出品数で代用する（min 件未満なら珍品）。
-   フリマ禁止品は出品数が常に0なので、この基準では見ない。弾薬箱は箱のままの出品が少ないので、中の弾の出品数で見る */
+/* 入手の難しさ：ドロップ率はAPIに無いので、フリマの出品数で代用する（min 件未満なら外す）。
+   フリマに出せない品は出品数が0なので、条件が1件以上なら外れる（0にすると出る）。弾薬箱は箱のままの出品が少ないので、中の弾の出品数で見る */
 function lootRare(it, byId, min){
-  if(!(min > 0) || hasT(it, "noFlea")) return false;
+  if(!(min > 0)) return false;
+  if(hasT(it, "noFlea")) return true;                                // フリマに出せない品は、出品数0と同じ
   const inner = it.contains && it.contains[0] && byId.get(it.contains[0].id);
   return Math.max(it.lastOfferCount || 0, inner ? inner.lastOfferCount || 0 : 0) < min;
 }
