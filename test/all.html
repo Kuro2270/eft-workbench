@@ -15,9 +15,14 @@
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);
   font-family:"BIZ UDPGothic","Hiragino Sans","Yu Gothic UI",Meiryo,sans-serif;font-size:14px;line-height:1.55}
-header{padding:18px 20px 10px;border-bottom:2px solid var(--tan);display:flex;flex-wrap:wrap;gap:12px 24px;align-items:baseline}
-header h1{margin:0;font-size:22px;letter-spacing:.02em}
-header .status{color:var(--muted);font-size:13px}
+/* ヘッダー：左（サイト名・モード）の幅を固定し、どのページでもツールのボタンが同じ位置に来るようにする */
+header{padding:14px 20px 12px;border-bottom:2px solid var(--tan);display:grid;grid-template-columns:300px 1fr auto;gap:10px 24px;align-items:center}
+header .hl{display:flex;align-items:center;gap:12px;min-width:0}
+header .brand{color:var(--tan);text-decoration:none;font-weight:700;font-size:17px;letter-spacing:.02em;white-space:nowrap}
+header #modeSel{flex:0 1 150px;width:150px;min-width:0}
+.phead{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 16px;margin:0 0 10px}
+.phead h1{margin:0;font-size:22px;letter-spacing:.02em}
+.phead .status{color:var(--muted);font-size:13px}
 main{padding:14px 20px 40px;max-width:1400px}
 button,select,input{font:inherit;color:var(--text);background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:5px 10px}
 button{cursor:pointer}
@@ -50,7 +55,7 @@ td.item a:hover{text-decoration:underline}
 .copy:hover{color:var(--text);border-color:var(--tan)}
 .copy.done{color:#1E2528;background:var(--gain);border-color:var(--gain)}
 .copy.fail{color:#1E2528;background:var(--loss);border-color:var(--loss)}
-.lang{margin-left:auto;display:inline-flex;border:1px solid var(--line);border-radius:4px;overflow:hidden}
+.lang{display:inline-flex;border:1px solid var(--line);border-radius:4px;overflow:hidden}
 .lang button{border:none;border-radius:0;padding:3px 10px;font-size:12px;color:var(--muted);background:none}
 .lang button[aria-pressed="true"]{background:var(--tan);color:#1E2528;font-weight:700}
 .sub{display:block;color:var(--muted);font-size:11px}
@@ -71,7 +76,7 @@ td.liq .sub{margin-top:2px}
 .opp i b{display:block;height:100%;background:var(--gain)}
 svg.spark{display:block}
 [hidden]{display:none !important}
-.pages{display:flex;gap:6px;margin-left:auto}
+.pages{display:flex;flex-wrap:wrap;gap:6px}
 .pages a{color:var(--muted);text-decoration:none;border:1px solid var(--line);border-radius:4px;padding:3px 10px}
 .pages a[aria-current="page"]{color:#1E2528;background:var(--tan);border-color:var(--tan);font-weight:700}
 #tierBoard{display:flex;flex-direction:column;gap:6px}
@@ -144,17 +149,19 @@ svg.wchart .cross{stroke:var(--muted);stroke-width:1}
 .setline a{color:var(--tan)}
 footer{padding:16px 20px;color:var(--muted);font-size:12px;border-top:1px solid var(--line)}
 footer a{color:var(--muted)}
+@media (max-width:900px){header{grid-template-columns:1fr auto}header .pages{grid-column:1 / -1;grid-row:2}}
+@media (max-width:600px){header .hl{display:contents}header .brand{grid-column:1;grid-row:1}header .lang{grid-column:2;grid-row:1}header #modeSel{grid-column:1 / -1;grid-row:2;justify-self:start;width:170px}header .pages{grid-row:3}}
 @media (max-width:700px){header,main{padding-left:10px;padding-right:10px}}
 </style>
 </head>
 <body>
 <header>
-  <h1 data-i18n="title">EFT 転売ボード</h1>
-  <span class="status" id="status"></span>
+  <div class="hl"><a class="brand" href="index.html">EFT Workbench</a><select id="modeSel"></select></div>
   <nav class="pages" id="pages" hidden><a href="index.html" id="pgTop" data-i18n="pageTop"></a><a href="flip.html" id="pgFlip" data-i18n="pageBoard"></a><a href="loot.html" id="pgLoot" data-i18n="pageLoot"></a><a href="watch.html" id="pgWatch" data-i18n="pageWatch"></a><a href="settings.html" id="pgSettings" data-i18n="pageSettings"></a></nav>
   <span class="lang" role="group" aria-label="Language / 言語"><button type="button" data-lang="ja">日本語</button><button type="button" data-lang="en">English</button></span>
 </header>
 <main>
+  <div class="phead"><h1 data-i18n="title">EFT 転売ボード</h1><span class="status" id="status"></span></div>
   <section id="topCards" class="cards" hidden>
     <p class="lead" data-i18n="topLead"></p>
     <a class="card" href="flip.html"><b data-i18n="pageBoard"></b><span data-i18n="topFlip"></span></a>
@@ -176,7 +183,6 @@ footer a{color:var(--muted)}
   </details>
 
   <div class="bar">
-    <label class="note"><span data-i18n="mode"></span> <select id="modeSel"></select></label>
     <button id="analyzeBtn" disabled data-i18n="analyze"></button>
     <label class="note"><span data-i18n="topN"></span> <select id="topN"><option>20</option><option selected>30</option><option>50</option></select></label>
     <label class="note"><span data-i18n="days"></span> <select id="daysSel"></select></label>
@@ -247,15 +253,14 @@ const I18N = {
     sTaskLocked: "クエスト解放が必要な品", hide: "隠す", show: "表示",
     sKeys: "残量のある品（鍵・カード・医薬品・燃料など）：フリマ→トレーダー", keysWarn: "注意付きで表示", keysExclude: "除外（おすすめ）",
     sWeapons: "銃本体・プリセット", gunsWarn: "注意付きで表示", gunsExclude: "除外（おすすめ）",
-    lootHide: "一覧に表示：", lootHideKeys: "鍵・ケース", lootHideArmor: "防具・リグ・バッグ", lootHideHelmets: "ヘルメット・パーツ", lootHideBalaclava: "マスク・バラクラバ", lootHideVariants: "特殊バージョン（名前に（）付き）", lootHideMods: "武器パーツ", lootHideHeadsets: "ヘッドセット", lootHideWearables: "帽子・メガネ・ひげなど", lootHideGuns: "銃・近接武器", lootHidePosters: "ポスター", lootRare1: "フリマの出品数が", lootRare2: "件未満の品は外す（0で外さない）", lootCutN: "{n}品を外しています", lootCutNone: "外した品はありません",
+    lootHide: "一覧に表示：", lootHideKeys: "鍵・ケース", lootHideArmor: "防具・リグ・バッグ", lootHideHelmets: "ヘルメット・パーツ", lootHideBalaclava: "マスク・バラクラバ", lootHideVariants: "特殊バージョン（名前に（）付き）", lootHideMods: "武器パーツ", lootHideHeadsets: "ヘッドセット", lootHideWearables: "帽子・メガネ・ひげなど", lootHideGuns: "銃・近接武器", lootHidePosters: "ポスター", lootRare1: "フリマの出品数が", lootRare2: "件未満の品は外す（0で外さない）", lootCutN: "{n}品を外しています", lootCutNone: "外した品はありません", viewList: "一覧で見る", viewTier: "ティア表で見る",
     gunTag: "組み立て済みの値段",
     gunTip: "銃のフリマ最安値は、その銃の組み立て済み（プリセット）の出品も含めた最安値です。トレーダーが売るのは素の本体なので、この差額はそのままでは取れません。素の本体を出品しても、この値段では売れないと考えてください。",
     stepItems: "アイテムと価格（数十MBあるため少し時間がかかります）",
-    loading: "取得中…", loaded: "{mode}：{n}品目を取得（{time}）", loadedSnap: "{mode}：{n}品目（{date} {time} 時点のデータ・1時間おきに自動で更新）", loadFail: "取得できませんでした：{msg}",
+    loading: "読み込み中…", loaded: "{date} {time} 時点の価格", loadedSnap: "{date} {time} 時点の価格", loadFail: "取得できませんでした：{msg}",
     netErr: "{step}で通信できませんでした（{why}）", timeout: "90秒で応答なし", httpErr: "{step}でエラー（HTTP {status}）",
     stepNames: {items: "アイテム取得", items_ja: "日本語名の取得", items_en: "英語名の取得", traders: "トレーダー取得", traders_ja: "トレーダー名の取得（日）", traders_en: "トレーダー名の取得（英）", prices: "推移の取得"},
     histProgress: "推移を取得中 {i} / {n}", histDone: "{n}件を分析しました", histFail: "推移の取得に失敗しました：{msg}",
-    switched: "{mode}に切り替えました",
     cols: {item: "アイテム", buyFlea: "フリマ最安（買値）", sellTrader: "トレーダー買取", profit: "利益／個", offers: "出品数", chg: "48h変動",
       tier: "段位", perSlot: "マス単価", slots: "サイズ", traderSell: "トレーダー売却", fleaNet: "フリマ手取り",
       rate: "利益が出た割合", expected: "期待利益／個", spark: "{d}日間の最安値", buyTrader: "トレーダー価格", matCost: "材料原価", sellFlea: "フリマ売値", fee: "手数料", limit: "購入上限", liq: "売れやすさ", total: "想定総利益（上限まで）"},
@@ -321,15 +326,14 @@ const I18N = {
     sTaskLocked: "Quest-locked trader items", hide: "Hide", show: "Show",
     sKeys: "Items with uses/charges (keys, cards, meds, fuel): flea → trader", keysWarn: "Show with warning", keysExclude: "Exclude (recommended)",
     sWeapons: "Guns and presets", gunsWarn: "Show with warning", gunsExclude: "Exclude (recommended)",
-    lootHide: "Show:", lootHideKeys: "Keys & cases", lootHideArmor: "Armor, rigs & bags", lootHideHelmets: "Helmets & parts", lootHideBalaclava: "Masks & balaclavas", lootHideVariants: "Special variants (name with brackets)", lootHideMods: "Weapon mods", lootHideHeadsets: "Headsets", lootHideWearables: "Hats, glasses, beards etc.", lootHideGuns: "Guns & melee", lootHidePosters: "Posters", lootRare1: "Hide items with fewer than ", lootRare2: " flea offers (0 = off)", lootCutN: "{n} items hidden", lootCutNone: "Nothing hidden",
+    lootHide: "Show:", lootHideKeys: "Keys & cases", lootHideArmor: "Armor, rigs & bags", lootHideHelmets: "Helmets & parts", lootHideBalaclava: "Masks & balaclavas", lootHideVariants: "Special variants (name with brackets)", lootHideMods: "Weapon mods", lootHideHeadsets: "Headsets", lootHideWearables: "Hats, glasses, beards etc.", lootHideGuns: "Guns & melee", lootHidePosters: "Posters", lootRare1: "Hide items with fewer than ", lootRare2: " flea offers (0 = off)", lootCutN: "{n} items hidden", lootCutNone: "Nothing hidden", viewList: "View as list", viewTier: "View as tiers",
     gunTag: "Built-gun price",
     gunTip: "For guns, the flea low price includes offers for assembled presets of that gun, not just the stripped weapon. Traders sell the stripped weapon, so this gap is not a profit you can actually take: a bare gun will not sell at that price.",
     stepItems: "items and prices (tens of MB, this takes a moment)",
-    loading: "Loading…", loaded: "{mode}: {n} items loaded ({time})", loadedSnap: "{mode}: {n} items (data as of {date} {time}, updated hourly)", loadFail: "Could not load: {msg}",
+    loading: "Loading…", loaded: "Prices as of {date} {time}", loadedSnap: "Prices as of {date} {time}", loadFail: "Could not load: {msg}",
     netErr: "Network error during {step} ({why})", timeout: "no response in 90 s", httpErr: "Error during {step} (HTTP {status})",
     stepNames: {items: "item download", items_ja: "Japanese names", items_en: "English names", traders: "trader download", traders_ja: "trader names (JA)", traders_en: "trader names (EN)", prices: "price history"},
     histProgress: "Fetching history {i} / {n}", histDone: "Analyzed {n} item(s)", histFail: "Could not fetch history: {msg}",
-    switched: "Switched to {mode}",
     cols: {item: "Item", buyFlea: "Flea low (buy)", sellTrader: "Trader pays", profit: "Profit / item", offers: "Offers", chg: "48h change",
       tier: "Tier", perSlot: "Per slot", slots: "Size", traderSell: "Trader", fleaNet: "Flea (after fee)",
       rate: "Profitable share", expected: "Expected profit / item", spark: "{d}-day low price", buyTrader: "Trader price", matCost: "Material cost", sellFlea: "Flea sell price", fee: "Fee", limit: "Buy limit", liq: "Sellability", total: "Total profit (up to limit)"},
@@ -1235,7 +1239,7 @@ function recompute(){
 }
 
 /* 画面の固定文言を現在の言語で描き直す */
-let STATUS = {k: "noData"}, PROGRESS = null;
+let STATUS = {k: "loading"}, PROGRESS = null;
 function setStatus(k, vars){ STATUS = {k, vars}; paintStatus(); }
 function setProgress(k, vars){ PROGRESS = k ? {k, vars} : null; paintStatus(); }
 function paintStatus(){
@@ -1253,7 +1257,7 @@ function applyLang(){
   document.querySelectorAll("[data-i18n]").forEach(el => { el.textContent = t(el.dataset.i18n); });
   document.querySelectorAll(".lang button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lang === S.lang)));
   $mode.innerHTML = MODE_KEYS.map(v => `<option value="${v}">${t("modes")[v]}</option>`).join("");
-  $mode.value = S.mode;
+  $mode.value = S.mode; $mode.setAttribute("aria-label", t("mode"));
   $days.innerHTML = DAY_OPTS.map(v => `<option value="${v}">${t("dayOpt", {n: v})}</option>`).join("");
   $days.value = String(S.days);
   document.getElementById("footer").innerHTML = t("footer", {src: `<a href="https://tarkov.dev" target="_blank" rel="noopener">tarkov.dev</a>`, mode: esc(modeLabel())});
@@ -1405,9 +1409,8 @@ $mode.addEventListener("change", () => {
   S.mode = $mode.value; saveSettings();
   DATA = null; ROWS = []; HIST_CACHE.clear();
   document.getElementById("analyzeBtn").disabled = true; setProgress(null);
-  setStatus("switched", {modeKey: S.mode});
   applyLang();
-  loadInitial();
+  if(NEEDS_DATA) loadInitial();
 });
 $liq.value = S.liqFilter;
 $liq.addEventListener("change", () => { S.liqFilter = $liq.value; saveSettings(); render(); });
@@ -1425,7 +1428,7 @@ function setupPage(){
   const show = id => { const el = document.getElementById(id); el.hidden = false; };
   show("pages");
   document.getElementById(PAGE_NAV[PAGE]).setAttribute("aria-current", "page");
-  document.querySelector("header h1").dataset.i18n = PAGE_TITLE[PAGE];
+  document.querySelector(".phead h1").dataset.i18n = PAGE_TITLE[PAGE];
   hide("#settingsBox");                                        // 設定はプレイヤー設定のページだけ
   if(PAGE !== "flip") hide("#flipBox");                        // 転売の条件は転売ボードだけ
   if(PAGE === "top" || PAGE === "settings"){
@@ -1444,7 +1447,7 @@ function setupPage(){
   for(const id of ["topN", "daysSel"]) document.getElementById(id).closest("label").hidden = true;
   if(PAGE === "watch"){
     show("pageLead"); document.getElementById("pageLead").dataset.i18n = "leadWatch";
-    hide("#lootFilterWrap", "#lootHideWrap", "#lootRareWrap", "#viewBtn", "#listWrap", "#explain", "#hiddenNote", "#tierLegend", "#tierBoard", "#banner");
+    hide(".bar", "#lootFilterWrap", "#lootHideWrap", "#lootRareWrap", "#viewBtn", "#listWrap", "#explain", "#hiddenNote", "#tierLegend", "#tierBoard", "#banner");   // モードはヘッダーにあるので、この段には何も残らない
     show("marketPanel");
   }
 }

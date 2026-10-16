@@ -55,6 +55,7 @@ console.log("持ち帰りティア表（loot.html）");
   await page.waitForTimeout(100);
   ok(!(await page.$eval("#tip", n => n.hidden)), "キーボードで選んでも出る");
   await page.screenshot({ path: "/tmp/out/loot-shot.png" });
+  ok(await page.$eval("#viewBtn", n => n.textContent) === "一覧で見る", "切り替えボタンの文字が出る");
   await page.click("#viewBtn");
   await page.waitForTimeout(200);
   ok(!(await page.$eval("#listWrap", n => n.hidden)) && (await page.$$("#tbl tbody tr")).length > 3, "「一覧で見る」で従来の表に切り替わる");

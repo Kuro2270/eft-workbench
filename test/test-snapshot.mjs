@@ -72,7 +72,7 @@ for (const file of ["loot.html", "flip.html"]) {
   const shown = await page.waitForSelector(sel, { timeout: 10000 }).then(() => true, () => false);
   ok(shown, `${file}：ボタンを押さずに表示される`);
   const st = await page.$eval("#status", n => n.textContent);
-  ok(/時点のデータ/.test(st), `${file}：保存データの時刻が出る / ${st}`);
+  ok(/時点の価格/.test(st), `${file}：保存データの時刻が出る / ${st}`);
   if (file === "loot.html") ok(apiHits === 0, `${file}：tarkov.dev には取りに行かない / ${apiHits} 回`);
   ok(errs.length === 0, `${file}：エラーなし ${errs.join(" / ")}`);
   ok(!(await page.$("#loadBtn")), `${file}：更新ボタンは無い`);
@@ -93,7 +93,7 @@ console.log("開いたままでも新しい保存データに差し替わる");
   await page.evaluate(() => document.dispatchEvent(new Event("visibilitychange")));   // 画面に戻ってきた
   await page.waitForFunction(b => document.getElementById("status").textContent !== b, before, { timeout: 10000 }).catch(() => {});
   const after = await page.$eval("#status", n => n.textContent);
-  ok(after !== before && /自動で更新/.test(after) && dataHits === 1 && apiHits === 0, `古くなったら新しい保存データに差し替わる / ${before} → ${after}`);
+  ok(after !== before && /時点の価格/.test(after) && dataHits === 1 && apiHits === 0, `古くなったら新しい保存データに差し替わる / ${before} → ${after}`);
   ok(await page.$$eval("#tierBoard .ti", ns => ns.length) > 0, "差し替えたあとも表示されている");
   dataHits = 0;
   await page.evaluate(() => document.dispatchEvent(new Event("visibilitychange")));
