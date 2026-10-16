@@ -127,11 +127,15 @@ const buyNames = await page.$$eval(".msec.buy tr.mrow", ns => ns.map(n => n.quer
 const sellNames = await page.$$eval(".msec.sell tr.mrow", ns => ns.map(n => n.querySelector("td").textContent));
 ok(buyNames.some(n => /Unlimited Item.*底値付近/.test(n)), "底値付近の品が買い場に出る / " + buyNames.slice(0, 4).join(" | "));
 ok(/Graphics Card.*高値付近/.test(sellNames[0] || ""), "売り場の先頭に高値付近の品 / " + sellNames.slice(0, 3).join(" | "));
-const buyRec = await page.$eval(".msec.buy tr.mrow .mrec", n => n.textContent);
-const sellRec = await page.$eval(".msec.sell tr.mrow .mrec", n => n.textContent);
-ok(/以下で買う/.test(buyRec) && /以上で売る/.test(sellRec) && /手取り/.test(sellRec), `おすすめの値段（買い：${buyRec}／売り：${sellRec}）`);
+{
+  const heads = await page.$$eval(".msec.buy thead th", ns => ns.map(n => n.textContent));
+  const sheads = await page.$$eval(".msec.sell thead th", ns => ns.map(n => n.textContent));
+  ok(heads.join("|") === "品物|いまの相場|過去30日の幅（底値〜高値）|見込み利益／個|出品" && sheads.join("|") === "品物|いまの相場|過去30日の幅（底値〜高値）|出品",
+     "列は 品物・いまの相場・過去の幅・見込み利益（買い場だけ）・出品 だけ（位置・おすすめ・流れ・底値→売値は無い） / " + heads.join("|"));
+}
 const prof = await page.$eval(".msec.buy tr.mrow .mprofit", n => n.textContent).catch(() => "");
-ok(/₽[\d,]+ \(\+\d+%\)/.test(prof) && /1マスあたり/.test(prof), "買い場に見込み利益（金額・利益率・1マスあたり）が出る / " + prof);
+ok(/^₽[\d,]+ \(\+\d+%\)$/.test(prof.trim()), "買い場の見込み利益は 金額と利益率だけ（1マスあたり・手取りの説明は無い） / " + prof);
+ok(!/直近|分前|極端に安い/.test(await page.$eval(".msec.buy tr.mrow", n => n.textContent)), "いまの相場に補足は付かない");
 {
   const profits = await page.$$eval(".msec.buy tr.mrow .mprofit b", ns => ns.map(n => +n.textContent.replace(/[^\d-]/g, "")));
   ok(profits.every((p, i) => i === 0 || profits[i - 1] >= p) && profits.every(p => p >= 10000), "見込み利益が条件以上の品だけ、利益の大きい順 / " + profits.join(","));
@@ -149,6 +153,7 @@ await page.waitForSelector(".mdetail svg.wchart", { timeout: 3000 }).catch(() =>
 ok(await page.$eval(".mdetail", n => !!n.querySelector(".ma-short") && !!n.querySelector(".ma-long") && !!n.querySelector(".ref-buy") && !!n.querySelector(".ref-sell") && n.querySelectorAll(".dot").length > 100), "クリックで、値動き・24時間平均・7日平均・おすすめ買値／売値の線のグラフが開く");
 ok(/底値.*中央.*高値/.test(await page.$eval(".mdetail .mtext", n => n.textContent)), "グラフの下に底値・中央・高値の説明");
 {
+  await (await page.$(".mdetail svg.wchart")).scrollIntoViewIfNeeded();   // 画面の外にあるとカーソルを乗せられない
   const box = await (await page.$(".mdetail svg.wchart")).boundingBox();
   await page.mouse.move(box.x + box.width * 0.5, box.y + box.height / 2);
   await page.waitForTimeout(100);
@@ -166,18 +171,10 @@ ok(/Graphics Card/.test(await page.$eval(".msec.found", n => n.textContent).catc
 await page.fill('[data-mk="q"]', "");
 
 ok(!buyNames.some(n => /Limited Item/.test(n)), "下がり続けて戻っていない品は、買い場に出ない");
-ok(/回/.test(await page.$eval(".msec.buy tr.mrow", n => n.textContent)) && /過去30日に戻った回数/.test(await page.$eval(".msec.buy tr.mrow", n => n.textContent)), "戻った回数が出る");
-await page.uncheck('[data-mk="mkNeedRebound"]');
-await page.waitForTimeout(300);
-{
-  const rows = await page.$$eval(".msec.buy tr.mrow", ns => ns.map(n => n.textContent));
-  ok(rows.some(r => /Limited Item/.test(r) && /戻っていない/.test(r)), "チェックを外すと出る（「戻っていない」と表示）");
-}
-await page.check('[data-mk="mkNeedRebound"]');
-await page.waitForTimeout(300);
+ok(!(await page.$('[data-mk="mkNeedRebound"]')), "「底値から戻ったことがない品は外す」は常にかかり、チェックは無い");
 await page.fill('[data-mk="mkMinProfit"]', "9999999"); await page.press('[data-mk="mkMinProfit"]', "Tab");
 await page.waitForTimeout(300);
-ok(/条件（見込み利益/.test(await page.$eval(".msec.buy", n => n.textContent)), "見込み利益の条件を上げると、合わない品は外れて理由が出る");
+ok(/いまは該当する品がありません$/.test((await page.$eval(".msec.buy", n => n.textContent)).trim()), "見込み利益の条件を上げると、合わない品は外れる（理由の長い説明は出さない）");
 await page.fill('[data-mk="mkMinProfit"]', "10000"); await page.press('[data-mk="mkMinProfit"]', "Tab");
 await page.waitForTimeout(300);
 /* 上の絞り込み：条件を厳しくすると一覧は減る（増えない）。「すべて」は個別の種類を含む */
@@ -195,18 +192,18 @@ await page.waitForTimeout(300);
   };
   const sub = (a, b) => a.every(x => b.includes(x));
   /* 一番ゆるい状態から始める */
-  for (const [k, v] of [["mkTh", 3], ["mkMinOffers", 0], ["mkMinProfit", 0], ["mkMinRate", 0], ["mkNeedRebound", false], ["mkKind", ""]]) await set(k, v);
+  for (const [k, v] of [["mkTh", 3], ["mkMinOffers", 0], ["mkMinProfit", 0], ["mkMinRate", 0], ["mkKind", ""]]) await set(k, v);
   ok(!(await page.$('[data-mk="mkFreshMin"]')), "値段の更新は選べない（120分以内で固定）");
   const base = await ids();
   ok(base.length > 3, "ゆるい条件で一覧が出る / " + base.length + "品");
   const steps = {
-    mkTh: [5, 10, 15], mkMinOffers: [20, 35, 50], mkMinProfit: [20000, 80000, 300000], mkMinRate: [30, 80, 150], mkNeedRebound: [true],
+    mkTh: [5, 10, 15], mkMinOffers: [20, 35, 50], mkMinProfit: [20000, 80000, 300000], mkMinRate: [30, 80, 150],
   };
   for (const [key, vals] of Object.entries(steps)) {
     let prev = base, okAll = true, trail = [base.length];
     for (const v of vals) { const cur = await set(key, v); if (!sub(cur, prev)) okAll = false; trail.push(cur.length); prev = cur; }
     ok(okAll, `${key}：厳しくするほど減る（前の一覧に含まれる品だけ残る） / ${trail.join("→")}`);
-    await set(key, { mkTh: 3, mkMinOffers: 0, mkMinProfit: 0, mkMinRate: 0, mkNeedRebound: false }[key]);
+    await set(key, { mkTh: 3, mkMinOffers: 0, mkMinProfit: 0, mkMinRate: 0 }[key]);
   }
   const kinds = await page.$$eval('[data-mk="mkKind"] option', ns => ns.map(n => n.value).filter(Boolean));
   let kindOk = true, seen = 0;
@@ -214,7 +211,7 @@ await page.waitForTimeout(300);
   await set("mkKind", "");
   ok(kindOk && seen > 0, `「すべて」は、どの種類の一覧も含む（${kinds.length}種類を確認）`);
   /* 既定に戻す */
-  for (const [k, v] of [["mkTh", 5], ["mkMinOffers", 10], ["mkMinProfit", 10000], ["mkMinRate", 15], ["mkNeedRebound", true]]) await set(k, v);
+  for (const [k, v] of [["mkTh", 5], ["mkMinOffers", 10], ["mkMinProfit", 10000], ["mkMinRate", 15]]) await set(k, v);
 }
 /* 在庫 */
 ok(/まだありません/.test(await page.$eval(".msec.stock", n => n.textContent)), "在庫の欄が出る（最初は空）");

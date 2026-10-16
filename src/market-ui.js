@@ -9,40 +9,40 @@
 const MK_I18N = {
   ja: {
     days: "比べる期間", daysOpt: "過去{n}日", kind: "種類", kindAll: "すべて",
-    needRebound: "底値からおすすめ売値まで戻ったことがない品は外す", cRebound: "底値→売値", reboundSub: "過去{n}日に戻った回数", reboundNone: "一度も戻っていない（底値のあとの最高 {p}）",
-    noneRebound: "条件に合う品がありません（底値付近 {n}品のうち、見込み利益が条件に合う {m}品はどれも、底値からおすすめ売値まで戻ったことがありません）",
+    
+    
     minProfit: "買い場は見込み利益が", minProfit2: "以上・", minRate2: "%以上の品だけ",
-    cProfit: "見込み利益／個", profitSub: "{via}で {net} で売った場合（1マスあたり {slot}）", viaFlea: "フリマ手取り", viaTrader: "トレーダー",
-    noneProfit: "条件（見込み利益 {p} 以上・{r}%以上）に合う品がありません（底値付近 {n}品を確認）",
+    cProfit: "見込み利益／個", 
+    
     capped: "候補が多すぎるため、外れ具合の大きい{n}品だけ確認しました（残り{m}品）。条件を絞ってください",
     th: "候補の目安", thOpt: "{n}%以上", thTip: "24時間平均か48時間前より、この割合以上 安い（高い）品の記録を確かめます。下げるほど候補が増え、確認に時間がかかります",
     minOffers: "出品数", minOffers2: "件以上", search: "名前で探す（2文字以上）",
     loading: "価格記録を確認中… {i}/{n}", needData: "価格データを読み込み中です",
     buyTitle: "買い場（過去{d}日の底値付近）", sellTitle: "売り場（過去{d}日の高値付近）", searchTitle: "探した品",
-    none: "いまは該当する品がありません（候補{n}品を確認）", fewAll: "記録が少なく判定できない品：{n}品",
-    cName: "品物", cNow: "いまの相場", nowSub: "直近{n}回の読み取り・{ago}", oddLow: "極端に安い出品 {p}（すぐ売り切れることが多い）", cRange: "過去{d}日の幅（底値〜高値）", cPos: "位置", cRec: "おすすめ", cTrend: "流れ", cOffers: "出品",
-    recBuy: "{p} 以下で買う", recSell: "{p} 以上で売る", recNet: "手取り {p}",
-    tagBuy: "底値付近", tagSell: "高値付近", up: "上向き {p}", down: "下向き {p}", flat: "横ばい",
+    none: "いまは該当する品がありません",
+    cName: "品物", cNow: "いまの相場", cRange: "過去{d}日の幅（底値〜高値）", cOffers: "出品",
+    
+    tagBuy: "底値付近", tagSell: "高値付近", 
     legDot: "読み取った相場（安い出品の平均）", legShort: "24時間平均", legLong: "7日平均", legBuy: "おすすめ買値", legSell: "おすすめ売値",
     detail: "過去{d}日：底値 {low}・中央 {med}・高値 {high}（極端な5%を除く）。24時間平均 {short}／7日平均 {long}。",
     chartTip: "{date}　相場 {price}｜24時間平均 {short}｜7日平均 {long}", ago: "{n}分前", agoH: "{n}時間前",
     },
   en: {
     days: "Compare with", daysOpt: "last {n} days", kind: "Kind", kindAll: "All",
-    needRebound: "Hide items that never recovered from the low to the sell price", cRebound: "Low → sell", reboundSub: "recoveries in the last {n} days", reboundNone: "never recovered (high after the low: {p})",
-    noneRebound: "Nothing here ({n} near the low; the {m} with enough profit never recovered from the low to the sell price)",
+    
+    
     minProfit: "Buy zone: expected profit ", minProfit2: " or more and ", minRate2: "% or more only",
-    cProfit: "Expected profit / unit", profitSub: "selling at {net} via {via} ({slot} per slot)", viaFlea: "flea (after fee)", viaTrader: "trader",
-    noneProfit: "Nothing meets the profit filter ({p}+, {r}%+) ({n} items near the low checked)",
+    cProfit: "Expected profit / unit", 
+    
     capped: "Too many candidates: only the {n} furthest from usual were checked ({m} more). Narrow the filters",
     th: "Candidate threshold", thOpt: "{n}%+", thTip: "Checks the history of items at least this far below (above) their 24h average or 48h-ago price. Lower means more candidates and a longer check",
     minOffers: "Offers", minOffers2: "or more", search: "Search by name (2+ letters)",
     loading: "Checking price history… {i}/{n}", needData: "Loading price data",
     buyTitle: "Buy zone (near the {d}-day low)", sellTitle: "Sell zone (near the {d}-day high)", searchTitle: "Search results",
-    none: "Nothing here right now ({n} candidates checked)", fewAll: "Not enough history: {n} items",
-    cName: "Item", cNow: "Market now", nowSub: "last {n} scans, {ago}", oddLow: "a very cheap listing at {p} (usually gone fast)", cRange: "{d}-day range (low–high)", cPos: "Position", cRec: "Suggested", cTrend: "Trend", cOffers: "Offers",
-    recBuy: "buy at {p} or less", recSell: "sell at {p} or more", recNet: "take-home {p}",
-    tagBuy: "near low", tagSell: "near high", up: "rising {p}", down: "falling {p}", flat: "flat",
+    none: "Nothing here right now",
+    cName: "Item", cNow: "Market now", cRange: "{d}-day range (low–high)", cOffers: "Offers",
+    
+    tagBuy: "near low", tagSell: "near high", 
     legDot: "scanned price (average of the cheapest listings)", legShort: "24h average", legLong: "7-day average", legBuy: "suggested buy", legSell: "suggested sell",
     detail: "{d} days: low {low}, median {med}, high {high} (extreme 5% excluded). 24h average {short} / 7-day average {long}.",
     chartTip: "{date}  price {price} | 24h avg {short} | 7-day avg {long}", ago: "{n} min ago", agoH: "{n} h ago",
@@ -132,21 +132,14 @@ function mkProfit(it, v){
 function mkRow(it, v, side, pf){
   const icon = it.iconLink ? `<img src="${esc(it.iconLink)}" alt="" loading="lazy">` : "";
   const tag = v.zone === "buy" ? `<span class="mtag buy">${mt("tagBuy")}</span>` : v.zone === "sell" ? `<span class="mtag sell">${mt("tagSell")}</span>` : "";
-  const rec = side === "sell" || (side === "found" && v.zone === "sell")
-    ? `<b>${esc(mt("recSell", {p: yen(v.sellAt)}))}</b><div class="note">${esc(mt("recNet", {p: yen(netOf(it, v.sellAt))}))}</div>`
-    : `<b>${esc(mt("recBuy", {p: yen(v.buyAt)}))}</b>`;
-  const trend = v.trend == null ? "―" : Math.abs(v.trend) < 0.03 ? mt("flat") : mt(v.trend > 0 ? "up" : "down", {p: pctTxt(v.trend)});
   const open = MK_OPEN === it.id;
   return `<tr class="mrow${open ? " open" : ""}" data-id="${esc(it.id)}" tabindex="0">`
     + `<td class="l"><span class="wico">${icon}</span>${esc(nm(it.name))}${copyBtn(nm(it.name))}${tag}${stockTagHtml(it.id)}${side !== "sell" ? stockAddBtn(it.id) : ""}</td>`
-    + `<td>${yen(v.price)}<div class="note">${esc(mt("nowSub", {n: CUR_SCANS, ago: mkAgo(v.at)}))}</div>${v.oddLow ? `<div class="note warn">${esc(mt("oddLow", {p: yen(v.oddLow.price)}))}</div>` : ""}</td>`
+    + `<td>${yen(v.price)}</td>`
     + `<td><span class="mrange" title="${esc(yen(v.low) + " 〜 " + yen(v.high))}"><i style="left:${(v.pos * 100).toFixed(1)}%"></i></span><div class="mrangeL"><span>${yen(v.low)}</span><span>${yen(v.high)}</span></div></td>`
-    + `<td>${Math.round(v.pos * 100)}%</td>`
-    + `<td class="mrec">${rec}</td>`
-    + (pf ? `<td class="mprofit"><b>${yen(pf.profit)}</b> <span class="note">(${pctTxt(pf.rate)})</span><div class="note">${esc(mt("profitSub", {via: mt(pf.via === "trader" ? "viaTrader" : "viaFlea"), net: yen(pf.sellNet), slot: yen(pf.perSlot)}))}</div></td>` + `<td>${v.rebounds > 0 ? `<b>${v.rebounds}回</b><div class="note">${esc(mt("reboundSub", {n: S.mkDays || 30}))}</div>` : `<span class="note warn">${esc(mt("reboundNone", {p: yen(v.recentHigh)}))}</span>`}</td>` : "")
-    + `<td>${esc(trend)}</td>`
+    + (pf ? `<td class="mprofit"><b>${yen(pf.profit)}</b> <span class="note">(${pctTxt(pf.rate)})</span></td>` : "")
     + `<td>${fmt(it.lastOfferCount || 0)}</td></tr>`
-    + (open ? `<tr class="mdetail"><td colspan="${pf ? 9 : 7}">${mkDetail(it, v)}</td></tr>` : "");
+    + (open ? `<tr class="mdetail"><td colspan="${pf ? 5 : 4}">${mkDetail(it, v)}</td></tr>` : "");
 }
 /* ---- 開いた行：グラフと説明 ---- */
 const CH = {w: 720, h: 160, padL: 4, padR: 58, padY: 8};
@@ -177,26 +170,22 @@ function mkDetail(it, v){
 function mkSection(side, items){
   const d = S.mkDays || 30;
   let views = items.map(it => ({it, v: mkView(it)})).filter(x => x.v);
-  const few = views.filter(x => x.v.zone === "few").length;
-  views = views.filter(x => x.v.zone !== "few");
-  let lowN = 0, profitN = 0;
+  views = views.filter(x => x.v.zone !== "few");      // 記録が少なく判定できない品は出さない
   if(side === "buy"){
     // 底値寄り（位置40%以下）の品のうち、見込み利益が条件に合うものだけ。利益の大きい順
     const low = views.filter(x => x.v.pos <= 0.4);
-    lowN = low.length;
     views = low.map(x => ({...x, pf: mkProfit(x.it, x.v)}))
                .filter(x => x.pf.profit >= (S.mkMinProfit || 0) && x.pf.rate * 100 >= (S.mkMinRate || 0));
-    profitN = views.length;
-    // 底値（おすすめ買値以下）まで下がったあと、おすすめ売値まで一度も戻ったことがない品は外す（戻る見込みが薄い）
-    if(S.mkNeedRebound !== false) views = views.filter(x => x.v.rebounds > 0);
+    // 底値（おすすめ買値以下）まで下がったあと、おすすめ売値まで一度も戻ったことがない品は外す（戻る見込みが薄い）。常にかける（画面には出さない）
+    views = views.filter(x => x.v.rebounds > 0);
     views.sort((a, b) => b.pf.profit - a.pf.profit);
   }
   else if(side === "sell") views = views.filter(x => x.v.pos >= 0.6).sort((a, b) => b.v.pos - a.v.pos);
-  const head = `<thead><tr><th class="l">${mt("cName")}</th><th>${mt("cNow")}</th><th>${mt("cRange", {d})}</th><th>${mt("cPos")}</th><th>${mt("cRec")}</th>${side === "buy" ? `<th>${mt("cProfit")}</th><th>${mt("cRebound")}</th>` : ""}<th>${mt("cTrend")}</th><th>${mt("cOffers")}</th></tr></thead>`;
+  const head = `<thead><tr><th class="l">${mt("cName")}</th><th>${mt("cNow")}</th><th>${mt("cRange", {d})}</th>${side === "buy" ? `<th>${mt("cProfit")}</th>` : ""}<th>${mt("cOffers")}</th></tr></thead>`;
   const title = side === "found" ? mt("searchTitle") : mt(side === "buy" ? "buyTitle" : "sellTitle", {d});
   const body = views.length ? `<table class="mtbl">${head}<tbody>${views.map(x => mkRow(x.it, x.v, side, x.pf)).join("")}</tbody></table>`
-    : `<p class="note">${esc(side === "buy" && profitN ? mt("noneRebound", {n: lowN, m: profitN}) : side === "buy" && lowN ? mt("noneProfit", {p: yen(S.mkMinProfit || 0), r: S.mkMinRate || 0, n: lowN}) : mt("none", {n: items.length}))}</p>`;
-  return `<section class="msec ${side}"><h2>${esc(title)}</h2>${body}${few ? `<p class="note">${esc(mt("fewAll", {n: few}))}</p>` : ""}${MK_CAPPED[side] ? `<p class="note warn">${esc(mt("capped", {n: MK_MAX, m: MK_CAPPED[side]}))}</p>` : ""}</section>`;
+    : `<p class="note">${esc(mt("none"))}</p>`;
+  return `<section class="msec ${side}"><h2>${esc(title)}</h2>${body}${MK_CAPPED[side] ? `<p class="note warn">${esc(mt("capped", {n: MK_MAX, m: MK_CAPPED[side]}))}</p>` : ""}</section>`;
 }
 /* ---- 操作の帯 ---- */
 function mkBar(){
@@ -207,7 +196,6 @@ function mkBar(){
     + `<label class="note">${mt("kind")} ${sel("mkKind", [["", mt("kindAll")], ...MK_KINDS.map(k => [k, t("kinds")[k] || k])])}</label>`
     + `<label class="note">${mt("minOffers")} <input type="number" data-mk="mkMinOffers" min="0" max="999" value="${S.mkMinOffers}">${mt("minOffers2")}</label>`
     + `<label class="note">${mt("minProfit")}<input type="number" data-mk="mkMinProfit" min="0" step="1000" value="${S.mkMinProfit}" style="width:6.5em">${mt("minProfit2")}<input type="number" data-mk="mkMinRate" min="0" max="500" value="${S.mkMinRate}">${mt("minRate2")}</label>`
-    + `<label class="note"><input type="checkbox" data-mk="mkNeedRebound" ${S.mkNeedRebound !== false ? "checked" : ""}>${mt("needRebound")}</label>`
     + `<input type="search" data-mk="q" placeholder="${esc(mt("search"))}" value="${esc(MK_Q)}" size="22">`
     + `<span class="note">${MK_BUSY ? esc(mt("loading", MK_BUSY)) : ""}</span></div>`;
 }

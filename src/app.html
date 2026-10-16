@@ -342,7 +342,7 @@ const DEFAULTS = {
   lang: (navigator.language || "ja").startsWith("ja") ? "ja" : "en",
   mode: "regular", playerLevel: 30, intel: 3, mgmt: 0, minProfit: 3000, minOffers: 5, excludeFence: false, hideTaskLocked: true, minBuy: 0, depletableF2T: "exclude", weapons: "exclude", days: 7,
   lootOff: ["grenade", "keys"],   // 持ち帰りティア表で、チェックを外している分類（LOOT_GROUP_VIEW のキー）
-  mkDays: 30, mkTh: 5, mkMinOffers: 10, mkMinProfit: 10000, mkMinRate: 15, mkNeedRebound: true, mkStock: [], lootMinOffers: 15, _lmo10: true, _loot15: true,
+  mkDays: 30, mkTh: 5, mkMinOffers: 10, mkMinProfit: 10000, mkMinRate: 15, mkStock: [], lootMinOffers: 15, _lmo10: true, _loot15: true,
   ll: Object.fromEntries(TRADER_KEYS.map(k => [k, 4]))
 };
 
@@ -356,6 +356,7 @@ function migrate(s){
   if(!Array.isArray(s.lootOff) && Object.keys(OLD_HIDE).some(k => k in s)) s.lootOff = Object.keys(OLD_HIDE).filter(k => s[k]).map(k => OLD_HIDE[k]);
   for(const k of [...Object.keys(OLD_HIDE), "hideLootVariants"]) delete s[k];
   if(Array.isArray(s.lootOff)) s.lootOff = s.lootOff.filter(k => ["barter", "meds", "provisions", "ammoBox", "grenade", "keys"].includes(k));   // 選べなくなった分類は消す
+  delete s.mkNeedRebound;   // 売り時・買い時の「底値から戻ったことがない品は外す」は常にかけるようにした
   delete s.maxBuy;   // 「買う数の上限」は「購入上限が○個以上の品だけ」に置き換えた
   delete s.hideLowLiq; delete s.liqFilter; delete s.keyMode; delete s.lootKeys;   // 売れやすさは「中以上」で固定にした
   return s;
