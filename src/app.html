@@ -16,10 +16,10 @@
 body{margin:0;background:var(--bg);color:var(--text);
   font-family:"BIZ UDPGothic","Hiragino Sans","Yu Gothic UI",Meiryo,sans-serif;font-size:14px;line-height:1.55}
 /* ヘッダー：左（サイト名・モード）の幅を固定し、どのページでもツールのボタンが同じ位置に来るようにする */
-header{padding:14px 20px 12px;border-bottom:2px solid var(--tan);display:grid;grid-template-columns:300px 1fr auto;gap:10px 24px;align-items:center}
+header{padding:14px 20px 12px;border-bottom:2px solid var(--tan);display:grid;grid-template-columns:auto 1fr auto;gap:10px 24px;align-items:center}
 header .hl{display:flex;align-items:center;gap:12px;min-width:0}
 header .brand{color:var(--tan);text-decoration:none;font-weight:700;font-size:17px;letter-spacing:.02em;white-space:nowrap}
-header #modeSel{flex:0 1 150px;width:150px;min-width:0}
+header #modeSel{width:auto}
 .phead{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 16px;margin:0 0 10px}
 .phead h1{margin:0;font-size:22px;letter-spacing:.02em}
 .phead .status{color:var(--muted);font-size:13px}
@@ -150,7 +150,7 @@ svg.wchart .cross{stroke:var(--muted);stroke-width:1}
 footer{padding:16px 20px;color:var(--muted);font-size:12px;border-top:1px solid var(--line)}
 footer a{color:var(--muted)}
 @media (max-width:900px){header{grid-template-columns:1fr auto}header .pages{grid-column:1 / -1;grid-row:2}}
-@media (max-width:600px){header .hl{display:contents}header .brand{grid-column:1;grid-row:1}header .lang{grid-column:2;grid-row:1}header #modeSel{grid-column:1 / -1;grid-row:2;justify-self:start;width:170px}header .pages{grid-row:3}}
+@media (max-width:600px){header .hl{display:contents}header .brand{grid-column:1;grid-row:1}header .lang{grid-column:2;grid-row:1}header #modeSel{grid-column:1 / -1;grid-row:2;justify-self:start}header .pages{grid-row:3}}
 @media (max-width:700px){header,main{padding-left:10px;padding-right:10px}}
 </style>
 </head>
@@ -606,6 +606,13 @@ const LOOT_HIDE = {
 };
 /* 近接武器は「銃本体」と同じスイッチで扱う（種類の名前がAPIに無いので、性能の種別で見分ける） */
 let LOOT_RARE = [];   // 出品数が少なくて外した品（画面に件数と名前を出す）
+/* マスク・バラクラバなどの顔まわり。種類の名前がAPIに無いので、カテゴリか名前で見分ける。
+   「帽子・メガネ・ひげなど」とは別のチェック（マスク・バラクラバ）で出し入れする */
+function isFaceCover(it){
+  const nmAll = (it.name && (it.name.en || "")) + " " + (it.name && (it.name.ja || ""));
+  if(it.cats && it.cats.some(c => /face-?cover|facecover|face cover/.test(c))) return true;          // APIがカテゴリを返す場合はこちら
+  return /balaclava|バラクラバ|mask|マスク|メンポ|shemagh|シュマグ|scarf|スカーフ|neck gaiter|ネックゲーター/i.test(nmAll) && !/filter|フィルター/i.test(nmAll);   // 返さない場合は名前で
+}
 function lootSkip(it){
   if(it.types.includes("preset")) return true;   // 銃そのものと二重に並ぶだけ
   if(it.types.includes("ammo") && !it.types.includes("ammoBox")) return true;     // 弾をばら売りすることはないので、常に出さない（弾薬箱は残す）
@@ -617,7 +624,7 @@ function lootSkip(it){
   /* アリーナ（EFT: ARENA）の品：本編のレイドには落ちていないので、常に出さない */
   if(/EFT: ?ARENA|^ARENA |アリーナ/i.test((it.name && (it.name.en || "")) + " " + (it.name && (it.name.ja || "")))) return true;
   /* 帽子・メガネ・ひげなどの身に着ける小物。防具・リグ・バッグ・ヘルメット・ヘッドセットは、それぞれ別のチェックで見る */
-  if(S.hideLootWearables && !it.types.some(ty => ["armor", "armorPlate", "rig", "backpack", "helmet", "headphones"].includes(ty))){
+  if(S.hideLootWearables && !isFaceCover(it) && !it.types.some(ty => ["armor", "armorPlate", "rig", "backpack", "helmet", "headphones"].includes(ty))){
     const en = (it.name && it.name.en) || "", ja = (it.name && it.name.ja) || "";
     if(it.types.includes("glasses") || it.types.includes("wearable")) return true;
     if(it.cats && it.cats.some(c => /headwear|eyewear|vis-?observ|cosmetic/.test(c))) return true;      // 種類が付いていない場合はカテゴリで
@@ -642,11 +649,7 @@ function lootSkip(it){
   /* ヘッドセット：イヤープラグ型（ProFlex など）も種類が違って返ることがあるので、名前でも見分ける */
   if(S.hideLootHeadsets && /headset|earplug|proflex|ヘッドセット|イヤープラグ|イヤーマフ/i.test((it.name && (it.name.en || "")) + " " + (it.name && (it.name.ja || "")))) return true;
   /* バラクラバ：種類の名前がAPIに無いので、名前で見分ける（ヘッドセットは別のチェック） */
-  if(S.hideLootBalaclava){
-    const nmAll = (it.name && (it.name.en || "")) + " " + (it.name && (it.name.ja || ""));
-    if(it.cats && it.cats.some(c => /face-?cover|facecover|face cover/.test(c))) return true;          // APIがカテゴリを返す場合はこちら
-    if(/balaclava|バラクラバ|mask|マスク|メンポ|shemagh|シュマグ|scarf|スカーフ|neck gaiter|ネックゲーター/i.test(nmAll) && !/filter|フィルター/i.test(nmAll)) return true;   // 返さない場合は名前で見分ける
-  }
+  if(S.hideLootBalaclava && isFaceCover(it)) return true;
   /* 入手の難しさ：ドロップ率はAPIに無いので、フリマの出品数で代用する。
      出回っていない品は、拾えたとしても「たまたま」でしかない。
      フリマ禁止品は出品数が常に0なので、この基準では見ない */
