@@ -171,13 +171,7 @@ ok(rows.some(r => /Rare Hologram/.test(r.item || "")), "0にすると珍品も�
 ok(await page.$eval("#tierLegend", n => n.textContent) === legBefore && (rows.find(r => /Graphics Card/.test(r.item || "")) || {}).tier === tierGpu, "出品数の条件を変えても、段位の境目と段位は変わらない");
 await page.evaluate(() => { S.lootMinOffers = 10; saveSettings(); recompute(); });
 await page.waitForTimeout(200);
-await page.click('[data-group="gun"]');
-await page.waitForTimeout(300);
 rows = await readRows();
-const gunRow = rows.find(r => /Assault Rifle Body/.test(r.item || ""));
-ok(!!gunRow, "銃本体は「表示」にすると出る（トレーダー売却で判断）");
-ok(rows.some(r => /Test Knife/.test(r.item || "")), "近接武器も同じスイッチで出る");
-ok(gunRow && /組み立て済み/.test(gunRow.fleaPer), "ただしフリマ側は使わないと明示 / " + (gunRow || {}).fleaPer);
 const tiers = rows.map(r => r.tier);
 ok(tiers.every(x => "SABCD".includes(x)), "全行に段位が付く / " + [...new Set(tiers)].join(","));
 ok(L("Graphics Card").tier === "S", "いちばん高い品は S / " + L("Graphics Card").tier);
@@ -203,36 +197,18 @@ const boxes = await page.$$eval("[data-group]", ns => ns.map(n => n.dataset.grou
 const off = await page.evaluate(() => S.lootOff);
 ok(boxes.every(b => { const [k, c] = b.split(":"); return (c === "true") === !off.includes(k); }), "チェックあり＝表示 / " + boxes.join(" "));
 ok(!boxes.some(b => /variant/.test(b)), "特殊バージョンのチェックはない");
-await page.click('[data-group="armor"]');
+ok(boxes.map(b => b.split(":")[0]).every(k => ["barter", "meds", "provisions", "ammoBox", "grenade", "keys"].includes(k)), "選べる分類は バーター品・医療品・食料・飲料・弾薬箱・投擲物・鍵・ケース だけ / " + boxes.join(" "));
+/* 選べる分類をすべて表示にしても、銃・防具・小物などは出ない */
+for (const el of await page.$$("[data-group]")) if (!(await el.evaluate(n => n.checked))) await el.click();
+await page.evaluate(() => { S.lootMinOffers = 0; saveSettings(); recompute(); });
 await page.waitForTimeout(400);
 rows = await readRows();
-ok(rows.some(r => /Body Armor/.test(r.item || "")) && rows.some(r => /Pilgrim/.test(r.item || "")) && rows.some(r => /SOTR/.test(r.item || "")), "チェックを入れると防具・バッグが戻る");
-ok(!rows.some(r => /Combat Helmet/.test(r.item || "")), "防具を出してもヘルメットは別スイッチ");
-await page.click('[data-group="face"]');
+const dropped = /Assault Rifle Body|Test Knife|Body Armor|Pilgrim|SOTR|Chest Rig|Combat Helmet|Typeless Helmet|Test Face Shield|Test Headset|ProFlex|Test Balaclava|Test Samurai Mask|Round frame|Fake beard|Fiigray|Rail Mount|Suppressor/;
+ok(!rows.some(r => dropped.test(r.item || "")), "銃・近接武器・防具・ヘルメット・ヘッドセット・マスク・小物・武器パーツは、どうしても出ない / " + rows.filter(r => dropped.test(r.item || "")).map(r => r.item).join(", "));
+ok(rows.some(r => /Gas mask air filter/.test(r.item || "")), "マスク用のフィルター（バーター品）は出る");
+await page.evaluate(() => { S.lootMinOffers = 10; S.lootOff = ["keys"]; saveSettings(); buildLootGroups(); recompute(); });
 await page.waitForTimeout(300);
-rows = await readRows();
-ok(rows.some(r => /Test Balaclava/.test(r.item || "")) && rows.some(r => /Test Samurai Mask/.test(r.item || "")) && !rows.some(r => /Test Cap/.test(r.item || "")), "マスク・バラクラバだけにチェックしても出る（帽子などは出ないまま）");
-await page.click('[data-group="face"]');
-await page.waitForTimeout(300);
-await page.click('[data-group="wear"]');
-await page.waitForTimeout(300);
-rows = await readRows();
-ok(rows.some(r => /Round frame/.test(r.item || "")) && rows.some(r => /Fake beard/.test(r.item || "")) && !rows.some(r => /Test Balaclava/.test(r.item || "")), "帽子・メガネなどだけにチェックすると、メガネ・ひげが出る（マスクは出ないまま）");
-await page.click('[data-group="wear"]');
-await page.waitForTimeout(300);
-await page.click('[data-group="helmet"]'); await page.click('[data-group="face"]'); await page.click('[data-group="headset"]'); await page.click('[data-group="wear"]');
-await page.waitForTimeout(400);
-rows = await readRows();
-ok(rows.some(r => /Combat Helmet/.test(r.item || "")) && rows.some(r => /Test Face Shield/.test(r.item || "")) && rows.some(r => /Test Balaclava/.test(r.item || "")) && rows.some(r => /Test Samurai Mask/.test(r.item || "")) && !rows.some(r => /Test Cap/.test(r.item || "")), "ヘルメット・パーツ・マスク・バラクラバはチェックで出せる（（）付きの小物は出ないまま）");
-ok(rows.some(r => /Test Headset/.test(r.item || "")) && rows.some(r => /ProFlex/.test(r.item || "")), "ヘッドセットもチェックで出せる");
-ok(rows.some(r => /Round frame/.test(r.item || "")) && rows.some(r => /Fake beard/.test(r.item || "")) && !rows.some(r => /ARENA/.test(r.item || "")), "小物はチェックで出せる（アリーナの品は出ないまま）");
-await page.click('[data-group="helmet"]'); await page.click('[data-group="face"]'); await page.click('[data-group="headset"]'); await page.click('[data-group="wear"]');
-await page.click('[data-group="armor"]');
-await page.waitForTimeout(300);
-console.log("  除外時: " + cutBefore.slice(0, 48));
-console.log("  表示時: " + cutAfter.slice(0, 48));
-await page.click('[data-group="keys"]');
-await page.waitForTimeout(300);
+console.log("  境目: " + cutBefore.slice(0, 48));
 rows = await readRows();
 
 console.log("\n絞り込み");
@@ -247,7 +223,7 @@ for (const k of ["meds", "provisions", "ammoBox", "grenade", "other"]) { const e
 await page.waitForTimeout(300);
 rows = await readRows();
 ok(rows.length > 0 && rows.length < totalRows, `分類を1つ（バーター品）だけにすると、その分類だけになる / ${rows.length} of ${totalRows}`);
-await page.evaluate(() => { S.lootOff = ["keys", "mods", "gun", "armor", "helmet", "headset", "face", "wear", "poster"]; saveSettings(); buildLootGroups(); recompute(); });
+await page.evaluate(() => { S.lootOff = ["keys"]; saveSettings(); buildLootGroups(); recompute(); });
 await page.waitForTimeout(200);
 await page.screenshot({ path: "/home/claude/tarkov/board/test/shot-loot.png", clip: { x: 0, y: 120, width: 1500, height: 480 } });
 

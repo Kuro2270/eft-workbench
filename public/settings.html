@@ -248,7 +248,7 @@ const I18N = {
     sTaskLocked: "クエスト解放が必要な品", hide: "隠す", show: "表示",
     sKeys: "残量のある品（鍵・カード・医薬品・燃料など）：フリマ→トレーダー", keysWarn: "注意付きで表示", keysExclude: "除外（おすすめ）",
     sWeapons: "銃本体・プリセット", gunsWarn: "注意付きで表示", gunsExclude: "除外（おすすめ）",
-    lootShow: "分類：", lootGroups: {barter: "バーター品", meds: "医療品", provisions: "食料・飲料", ammoBox: "弾薬箱", grenade: "投擲物", keys: "鍵・ケース", mods: "武器パーツ", gun: "銃・近接武器", armor: "防具・リグ・バッグ", helmet: "ヘルメット・パーツ", headset: "ヘッドセット", face: "マスク・バラクラバ", wear: "帽子・メガネなど", poster: "ポスター", other: "その他"}, lootRare1: "フリマの出品数が", lootRare2: "件未満の品は外す（0で外さない）", lootCutN: "{n}品を外しています", lootCutNone: "外した品はありません", viewList: "一覧で見る", viewTier: "ティア表で見る",
+    lootShow: "分類：", lootGroups: {barter: "バーター品", meds: "医療品", provisions: "食料・飲料", ammoBox: "弾薬箱", grenade: "投擲物", keys: "鍵・ケース"}, lootRare1: "フリマの出品数が", lootRare2: "件未満の品は外す（0で外さない）", lootCutN: "{n}品を外しています", lootCutNone: "外した品はありません", viewList: "一覧で見る", viewTier: "ティア表で見る",
     gunTag: "組み立て済みの値段",
     gunTip: "銃のフリマ最安値は、その銃の組み立て済み（プリセット）の出品も含めた最安値です。トレーダーが売るのは素の本体なので、この差額はそのままでは取れません。素の本体を出品しても、この値段では売れないと考えてください。",
     stepItems: "アイテムと価格（数十MBあるため少し時間がかかります）",
@@ -312,7 +312,7 @@ const I18N = {
     sTaskLocked: "Quest-locked trader items", hide: "Hide", show: "Show",
     sKeys: "Items with uses/charges (keys, cards, meds, fuel): flea → trader", keysWarn: "Show with warning", keysExclude: "Exclude (recommended)",
     sWeapons: "Guns and presets", gunsWarn: "Show with warning", gunsExclude: "Exclude (recommended)",
-    lootShow: "Show:", lootGroups: {barter: "Barter items", meds: "Meds", provisions: "Food & drink", ammoBox: "Ammo boxes", grenade: "Throwables", keys: "Keys & cases", mods: "Weapon mods", gun: "Guns & melee", armor: "Armor, rigs & bags", helmet: "Helmets & parts", headset: "Headsets", face: "Masks & balaclavas", wear: "Hats, glasses etc.", poster: "Posters", other: "Other"}, lootRare1: "Hide items with fewer than ", lootRare2: " flea offers (0 = off)", lootCutN: "{n} items hidden", lootCutNone: "Nothing hidden", viewList: "View as list", viewTier: "View as tiers",
+    lootShow: "Show:", lootGroups: {barter: "Barter items", meds: "Meds", provisions: "Food & drink", ammoBox: "Ammo boxes", grenade: "Throwables", keys: "Keys & cases"}, lootRare1: "Hide items with fewer than ", lootRare2: " flea offers (0 = off)", lootCutN: "{n} items hidden", lootCutNone: "Nothing hidden", viewList: "View as list", viewTier: "View as tiers",
     gunTag: "Built-gun price",
     gunTip: "For guns, the flea low price includes offers for assembled presets of that gun, not just the stripped weapon. Traders sell the stripped weapon, so this gap is not a profit you can actually take: a bare gun will not sell at that price.",
     stepItems: "items and prices (tens of MB, this takes a moment)",
@@ -355,7 +355,7 @@ const DEMAND_KEYS = ["quest","hideout","craft"];
 const DEFAULTS = {
   lang: (navigator.language || "ja").startsWith("ja") ? "ja" : "en",
   mode: "regular", playerLevel: 30, intel: 3, mgmt: 0, minProfit: 3000, minOffers: 5, excludeFence: false, hideTaskLocked: true, liqFilter: "all", depletableF2T: "exclude", weapons: "exclude", days: 7,
-  lootOff: ["keys", "mods", "gun", "armor", "helmet", "headset", "face", "wear", "poster"],   // 持ち帰りティア表で出さない分類（LOOT_GROUPS のキー）
+  lootOff: ["keys"],   // 持ち帰りティア表で、チェックを外している分類（LOOT_GROUP_VIEW のキー）
   mkDays: 30, mkTh: 5, mkMinOffers: 10, mkMinProfit: 10000, mkMinRate: 15, mkNeedRebound: true, mkStock: [], lootMinOffers: 10, _lmo10: true,
   ll: Object.fromEntries(TRADER_KEYS.map(k => [k, 4]))
 };
@@ -369,6 +369,7 @@ function migrate(s){
   const OLD_HIDE = {hideLootKeys: "keys", hideLootArmor: "armor", hideLootMods: "mods", hideLootHelmets: "helmet", hideLootGuns: "gun", hideLootPosters: "poster", hideLootHeadsets: "headset", hideLootBalaclava: "face", hideLootWearables: "wear"};
   if(!Array.isArray(s.lootOff) && Object.keys(OLD_HIDE).some(k => k in s)) s.lootOff = Object.keys(OLD_HIDE).filter(k => s[k]).map(k => OLD_HIDE[k]);
   for(const k of [...Object.keys(OLD_HIDE), "hideLootVariants"]) delete s[k];
+  if(Array.isArray(s.lootOff)) s.lootOff = s.lootOff.filter(k => ["barter", "meds", "provisions", "ammoBox", "grenade", "keys"].includes(k));   // 選べなくなった分類は消す
   delete s.hideLowLiq; delete s.keyMode; delete s.lootKeys;
   return s;
 }
@@ -839,6 +840,8 @@ function rowsB2F(){
 /* ===== 持ち帰りティア表の分類 =====
    品物は、下の LOOT_GROUPS のどれか1つに必ず入る（上から順に見て、最初に当てはまった分類）。
    画面の「分類」のチェックは、この分類だけで出し入れする（1つの品が2つの分類に入ることはない）。
+   武器パーツ・銃・防具・ヘルメット・ヘッドセット・マスク・帽子などの小物・ポスター・その他は、品数が多すぎて一覧にならないので常に出さない（LOOT_DROP）。
+   それでも分類は必要（例えばマスクを「その他」や「バーター品」に紛れ込ませないため）。
    段位の境目は、表示している分類の品から決める */
 const nameOf = it => ((it.name && it.name.en) || "") + " " + ((it.name && it.name.ja) || "");
 const hasT = (it, ...tys) => tys.some(ty => it.types.includes(ty));
@@ -870,8 +873,9 @@ const LOOT_GROUPS = [
   {k: "barter",   test: it => hasT(it, "barter")},
   {k: "other",    test: () => true}
 ];
-/* 画面に並べる順（よく使うものを先に） */
-const LOOT_GROUP_VIEW = ["barter", "meds", "provisions", "ammoBox", "grenade", "keys", "mods", "gun", "armor", "helmet", "headset", "face", "wear", "poster", "other"];
+/* 画面に並べる分類（この順）と、常に出さない分類 */
+const LOOT_GROUP_VIEW = ["barter", "meds", "provisions", "ammoBox", "grenade", "keys"];
+const LOOT_DROP = ["mods", "gun", "armor", "helmet", "headset", "face", "wear", "poster", "other"];
 function lootGroup(it){ return LOOT_GROUPS.find(g => g.test(it)).k; }
 /* マスク・バラクラバなどの顔まわり。種類の名前がAPIに無いので、カテゴリか名前で見分ける */
 function isFaceCover(it){
@@ -890,9 +894,7 @@ function lootExcluded(it, g){
   if(/EFT: ?ARENA|^ARENA |アリーナ/i.test(n)) return true;            // アリーナの品は本編のレイドに落ちていない
   if(/dog ?tag|ドッグタグ/i.test(n)) return true;
   if(/unknown-item/.test(it.iconLink || "")) return true;            // 画像が無い品（ゲームに入ったばかりで情報がそろっていない）
-  /* 身に着ける小物・顔まわりで、名前の後ろに（）で柄や色が付く品（「Neoprene mask (ONI)」など）は、アリーナなどの限定品で拾えない。
-     弾薬箱「(30 pcs)」や食料「(Large)」のような普通の品は、この分類に入らないので外れない */
-  if((g === "wear" || g === "face") && /[(（][^)）]+[)）]/.test(n)) return true;
+  if(LOOT_DROP.includes(g)) return true;
   return false;
 }
 /* 入手の難しさ：ドロップ率はAPIに無いので、フリマの出品数で代用する（min 件未満なら珍品）。
