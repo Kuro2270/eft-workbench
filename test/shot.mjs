@@ -20,7 +20,6 @@ await page.addInitScript(({ items, traders, flea, hist }) => {
 await page.goto("file://" + PAGE, { waitUntil: "load" });
 await page.evaluate(() => { localStorage.clear(); });
 await page.reload({ waitUntil: "load" });
-await page.click("#loadBtn");
 await page.waitForSelector("#tbl tbody td.item", { timeout: 15000 });
 await page.click('.tabs button[data-tab="loot"]');
 await page.waitForTimeout(700);

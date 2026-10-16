@@ -185,7 +185,6 @@ footer a{color:var(--muted)}
 
   <div class="bar">
     <label class="note"><span data-i18n="mode"></span> <select id="modeSel"></select></label>
-    <button class="primary" id="loadBtn" data-i18n="load"></button>
     <button id="analyzeBtn" disabled data-i18n="analyze"></button>
     <label class="note"><span data-i18n="topN"></span> <select id="topN"><option>20</option><option selected>30</option><option>50</option></select></label>
     <label class="note"><span data-i18n="days"></span> <select id="daysSel"></select></label>
@@ -234,7 +233,7 @@ const I18N = {
     setLine: "プレイヤー設定：Lv{lv}・インテルセンターLv{intel}", setLink: "変更する",
     settingsSummary: "プレイヤーの状況（自動で保存されます）", flipSummary: "転売の条件（最低利益・出品数など）",
     settingsNote: "トレーダーのロイヤリティレベル（LL）は、トレーダーから買う転売で「買える品物」の判定に使います。インテルセンターLv3以上でフリマ手数料が安くなります。",
-    mode: "モード", load: "最新の価格に更新", analyze: "上位の推移を分析", topN: "分析する件数", days: "期間", dayOpt: "{n}日",
+    mode: "モード", analyze: "上位の推移を分析", topN: "分析する件数", days: "期間", dayOpt: "{n}日",
     liqFilter: "売れやすさ", liqAll: "すべて", liqMid: "中以上", liqHigh: "高のみ",
     tabF2T: "フリマで買ってトレーダーに売る", tabT2F: "トレーダーで買ってフリマで売る", tabB2F: "交換で手に入れてフリマで売る",
     tabLoot: "レイドで持ち帰る",
@@ -260,7 +259,7 @@ const I18N = {
     gunTag: "組み立て済みの値段",
     gunTip: "銃のフリマ最安値は、その銃の組み立て済み（プリセット）の出品も含めた最安値です。トレーダーが売るのは素の本体なので、この差額はそのままでは取れません。素の本体を出品しても、この値段では売れないと考えてください。",
     stepItems: "アイテムと価格（数十MBあるため少し時間がかかります）",
-    loading: "取得中…", loaded: "{mode}：{n}品目を取得（{time}）", loadedSnap: "{mode}：{n}品目（{date} {time} 時点のデータ）", loadFail: "取得できませんでした：{msg}",
+    loading: "取得中…", loaded: "{mode}：{n}品目を取得（{time}）", loadedSnap: "{mode}：{n}品目（{date} {time} 時点のデータ・1時間おきに自動で更新）", loadFail: "取得できませんでした：{msg}",
     netErr: "{step}で通信できませんでした（{why}）", timeout: "90秒で応答なし", httpErr: "{step}でエラー（HTTP {status}）",
     stepNames: {items: "アイテム取得", items_ja: "日本語名の取得", items_en: "英語名の取得", traders: "トレーダー取得", traders_ja: "トレーダー名の取得（日）", traders_en: "トレーダー名の取得（英）", prices: "推移の取得"},
     histProgress: "推移を取得中 {i} / {n}", histDone: "{n}件を分析しました", histFail: "推移の取得に失敗しました：{msg}",
@@ -308,7 +307,7 @@ const I18N = {
     setLine: "Player settings: Lv{lv}, Intelligence Center Lv{intel}", setLink: "Change",
     settingsSummary: "Your progress (saved automatically)", flipSummary: "Flip conditions (minimum profit, offers, etc.)",
     settingsNote: "Trader loyalty levels (LL) decide which trader items you can buy for flipping. Intelligence Center level 3+ lowers flea market fees.",
-    mode: "Mode", load: "Refresh prices now", analyze: "Analyze history of top items", topN: "Items to analyze", days: "History", dayOpt: "{n} d",
+    mode: "Mode", analyze: "Analyze history of top items", topN: "Items to analyze", days: "History", dayOpt: "{n} d",
     liqFilter: "Sellability", liqAll: "All", liqMid: "Medium or better", liqHigh: "High only",
     tabF2T: "Buy on flea, sell to traders", tabT2F: "Buy from traders, sell on flea", tabB2F: "Barter at traders, sell on flea",
     tabLoot: "What to bring back",
@@ -334,7 +333,7 @@ const I18N = {
     gunTag: "Built-gun price",
     gunTip: "For guns, the flea low price includes offers for assembled presets of that gun, not just the stripped weapon. Traders sell the stripped weapon, so this gap is not a profit you can actually take: a bare gun will not sell at that price.",
     stepItems: "items and prices (tens of MB, this takes a moment)",
-    loading: "Loading…", loaded: "{mode}: {n} items loaded ({time})", loadedSnap: "{mode}: {n} items (data as of {date} {time})", loadFail: "Could not load: {msg}",
+    loading: "Loading…", loaded: "{mode}: {n} items loaded ({time})", loadedSnap: "{mode}: {n} items (data as of {date} {time}, updated hourly)", loadFail: "Could not load: {msg}",
     netErr: "Network error during {step} ({why})", timeout: "no response in 90 s", httpErr: "Error during {step} (HTTP {status})",
     stepNames: {items: "item download", items_ja: "Japanese names", items_en: "English names", traders: "trader download", traders_ja: "trader names (JA)", traders_en: "trader names (EN)", prices: "price history"},
     histProgress: "Fetching history {i} / {n}", histDone: "Analyzed {n} item(s)", histFail: "Could not fetch history: {msg}",
@@ -451,7 +450,7 @@ async function getJson(path, stepKey){
 }
 /* ================= データの組み立て（画面とスナップショット作成で共通） =================
    tarkov.dev の JSON API から取った生データを、画面で使う形に組み立てる。
-   ・画面（app.html）… build.mjs がこのファイルを埋め込む。「最新の価格に更新」で使う
+   ・画面（app.html）… build.mjs がこのファイルを埋め込む。サーバーに保存データが無いときに、その場で取るのに使う
    ・snapshot.mjs     … 定期実行で同じ組み立てをして data/<モード>.json に書き出す
    どちらも同じ関数を通すので、保存したデータと、その場で取ったデータの中身は同じになる。
    DOM や画面の設定（S）には触れない。 */
@@ -681,7 +680,7 @@ function isFresh(updatedAt, refAt, maxMin){
 }
 
 
-/* その場で tarkov.dev から取る（「最新の価格に更新」） */
+/* その場で tarkov.dev から取る（サーバーに保存データが無いときだけ） */
 async function loadAll(onStep){
   onStep(t("stepItems"));
   const got = await Promise.all(RAW_PATHS.map(r => getJson(r.path, r.path).catch(err => { if(!r.soft) throw err; console.warn(err); return null; })));
@@ -1311,25 +1310,47 @@ function applyData(d, statusKey){
   recompute();
   if(TAB !== "loot" && PAGE !== "watch") analyzeTop();
 }
-/* その場で tarkov.dev から取り直す */
+/* その場で tarkov.dev から取る */
 async function loadLive(){
-  const btn = document.getElementById("loadBtn"); btn.disabled = true; setStatus("loading");
+  setStatus("loading");
   try{
     const d = await loadAll(step => { $status.textContent = t("loading") + " " + step; });
     applyData({...d, at: new Date()}, "loaded");
   }catch(err){
     setStatus("loadFail", {msg: err.message}); console.error(err);
-  }finally{ btn.disabled = false; }
+  }
 }
 /* 開いたとき・モードを変えたとき：サーバーの保存データがあれば、すぐそれを出す。無ければその場で取る */
+let LOADING = false;
 async function loadInitial(){
-  const btn = document.getElementById("loadBtn"); btn.disabled = true; setStatus("loading");
-  const snap = await loadSnapshot(S.mode);
-  btn.disabled = false;
-  if(snap) applyData(snap, "loadedSnap");
-  else await loadLive();
+  LOADING = true; setStatus("loading");
+  try{
+    const snap = await loadSnapshot(S.mode);
+    if(snap) applyData(snap, "loadedSnap");
+    else await loadLive();
+  }finally{
+    LOADING = false;
+    nextCheck = DATA ? DATA.at.getTime() + FRESH_MS : Date.now() + RETRY_MS;
+  }
 }
-document.getElementById("loadBtn").addEventListener("click", loadLive);
+
+/* 開いたままでも、新しい保存データが出たら差し替える。
+   保存は GitHub Actions が1時間おき（毎時23分ごろ）に行うので、手元のデータが1時間ほど古くなってから確かめる。
+   まだ新しいものが無ければ15分おきに確かめ直す。画面を見ていないあいだは何もしない */
+const FRESH_MS = 62 * 60 * 1000, RETRY_MS = 15 * 60 * 1000;
+let nextCheck = Infinity;
+async function refreshIfStale(){
+  if(document.hidden || LOADING || Date.now() < nextCheck) return;
+  if(!DATA) return loadInitial();                       // 取れなかったときは、ここで取り直す
+  const mode = S.mode, cur = DATA;
+  nextCheck = Date.now() + RETRY_MS;
+  const snap = await loadSnapshot(mode);
+  if(!snap || DATA !== cur || S.mode !== mode || snap.at <= cur.at) return;
+  applyData(snap, "loadedSnap");
+  nextCheck = snap.at.getTime() + FRESH_MS;
+}
+setInterval(refreshIfStale, 60 * 1000);
+document.addEventListener("visibilitychange", refreshIfStale);
 
 /* 上位N件の7日間推移を取得して分析（価格取得後・タブ切り替え後にも自動で実行） */
 let analyzing = false, rerun = false;

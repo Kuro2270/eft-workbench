@@ -36,6 +36,7 @@ Escape from Tarkov の無料ツール集。tarkov.dev のデータを使う。
 2. Cloudflare の Workers KV（名前 `eft-snapshots`）に `regular.json`・`pvp-season.json`・`pve.json` として置く
 3. サイトの `/data/<モード>.json` を開くと、`functions/data/[mode].js` がそれを返す
 4. 画面は開いたときにまずこれを読んで、すぐ表示する（無ければその場で tarkov.dev から取る）
+5. 開いたままでも、手元のデータが1時間ほど古くなったら新しい保存データを読み直して差し替える（更新ボタンは無い。画面を見ていないあいだは読みに行かない）
 
 リポジトリには価格データをコミットしない（1時間おきに履歴が増えて重くなるため。`public/data/` は .gitignore）。
 

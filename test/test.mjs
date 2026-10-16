@@ -42,7 +42,6 @@ await page.evaluate(() => {
   localStorage.setItem("eftflip.settings", JSON.stringify(s));
 });
 await page.reload({ waitUntil: "load" });
-await page.click("#loadBtn");
 await page.waitForSelector("#tbl tbody td.item", { timeout: 15000 }).catch(async () => {
   console.log("状態:", await page.$eval("#status", n => n.textContent));
   console.log("表:", await page.$eval("#tbl tbody", n => n.innerText.slice(0, 200)));

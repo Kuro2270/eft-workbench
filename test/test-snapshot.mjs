@@ -1,13 +1,14 @@
 /* 保存データ（snapshot.mjs）と「開いたらすぐ出る」の確認
    1) 作り物の API を立てて snapshot.mjs を走らせ、data/*.json ができること
    2) その data を置いたサーバーで loot.html / flip.html を開くと、ボタンを押さずに出ること（tarkov.dev には行かない）
-   3) 保存データが無いときは、その場で取りに行って出ること */
+   3) 開いたままでも、手元のデータが古くなったら新しい保存データに差し替わること（更新ボタンは無い）
+   4) 保存データが無いときは、その場で取りに行って出ること */
 import pw from "/home/claude/.npm-global/lib/node_modules/playwright/index.js";
 import http from "node:http";
 import { execFile } from "node:child_process";
 /* 作り物の API が同じプロセスにいるので、待つあいだも止めない（同期で呼ぶと応答できずに固まる） */
 const run = (args, env) => new Promise((ok, ng) => execFile("node", args, {env: {...process.env, ...env}}, (e, so, se) => { process.stdout.write(so); e ? ng(e) : ok(); }));
-import { readFileSync, mkdtempSync, existsSync, rmSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdtempSync, existsSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 import { dirname, join, extname } from "node:path";
@@ -41,10 +42,11 @@ await run([join(ROOT, "snapshot.mjs"), "regular"], {EFT_JSON_API: "http://127.0.
 ok(bad && JSON.parse(readFileSync(join(out, "regular.json"), "utf8")).at === snap.at, "取れないときは失敗で終わり、前回のファイルは残る");
 
 /* 画面を置くサーバー（data/ だけ差し替えられるように） */
-let dataDir = out;
+let dataDir = out, dataHits = 0;
 const TYPES = {".html": "text/html; charset=utf-8", ".json": "application/json"};
 const site = http.createServer((req, res) => {
   const u = decodeURIComponent(req.url.split("?")[0]);
+  if (u.startsWith("/data/")) dataHits++;
   const f = u.startsWith("/data/") ? join(dataDir, u.slice(6)) : join(ROOT, "public", u === "/" ? "index.html" : u.slice(1));
   if (!existsSync(f)) { res.writeHead(404); return res.end(); }
   res.writeHead(200, {"content-type": TYPES[extname(f)] || "application/octet-stream"}); res.end(readFileSync(f));
@@ -73,12 +75,33 @@ for (const file of ["loot.html", "flip.html"]) {
   ok(/時点のデータ/.test(st), `${file}：保存データの時刻が出る / ${st}`);
   if (file === "loot.html") ok(apiHits === 0, `${file}：tarkov.dev には取りに行かない / ${apiHits} 回`);
   ok(errs.length === 0, `${file}：エラーなし ${errs.join(" / ")}`);
-  if (file === "loot.html") {
-    await page.click("#loadBtn");
-    await page.waitForFunction(() => /取得（/.test(document.getElementById("status").textContent), null, { timeout: 10000 }).catch(() => {});
-    ok(/取得（/.test(await page.$eval("#status", n => n.textContent)) && apiHits > 0, "「最新の価格に更新」でその場の価格に切り替わる");
-  }
+  ok(!(await page.$("#loadBtn")), `${file}：更新ボタンは無い`);
   await page.close();
+}
+
+console.log("開いたままでも新しい保存データに差し替わる");
+{
+  const dir = mkdtempSync(join(tmpdir(), "eft-stale-"));
+  const put = at => writeFileSync(join(dir, "regular.json"), JSON.stringify({...snap, at}));
+  put(new Date(Date.now() - 2 * 3600e3).toISOString());          // 2時間前の保存データ
+  dataDir = dir; apiHits = 0;
+  const { page, errs } = await open("loot.html");
+  await page.waitForSelector("#tierBoard .ti", { timeout: 10000 });
+  const before = await page.$eval("#status", n => n.textContent);
+  put(new Date().toISOString());                                   // 新しい保存データが出た
+  dataHits = 0;
+  await page.evaluate(() => document.dispatchEvent(new Event("visibilitychange")));   // 画面に戻ってきた
+  await page.waitForFunction(b => document.getElementById("status").textContent !== b, before, { timeout: 10000 }).catch(() => {});
+  const after = await page.$eval("#status", n => n.textContent);
+  ok(after !== before && /自動で更新/.test(after) && dataHits === 1 && apiHits === 0, `古くなったら新しい保存データに差し替わる / ${before} → ${after}`);
+  ok(await page.$$eval("#tierBoard .ti", ns => ns.length) > 0, "差し替えたあとも表示されている");
+  dataHits = 0;
+  await page.evaluate(() => document.dispatchEvent(new Event("visibilitychange")));
+  await page.waitForTimeout(500);
+  ok(dataHits === 0, `新しいうちは取りに行かない / ${dataHits} 回`);
+  ok(errs.length === 0, "エラーなし " + errs.join(" / "));
+  await page.close();
+  rmSync(dir, { recursive: true, force: true });
 }
 
 console.log("保存データが無いとき");
