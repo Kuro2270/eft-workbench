@@ -367,7 +367,7 @@ const DEMAND_KEYS = ["quest","hideout","craft"];
 const DEFAULTS = {
   lang: (navigator.language || "ja").startsWith("ja") ? "ja" : "en",
   mode: "regular", playerLevel: 30, intel: 3, mgmt: 0, minProfit: 3000, minOffers: 5, excludeFence: false, hideTaskLocked: true, liqFilter: "all", depletableF2T: "exclude", weapons: "exclude", days: 7,
-  hideLootKeys: true, hideLootArmor: true, hideLootMods: true, hideLootGuns: true, hideLootPosters: true, hideLootHelmets: true, hideLootBalaclava: true, hideLootVariants: true, hideLootHeadsets: true, hideLootWearables: true, mkDays: 30, mkTh: 5, mkFreshMin: 60, mkMinOffers: 10, mkMinProfit: 10000, mkMinRate: 15, mkNeedRebound: true, mkStock: [], lootMinOffers: 10, _lmo10: true,
+  hideLootKeys: true, hideLootArmor: true, hideLootMods: true, hideLootGuns: true, hideLootPosters: true, hideLootHelmets: true, hideLootBalaclava: true, hideLootVariants: true, hideLootHeadsets: true, hideLootWearables: true, mkDays: 30, mkTh: 5, mkMinOffers: 10, mkMinProfit: 10000, mkMinRate: 15, mkNeedRebound: true, mkStock: [], lootMinOffers: 10, _lmo10: true,
   ll: Object.fromEntries(TRADER_KEYS.map(k => [k, 4]))
 };
 
@@ -1502,7 +1502,7 @@ const MK_I18N = {
     noneProfit: "条件（見込み利益 {p} 以上・{r}%以上）に合う品がありません（底値付近 {n}品を確認）",
     capped: "候補が多すぎるため、外れ具合の大きい{n}品だけ確認しました（残り{m}品）。条件を絞ってください",
     th: "候補の目安", thOpt: "{n}%以上", thTip: "24時間平均か48時間前より、この割合以上 安い（高い）品の記録を確かめます。下げるほど候補が増え、確認に時間がかかります",
-    fresh: "値段の更新", freshOpt: "{n}分以内", freshAll: "問わない", minOffers: "出品数", minOffers2: "件以上", search: "名前で探す（2文字以上）",
+    minOffers: "出品数", minOffers2: "件以上", search: "名前で探す（2文字以上）",
     loading: "価格記録を確認中… {i}/{n}", needData: "価格データを読み込み中です",
     buyTitle: "買い場（過去{d}日の底値付近）", sellTitle: "売り場（過去{d}日の高値付近）", searchTitle: "探した品",
     buySub: "いまの相場が、過去{d}日の値動きの下のほうにある品のうち、おすすめ売値まで戻れば大きく利益が出る品（利益の大きい順）",
@@ -1526,7 +1526,7 @@ const MK_I18N = {
     noneProfit: "Nothing meets the profit filter ({p}+, {r}%+) ({n} items near the low checked)",
     capped: "Too many candidates: only the {n} furthest from usual were checked ({m} more). Narrow the filters",
     th: "Candidate threshold", thOpt: "{n}%+", thTip: "Checks the history of items at least this far below (above) their 24h average or 48h-ago price. Lower means more candidates and a longer check",
-    fresh: "Price scanned", freshOpt: "within {n} min", freshAll: "any time", minOffers: "Offers", minOffers2: "or more", search: "Search by name (2+ letters)",
+    minOffers: "Offers", minOffers2: "or more", search: "Search by name (2+ letters)",
     loading: "Checking price history… {i}/{n}", needData: "Loading price data",
     buyTitle: "Buy zone (near the {d}-day low)", sellTitle: "Sell zone (near the {d}-day high)", searchTitle: "Search results",
     buySub: "Items sitting low in their {d}-day range that would make a good profit if they recover to the suggested sell price (largest profit first)",
@@ -1559,10 +1559,13 @@ function mkEligible(it){
   if(S.mkKind && !it.types.includes(S.mkKind)) return false;
   return true;
 }
+/* 値段の更新の条件は固定（利用者は選ばない）。データを取った時点で、最安値の読み取りが120分以内の品だけ。
+   tarkov.dev の読み取りは品物によって1〜2時間おきで、価格は1時間おきに保存するため、60分では保存した時刻によって候補が0になることがある */
+const MK_FRESH_MIN = 120;
 /* 表示の条件：出品数・値段の更新。条件を厳しくすると、一覧は必ず減る（増えない） */
 function mkShowOk(it){
   if((it.lastOfferCount || 0) < (S.mkMinOffers || 0)) return false;
-  if(S.mkFreshMin > 0 && !isFresh(it.updated || 0, +DATA.at || Date.now(), S.mkFreshMin)) return false;
+  if(!isFresh(it.updated || 0, +DATA.at || Date.now(), MK_FRESH_MIN)) return false;
   return true;
 }
 /* 候補：上の条件（種類・出品数・値段の更新）をすべて満たし、かつ24時間平均か48時間前より「目安」以上外れている品。
@@ -1697,7 +1700,6 @@ function mkBar(){
     + `<label class="note">${mt("days")} ${sel("mkDays", [7, 14, 30].map(n => [n, mt("daysOpt", {n})]))}</label>`
     + `<label class="note" title="${esc(mt("thTip"))}">${mt("th")} ${sel("mkTh", [3, 5, 10, 15].map(n => [n, mt("thOpt", {n})]))}</label>`
     + `<label class="note">${mt("kind")} ${sel("mkKind", [["", mt("kindAll")], ...MK_KINDS.map(k => [k, t("kinds")[k] || k])])}</label>`
-    + `<label class="note">${mt("fresh")} ${sel("mkFreshMin", [[30, mt("freshOpt", {n: 30})], [60, mt("freshOpt", {n: 60})], [120, mt("freshOpt", {n: 120})], [0, mt("freshAll")]])}</label>`
     + `<label class="note">${mt("minOffers")} <input type="number" data-mk="mkMinOffers" min="0" max="999" value="${S.mkMinOffers}">${mt("minOffers2")}</label>`
     + `<label class="note">${mt("minProfit")}<input type="number" data-mk="mkMinProfit" min="0" step="1000" value="${S.mkMinProfit}" style="width:6.5em">${mt("minProfit2")}<input type="number" data-mk="mkMinRate" min="0" max="500" value="${S.mkMinRate}">${mt("minRate2")}</label>`
     + `<label class="note"><input type="checkbox" data-mk="mkNeedRebound" ${S.mkNeedRebound !== false ? "checked" : ""}>${mt("needRebound")}</label>`

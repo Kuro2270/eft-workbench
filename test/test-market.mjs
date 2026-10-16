@@ -195,17 +195,18 @@ await page.waitForTimeout(300);
   };
   const sub = (a, b) => a.every(x => b.includes(x));
   /* 一番ゆるい状態から始める */
-  for (const [k, v] of [["mkTh", 3], ["mkMinOffers", 0], ["mkFreshMin", 0], ["mkMinProfit", 0], ["mkMinRate", 0], ["mkNeedRebound", false], ["mkKind", ""]]) await set(k, v);
+  for (const [k, v] of [["mkTh", 3], ["mkMinOffers", 0], ["mkMinProfit", 0], ["mkMinRate", 0], ["mkNeedRebound", false], ["mkKind", ""]]) await set(k, v);
+  ok(!(await page.$('[data-mk="mkFreshMin"]')), "値段の更新は選べない（120分以内で固定）");
   const base = await ids();
   ok(base.length > 3, "ゆるい条件で一覧が出る / " + base.length + "品");
   const steps = {
-    mkTh: [5, 10, 15], mkMinOffers: [20, 35, 50], mkFreshMin: [120, 60, 30], mkMinProfit: [20000, 80000, 300000], mkMinRate: [30, 80, 150], mkNeedRebound: [true],
+    mkTh: [5, 10, 15], mkMinOffers: [20, 35, 50], mkMinProfit: [20000, 80000, 300000], mkMinRate: [30, 80, 150], mkNeedRebound: [true],
   };
   for (const [key, vals] of Object.entries(steps)) {
     let prev = base, okAll = true, trail = [base.length];
     for (const v of vals) { const cur = await set(key, v); if (!sub(cur, prev)) okAll = false; trail.push(cur.length); prev = cur; }
     ok(okAll, `${key}：厳しくするほど減る（前の一覧に含まれる品だけ残る） / ${trail.join("→")}`);
-    await set(key, { mkTh: 3, mkMinOffers: 0, mkFreshMin: 0, mkMinProfit: 0, mkMinRate: 0, mkNeedRebound: false }[key]);
+    await set(key, { mkTh: 3, mkMinOffers: 0, mkMinProfit: 0, mkMinRate: 0, mkNeedRebound: false }[key]);
   }
   const kinds = await page.$$eval('[data-mk="mkKind"] option', ns => ns.map(n => n.value).filter(Boolean));
   let kindOk = true, seen = 0;
@@ -213,7 +214,7 @@ await page.waitForTimeout(300);
   await set("mkKind", "");
   ok(kindOk && seen > 0, `「すべて」は、どの種類の一覧も含む（${kinds.length}種類を確認）`);
   /* 既定に戻す */
-  for (const [k, v] of [["mkTh", 5], ["mkMinOffers", 10], ["mkFreshMin", 60], ["mkMinProfit", 10000], ["mkMinRate", 15], ["mkNeedRebound", true]]) await set(k, v);
+  for (const [k, v] of [["mkTh", 5], ["mkMinOffers", 10], ["mkMinProfit", 10000], ["mkMinRate", 15], ["mkNeedRebound", true]]) await set(k, v);
 }
 /* 在庫 */
 ok(/まだありません/.test(await page.$eval(".msec.stock", n => n.textContent)), "在庫の欄が出る（最初は空）");
