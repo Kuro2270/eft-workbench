@@ -1,0 +1,119 @@
+{
+  "_about": "1つのスポットの動画の台本。sources は元の動画・画像、segments は場面（kind: still=静止画 / clip=動画、src は sources の名前、start=元の動画の開始秒、dur=長さ、caption=画面下の一言、lines=ずんだもんのセリフ［出す秒, 英語, 日本語訳（吹き出しの下に（）で出す）］。\\n は吹き出しの改行）。thumbnail はサムネイル（main＝大きな見出しの行［1行目は黄色］, ja＝日本語のひと言, badge＝札, bg＝背景にする画面［sources の名前, 秒］）",
+  "spot": "streets-zmejskij-tree",
+  "sources": {
+    "view": "assets/spots/streets-zmejskij-tree/view.jpg",
+    "route": "sources/streets-zmejskij-tree/route.mp4",
+    "kill": "sources/streets-zmejskij-tree/kill1.mpg",
+    "kill2": "sources/streets-zmejskij-tree/kill2.mp4"
+  },
+  "segments": [
+    {
+      "kind": "still",
+      "src": "view",
+      "start": 0,
+      "dur": 3.0,
+      "caption": "Wait up in this tree",
+      "lines": [
+        [
+          0,
+          "Let's hide\nin this tree.",
+          "この木に\n隠れるのだ"
+        ]
+      ]
+    },
+    {
+      "kind": "clip",
+      "src": "route",
+      "start": 0.0,
+      "dur": 2.6,
+      "caption": "① Go in from the back of the alley",
+      "lines": [
+        [
+          0,
+          "Walk slowly.\nStay quiet.",
+          "ゆっくり、\n静かに行くのだ"
+        ]
+      ]
+    },
+    {
+      "kind": "clip",
+      "src": "route",
+      "start": 2.6,
+      "dur": 7.6,
+      "caption": "② Walk past the truck",
+      "lines": [
+        [
+          0.5,
+          "Almost there!",
+          "もうすぐなのだ！"
+        ]
+      ]
+    },
+    {
+      "kind": "clip",
+      "src": "route",
+      "start": 10.2,
+      "dur": 8.0,
+      "caption": "③ Climb the truck, then the tree",
+      "lines": [
+        [
+          0.5,
+          "Up we go!",
+          "登るのだ！"
+        ]
+      ]
+    },
+    {
+      "kind": "clip",
+      "src": "kill",
+      "start": 13.5,
+      "dur": 16.0,
+      "caption": "Kill 1: Shoot them from above",
+      "lines": [
+        [
+          0,
+          "Now... wait.",
+          "ここで待つのだ…"
+        ],
+        [
+          7,
+          "They never\nlook up!",
+          "みんな上は\n見ないのだ！"
+        ]
+      ]
+    },
+    {
+      "kind": "clip",
+      "src": "kill2",
+      "start": 8.5,
+      "dur": 9.5,
+      "caption": "Kill 2: Same tree, same trick",
+      "lines": [
+        [
+          0.3,
+          "Shh...\nHere they come.",
+          "しっ…来たのだ"
+        ],
+        [
+          7.6,
+          "That's two!",
+          "これで2人なのだ！"
+        ]
+      ]
+    }
+  ],
+  "thumbnail": {
+    "main": [
+      "BAD AIM?",
+      "HIDE IN",
+      "THIS TREE"
+    ],
+    "ja": "エイム下手でも勝てる",
+    "badge": "2 KILLS",
+    "bg": [
+      "kill2",
+      13.6
+    ]
+  }
+}

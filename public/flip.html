@@ -156,6 +156,38 @@ svg.wchart .cross{stroke:var(--muted);stroke-width:1}
 .card:hover,.card:focus{border-color:var(--tan)}
 .card.sub b{color:inherit}
 .setline a{color:var(--tan)}
+/* ラットスポット：見取り図の上に番号つきの★、その下にスポットの一覧 */
+.ratmap{position:relative;margin:0 0 16px;max-width:1100px}
+.ratmap a.full{display:block}
+.ratmap img{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:6px}
+/* 待つ位置：動画と同じ黄色の★に番号（見取り図の脱出口などの丸い印と見分けがつくように） */
+.ratpin{position:absolute;transform:translate(-50%,-50%);width:44px;height:44px;display:flex;align-items:center;justify-content:center;text-decoration:none;
+  background:#14171A;clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);filter:drop-shadow(0 0 4px #000)}
+.ratpin::before{content:"";position:absolute;inset:3px;background:#FFD640;clip-path:inherit}
+.ratpin b{position:relative;top:2px;color:#14171A;font-size:13px}
+.ratpin:hover::before,.ratpin:focus::before{background:#FFF}
+.ratlist{display:grid;gap:14px;max-width:1100px}
+.ratcard{display:grid;grid-template-columns:auto 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:16px;scroll-margin-top:12px}
+.ratcard:target{border-color:var(--tan)}
+.ratmedia{width:270px}
+.ratvideo{position:relative;display:block;width:100%;padding:0;border:0;background:none;border-radius:6px;overflow:hidden}
+.ratvideo img{display:block;width:100%;height:auto}
+.ratvideo .play{position:absolute;left:50%;top:50%;width:68px;height:68px;margin:-34px 0 0 -34px;border-radius:50%;background:#000a}
+.ratvideo .play::after{content:"";position:absolute;left:27px;top:20px;border-style:solid;border-width:14px 0 14px 22px;border-color:transparent transparent transparent #fff}
+.ratvideo:hover .play{background:var(--loss)}
+.ratmedia iframe{display:block;width:100%;aspect-ratio:9/16;border:0;border-radius:6px}
+.ratbody h2{margin:0 0 10px;font-size:19px;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px}
+.ratbody h2 small{font-size:13px;color:var(--muted);font-weight:400}
+.ratno{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:#FFD640;color:#14171A;font-size:15px}
+.ratbody h3{margin:14px 0 6px;font-size:14px;color:var(--tan)}
+.ratrate{width:auto;min-width:0;border-collapse:collapse}
+.ratrate th,.ratrate td{position:static;background:none;border:0;padding:2px 14px 2px 0;text-align:left;font-size:13px;cursor:default}
+.ratrate th{color:var(--muted);font-weight:400}
+.ratdots{color:#FFD640;letter-spacing:3px;font-size:15px}
+.ratdots i{font-style:normal;color:var(--line)}
+.ratroute{margin:0;padding-left:1.4em;line-height:1.8}
+.ratview{display:block;width:100%;max-width:560px;height:auto;border-radius:6px;border:1px solid var(--line)}
+@media (max-width:700px){.ratcard{grid-template-columns:1fr}.ratmedia{width:min(100%,320px);margin:0 auto}.ratpin{width:32px;height:32px}.ratpin b{font-size:11px}}
 footer{padding:16px 20px;color:var(--muted);font-size:12px;border-top:1px solid var(--line)}
 footer a{color:var(--muted)}
 @media (max-width:900px){header{grid-template-columns:1fr auto}header .pages{grid-column:1 / -1;grid-row:2}}
@@ -166,7 +198,7 @@ footer a{color:var(--muted)}
 <body>
 <header>
   <div class="hl"><a class="brand" href="index.html">EFT Workbench</a><select id="modeSel"></select></div>
-  <nav class="pages" id="pages" hidden><a href="index.html" id="pgTop" data-i18n="pageTop"></a><a href="flip.html" id="pgFlip" data-i18n="pageBoard"></a><a href="loot.html" id="pgLoot" data-i18n="pageLoot"></a><a href="watch.html" id="pgWatch" data-i18n="pageWatch"></a><a href="settings.html" id="pgSettings" data-i18n="pageSettings"></a></nav>
+  <nav class="pages" id="pages" hidden><a href="index.html" id="pgTop" data-i18n="pageTop"></a><a href="flip.html" id="pgFlip" data-i18n="pageBoard"></a><a href="loot.html" id="pgLoot" data-i18n="pageLoot"></a><a href="watch.html" id="pgWatch" data-i18n="pageWatch"></a><a href="rat.html" id="pgRat" data-i18n="pageRat"></a><a href="settings.html" id="pgSettings" data-i18n="pageSettings"></a></nav>
   <span class="lang" role="group" aria-label="Language / 言語"><button type="button" data-lang="ja">日本語</button><button type="button" data-lang="en">English</button></span>
 </header>
 <main>
@@ -175,6 +207,7 @@ footer a{color:var(--muted)}
     <a class="card" href="flip.html"><b data-i18n="pageBoard"></b><span data-i18n="topFlip"></span></a>
     <a class="card" href="loot.html"><b data-i18n="pageLoot"></b><span data-i18n="topLoot"></span></a>
     <a class="card" href="watch.html"><b data-i18n="pageWatch"></b><span data-i18n="topWatch"></span></a>
+    <a class="card" href="rat.html"><b data-i18n="pageRat"></b><span data-i18n="topRat"></span></a>
     <a class="card sub" href="settings.html"><b data-i18n="pageSettings"></b><span data-i18n="topSettings"></span></a>
   </section>
   <details class="settings" id="flipBox">
@@ -204,6 +237,7 @@ footer a{color:var(--muted)}
   </div>
   <div id="banner"></div>
   <section id="marketPanel" hidden></section>
+  <section id="ratPanel" hidden></section>
   <p class="note" id="tierLegend"></p>
   <div id="tierBoard" hidden></div>
   <div class="tablewrap" id="listWrap"><table id="tbl"><thead></thead><tbody></tbody></table></div>
@@ -216,8 +250,10 @@ footer a{color:var(--muted)}
 /* ================= 言語 ================= */
 const I18N = {
   ja: {
-    title: "EFT 転売ボード", titleLoot: "EFT 持ち帰りティア表", titleTop: "EFT ツール", titleWatch: "EFT 売り時・買い時", titleSettings: "EFT プレイヤー設定",
-    pageTop: "トップ", pageBoard: "転売ボード", pageLoot: "持ち帰りティア表", pageWatch: "売り時・買い時", pageSettings: "プレイヤー設定",
+    title: "EFT 転売ボード", titleLoot: "EFT 持ち帰りティア表", titleTop: "EFT ツール", titleWatch: "EFT 売り時・買い時", titleSettings: "EFT プレイヤー設定", titleRat: "EFT ラットスポット",
+    pageTop: "トップ", pageBoard: "転売ボード", pageLoot: "持ち帰りティア表", pageWatch: "売り時・買い時", pageSettings: "プレイヤー設定", pageRat: "ラットスポット",
+    topRat: "待ち伏せ（ラット）で勝てるスポットを、マップごとに。地図の位置・行き方・評価と、実際のキル動画つき。",
+    ratRoute: "行き方", ratView: "待つ位置から見える景色", ratPlay: "動画を再生",
     topFlip: "フリマとトレーダーの値段の差で利益が出る品を、売れやすさと一緒に一覧にします。",
     topLoot: "レイドで持ち帰る品を、1マスあたりの売値で S〜D の段に分けます。何を優先して持ち帰るかの目安に。",
     topWatch: "いまの値段が過去の底値付近の品（買い場）と、高値付近の品（売り場）をランキングで並べ、おすすめの買値・売値も出します。品を選ぶと値動きと移動平均のグラフも見られます。",
@@ -279,8 +315,10 @@ const I18N = {
     firBanner: "現在のフリマは「レイド中に見つけた（FIR）」品物しか出品できない設定になっています（APIの値）。トレーダーで買った品物はFIRにならないため、この一覧の多くは実際には出品できない可能性があります。安い品物で一度試してから使ってください。",
   },
   en: {
-    title: "EFT Flip Board", titleLoot: "EFT Loot Tier List", titleTop: "EFT Tools", titleWatch: "EFT Buy & Sell Signals", titleSettings: "EFT Player Settings",
-    pageTop: "Home", pageBoard: "Flip board", pageLoot: "Loot tier list", pageWatch: "Buy & sell signals", pageSettings: "Player settings",
+    title: "EFT Flip Board", titleLoot: "EFT Loot Tier List", titleTop: "EFT Tools", titleWatch: "EFT Buy & Sell Signals", titleSettings: "EFT Player Settings", titleRat: "EFT Rat Spots",
+    pageTop: "Home", pageBoard: "Flip board", pageLoot: "Loot tier list", pageWatch: "Buy & sell signals", pageSettings: "Player settings", pageRat: "Rat spots",
+    topRat: "Ambush (rat) spots for each map: where they are, how to get there, ratings and real kill videos.",
+    ratRoute: "Route", ratView: "View from the spot", ratPlay: "Play video",
     topFlip: "Items you can buy on one side and sell on the other (flea ⇄ traders) for a profit, with how easily they sell.",
     topLoot: "Raid loot ranked S–D by take-home per grid slot, so you know what to carry out first.",
     topWatch: "Rankings of items trading near their past lows (buy zone) and near their past highs (sell zone), with suggested buy and sell prices and a moving-average chart.",
@@ -1045,7 +1083,7 @@ const whyText = w => w.k === "demand"
 /* ================= 表示 ================= */
 const PAGE = "flip";   // "top"／"flip"（転売ボード）／"loot"（持ち帰りティア表）／"watch"（売り時通知）／"settings"／"all"（開発用・全部入り）
 const LOOTISH = PAGE === "loot";                          // ティア表の計算を使うページ
-const NEEDS_DATA = !["top", "settings"].includes(PAGE);   // 価格データを読むページ
+const NEEDS_DATA = !["top", "settings", "rat"].includes(PAGE);   // 価格データを読むページ
 let DATA = null, TAB = LOOTISH ? "loot" : "f2t", ROWS = [], SORT = LOOTISH ? {key: "perSlot", dir: -1} : {key: "profit", dir: -1};
 const lootView = () => S.lootView || (PAGE === "loot" ? "tier" : "list");
 const HIST_CACHE = new Map();
@@ -1281,6 +1319,7 @@ function applyLang(){
   buildLootGroups();
   paintStatus();
   render();
+  paintRat();
 }
 
 /* ================= 操作 ================= */
@@ -1426,8 +1465,8 @@ $mode.addEventListener("change", () => {
 $days.addEventListener("change", () => { S.days = +$days.value; saveSettings(); recompute(); });
 
 /* ページごとの見え方（転売ボード／持ち帰りティア表） */
-const PAGE_TITLE = {top: "titleTop", flip: "title", loot: "titleLoot", watch: "titleWatch", settings: "titleSettings", all: "title"};
-const PAGE_NAV = {top: "pgTop", flip: "pgFlip", loot: "pgLoot", watch: "pgWatch", settings: "pgSettings"};
+const PAGE_TITLE = {top: "titleTop", flip: "title", loot: "titleLoot", watch: "titleWatch", rat: "titleRat", settings: "titleSettings", all: "title"};
+const PAGE_NAV = {top: "pgTop", flip: "pgFlip", loot: "pgLoot", watch: "pgWatch", rat: "pgRat", settings: "pgSettings"};
 /* ページごとに、そのページの機能だけを見せる（中身の部品は共通） */
 function setupPage(){
   if(PAGE === "all") return;                                   // 開発・テスト用：全部入り
@@ -1438,9 +1477,10 @@ function setupPage(){
   document.querySelector(".phead h1").dataset.i18n = PAGE_TITLE[PAGE];
   hide("#settingsBox");                                        // 設定はプレイヤー設定のページだけ
   if(PAGE !== "flip") hide("#flipBox");                        // 転売の条件は転売ボードだけ
-  if(PAGE === "top" || PAGE === "settings"){
+  if(PAGE === "top" || PAGE === "settings" || PAGE === "rat"){
     hide("#status", ".bar", ".tabs", "#banner", "#tierLegend", "#tierBoard", "#listWrap");
     if(PAGE === "top") show("topCards");
+    else if(PAGE === "rat") show("ratPanel");
     else{ const b = document.getElementById("settingsBox"); b.hidden = false; delete b.dataset.off; b.open = true; }
     return;
   }
@@ -1887,6 +1927,60 @@ function onStockChange(e){
   stockSave(list); paintMarket();
   return true;
 }
+
+/* ================= ラットスポット（rat.html） =================
+   マップを選ぶと、見取り図の上に番号つきの★（待つ位置）と、その下にスポットの一覧を出す。
+   見取り図を押すと、大きな画像を別のタブで開く（スマートフォンで拡大して見られるように）。★を押すと、そのスポットへ移る
+   一覧の1件：名前・評価（●の数）・行き方・待つ位置から見える景色・ショート動画
+   動画は、押すまで読み込まない（サムネイルだけ。押したら YouTube の再生画面に差し替える）
+   データは site/rat.mjs がサイトを作るときに埋め込む（RAT_DATA）。価格データは使わない */
+const RAT = {"ratings":{"sightline":{"ja":"見晴らし","en":"View"},"audio":{"ja":"聞き取りやすさ","en":"Sound"},"scav_safe":{"ja":"Scav回避","en":"Scav-safe"},"access":{"ja":"行きやすさ","en":"Easy to reach"}},"maps":[{"id":"streets","ja":"ストリートオブタルコフ","en":"Streets of Tarkov","img":{"ja":"rat/map-streets-ja.jpg","en":"rat/map-streets-en.jpg"}}],"spots":[{"id":"streets-zmejskij-tree","map":"streets","ja":"ズメイスキー小路の木の上","en":"Zmejskij Alley Tree","pos":[41.4,49.5],"ratings":{"sightline":5,"audio":5,"scav_safe":5,"access":5},"route":{"ja":["路地の奥から入る","トラックの横を抜ける","トラックの上に上がり、木の中へ"],"en":["Go in from the back of the alley","Walk past the truck","Climb the truck, then the tree"]},"view":"rat/streets-zmejskij-tree-view.jpg","thumb":"rat/streets-zmejskij-tree-thumb.jpg","short":"https://youtube.com/shorts/aiN82Z9kjJY"}]};
+
+function ytId(url){
+  const m = String(url || "").match(/(?:shorts\/|youtu\.be\/|[?&]v=|embed\/)([\w-]{11})/);
+  return m ? m[1] : "";
+}
+function paintRat(){
+  const box = document.getElementById("ratPanel");
+  if(!box || box.hidden || !RAT || !RAT.maps.length) return;
+  const ja = S.lang === "ja", nmOf = o => (ja ? o.ja : o.en) || o.en || o.ja;
+  const map = RAT.maps.find(m => m.id === S.ratMap) || RAT.maps[0];
+  const spots = RAT.spots.filter(s => s.map === map.id);
+  const tabs = `<div class="tabs" role="tablist">${RAT.maps.map(m => `<button role="tab" data-ratmap="${m.id}" aria-selected="${m.id === map.id}">${esc(nmOf(m))}</button>`).join("")}</div>`;
+  const pins = spots.map((s, i) => `<a class="ratpin" href="#rat-${s.id}" style="left:${s.pos[0]}%;top:${s.pos[1]}%" title="${esc(nmOf(s))}"><b>${i + 1}</b></a>`).join("");
+  const dots = n => `<span class="ratdots" aria-label="${n}/5">${"●".repeat(n)}<i>${"●".repeat(5 - n)}</i></span>`;
+  const cards = spots.map((s, i) => {
+    const id = ytId(s.short);
+    const video = id && s.thumb
+      ? `<button type="button" class="ratvideo" data-yt="${id}" aria-label="${esc(t("ratPlay"))}"><img src="${s.thumb}" alt="" loading="lazy" width="540" height="960"><span class="play" aria-hidden="true"></span></button>` : "";
+    const rate = Object.entries(RAT.ratings).map(([k, v]) => `<tr><th>${esc(nmOf(v))}</th><td>${dots(s.ratings[k] || 0)}</td></tr>`).join("");
+    const route = (ja ? s.route.ja : s.route.en) || [];
+    return `<article class="ratcard" id="rat-${s.id}">
+      ${video ? `<div class="ratmedia">${video}</div>` : ""}
+      <div class="ratbody">
+        <h2><span class="ratno">${i + 1}</span>${esc(nmOf(s))}${ja ? `<small>${esc(s.en)}</small>` : ""}</h2>
+        <table class="ratrate">${rate}</table>
+        <h3>${esc(t("ratRoute"))}</h3>
+        <ol class="ratroute">${route.map(r => `<li>${esc(r)}</li>`).join("")}</ol>
+        ${s.view ? `<h3>${esc(t("ratView"))}</h3><img class="ratview" src="${s.view}" alt="" loading="lazy" width="960" height="544">` : ""}
+      </div>
+    </article>`;
+  }).join("");
+  box.innerHTML = `${tabs}
+    <figure class="ratmap"><a class="full" href="${ja ? map.img.ja : map.img.en}" target="_blank" rel="noopener"><img src="${ja ? map.img.ja : map.img.en}" alt="${esc(nmOf(map))}" width="1600" height="1227"></a>${pins}</figure>
+    <div class="ratlist">${cards}</div>`;
+}
+document.getElementById("ratPanel").addEventListener("click", e => {
+  const tab = e.target.closest("button[data-ratmap]");
+  if(tab){ S.ratMap = tab.dataset.ratmap; saveSettings(); paintRat(); return; }
+  const v = e.target.closest("button[data-yt]");
+  if(v){
+    const f = document.createElement("iframe");
+    f.src = `https://www.youtube-nocookie.com/embed/${v.dataset.yt}?autoplay=1&rel=0&playsinline=1`;
+    f.title = "YouTube"; f.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen"; f.allowFullscreen = true;
+    v.replaceWith(f);
+  }
+});
 
 
 setupPage();

@@ -1,0 +1,12 @@
+{
+  "_about": "マップの一覧（長尺動画・サイトでは、この並び順でマップを並べる）。map_en・map_ja は見取り図の画像（英語・日本語）。スポットの pos_pct は、この画像の左上からの位置（%）",
+  "maps": [
+    {
+      "id": "streets",
+      "name_en": "Streets of Tarkov",
+      "name_ja": "ストリートオブタルコフ",
+      "map_en": "assets/maps/streets-en.jpg",
+      "map_ja": "assets/maps/streets-ja.jpg"
+    }
+  ]
+}

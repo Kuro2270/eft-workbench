@@ -82,7 +82,7 @@ console.log("\nトップ（index.html）");
   const { page, errs } = await open("index.html");
   ok(/EFT ツール/.test(await page.title()), "タイトル / " + await page.title());
   const cards = await page.$$eval("#topCards a.card", ns => ns.map(n => n.getAttribute("href") + ":" + n.textContent.trim().slice(0, 12)));
-  ok(cards.length === 4 && cards.map(c => c.split(":")[0]).join(",") === "flip.html,loot.html,watch.html,settings.html", "4つの入口が並ぶ（マップ作成は公開しない） / " + cards.join(" "));
+  ok(cards.length === 5 && cards.map(c => c.split(":")[0]).join(",") === "flip.html,loot.html,watch.html,rat.html,settings.html", "5つの入口が並ぶ（マップ作成は公開しない） / " + cards.join(" "));
   ok(await page.$eval(".bar", n => n.hidden) && await page.$eval("#tierBoard", n => n.hidden) && await page.$eval("#settingsBox", n => n.hidden), "ツールの部品は出ない");
   ok(await page.evaluate(() => !window.__fetched), "価格データを読みに行かない");
   ok(errs.length === 0, "エラーなし " + errs.join(";"));
@@ -107,6 +107,23 @@ console.log("\n売り時・買い時（watch.html）");
   ok(!(await page.$eval("#marketPanel", n => n.hidden)), "売り時・買い時の欄が出る");
   ok(await page.$eval("#lootHideWrap", n => n.hidden) && await page.$eval("#listWrap", n => n.hidden) && await page.$eval(".tabs", n => n.hidden) && await page.$eval("#tierBoard", n => n.hidden), "ティア表・転売の表・絞り込みは出ない");
   ok(await page.$eval("#pgWatch", n => n.getAttribute("aria-current") === "page" && /売り時・買い時/.test(n.textContent)), "上のリンクの名前も「売り時・買い時」");
+  ok(errs.length === 0, "エラーなし " + errs.join(";"));
+  await page.close();
+}
+console.log("\nラットスポット（rat.html）");
+{
+  const { page, errs } = await open("rat.html");
+  ok(/ラットスポット/.test(await page.title()), "タイトル / " + await page.title());
+  ok(await page.$eval("#pgRat", n => n.getAttribute("aria-current") === "page"), "上のリンクで今のページが分かる");
+  ok(!(await page.$eval("#ratPanel", n => n.hidden)) && await page.$eval(".bar", n => n.hidden) && await page.$eval("#listWrap", n => n.hidden), "ラットスポットの欄だけが出る");
+  ok((await page.$$("#ratPanel button[data-ratmap]")).length >= 1, "マップを選べる");
+  const pins = await page.$$eval(".ratpin", ns => ns.length), cards = await page.$$eval(".ratcard", ns => ns.length);
+  ok(pins > 0 && pins === cards, `見取り図の★と一覧の数がそろう / ★${pins}・一覧${cards}`);
+  ok(await page.$eval(".ratmap img", n => n.complete && n.naturalWidth > 0), "見取り図の画像が出る");
+  ok(!(await page.$("#ratPanel iframe")), "動画は押すまで読み込まない");
+  ok(await page.evaluate(() => !window.__fetched), "価格データを読みに行かない");
+  await page.click('.lang button[data-lang="en"]');
+  ok(/Route/.test(await page.$eval("#ratPanel", n => n.innerText)), "英語に切り替わる");
   ok(errs.length === 0, "エラーなし " + errs.join(";"));
   await page.close();
 }

@@ -10,6 +10,7 @@ Escape from Tarkov の無料ツール集。tarkov.dev のデータを使う。
 | `flip.html` 転売ボード | フリマ⇔トレーダーの転売。転売の条件（最低利益など）はこのページで |
 | `loot.html` 持ち帰りティア表 | レイドで持ち帰る品を 1マスあたりの売値で S〜D に |
 | `watch.html` 売り時・買い時 | 底値付近（買い場）・高値付近（売り場）のランキング、おすすめの値段、移動平均のグラフ |
+| `rat.html` ラットスポット | マップを選ぶと、見取り図の上に待つ位置（★）、その下にスポットの一覧（評価・行き方・見える景色・ショート動画）。動画は押すまで読み込まない |
 | `settings.html` プレイヤー設定 | レベル・LL・インテルセンターなど。全ツール共通 |
 | `privacy.html`・`contact.html`・`404.html` | プライバシーポリシー（運営者情報・データの出どころ・非公式であることもここだけに書く）・お問い合わせ・見つからないとき。`about.html` は `privacy.html` へ転送するだけ |
 
@@ -19,14 +20,15 @@ Escape from Tarkov の無料ツール集。tarkov.dev のデータを使う。
 
 | 場所 | 役割 |
 | --- | --- |
-| `src/` | ツールの画面の本体（直すのはここ）。`app.html` に `data.js`・`market.js`・`market-ui.js`・`stock-ui.js` を埋め込む |
-| `site/` | ページを作る処理。`tools.mjs`（ツールの5ページ）・`info.mjs`（プライバシーポリシーなど）・`seo.mjs`（robots.txt・sitemap.xml）・`config.mjs`（サイト名・URL・お問い合わせフォーム） |
+| `src/` | ツールの画面の本体（直すのはここ）。`app.html` に `data.js`・`market.js`・`market-ui.js`・`stock-ui.js`・`rat-ui.js` を埋め込む |
+| `site/` | ページを作る処理。`tools.mjs`（ツールの6ページ）・`rat.mjs`（ラットスポットのデータと画像）・`info.mjs`（プライバシーポリシーなど）・`seo.mjs`（robots.txt・sitemap.xml）・`config.mjs`（サイト名・URL・お問い合わせフォーム） |
 | `build.mjs` | `site/` の3つを順番に呼んで `public/` を作る |
 | `public/` | 公開するもの（build.mjs が作る。直接は直さない）。Cloudflare Pages がここを配信する |
 | `functions/data/[mode].js` | 公開サイトの `/data/<モード>.json` を返す（Cloudflare の保存場所 Workers KV から） |
 | `snapshot.mjs` | 価格を tarkov.dev から取って `public/data/<モード>.json` に保存する |
 | `.github/workflows/snapshot.yml` | 「価格｜価格を取って保存する」：1時間おきに snapshot.mjs を動かし、Workers KV に置く |
 | `tools/` | 手元専用の道具（マップ作成） |
+| `rat/` | ラットスポットの動画を作る道具と、ラットスポットのページの元データ（公開されない。使い方は `rat/README.md`） |
 | `test/` | 確認用（`node test/test.mjs` など） |
 | `start.bat` | 手元で開く（Windows。ダブルクリック） |
 

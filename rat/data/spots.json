@@ -1,0 +1,62 @@
+{
+  "_about": "ラットスポットの一覧。ratings は 1〜5（5 がいちばん良い）。並べ替えや絞り込みに使う。pos_pct は地図（assets/maps/<map>-en.jpg）の左上からの位置（%）。長尺動画では、マップごとに、この並び順でつなぐ。videos.short はショート動画の URL（サイトの一覧に出す）。長尺動画はできあがるまで載せない",
+  "rating_keys": {
+    "sightline": {
+      "ja": "見晴らし",
+      "en": "View",
+      "desc_ja": "待つ位置から見える範囲の広さ・見通しのよさ",
+      "desc_en": "How wide and clear your view is from the spot"
+    },
+    "audio": {
+      "ja": "聞き取りやすさ",
+      "en": "Sound",
+      "desc_ja": "近づく足音や物音の聞き取りやすさ",
+      "desc_en": "How easily you hear footsteps and noise approaching"
+    },
+    "scav_safe": {
+      "ja": "Scav回避",
+      "en": "Scav-safe",
+      "desc_ja": "Scav に見つかりにくい・寄ってこられにくい",
+      "desc_en": "How unlikely Scavs are to spot or wander into you"
+    },
+    "access": {
+      "ja": "行きやすさ",
+      "en": "Easy to reach",
+      "desc_ja": "スポーンから迷わず安全に着けるか",
+      "desc_en": "How easy and safe it is to get there"
+    }
+  },
+  "spots": [
+    {
+      "id": "streets-zmejskij-tree",
+      "map": "streets",
+      "zone": "residential",
+      "name_ja": "ズメイスキー小路の木の上",
+      "name_en": "Zmejskij Alley Tree",
+      "pos_pct": [
+        41.4,
+        49.5
+      ],
+      "facing_deg": -140,
+      "ratings": {
+        "sightline": 5,
+        "audio": 5,
+        "scav_safe": 5,
+        "access": 5
+      },
+      "route_ja": [
+        "路地の奥から入る",
+        "トラックの横を抜ける",
+        "トラックの上に上がり、木の中へ"
+      ],
+      "route_en": [
+        "Go in from the back of the alley",
+        "Walk past the truck",
+        "Climb the truck, then the tree"
+      ],
+      "videos": {
+        "short": "https://youtube.com/shorts/aiN82Z9kjJY"
+      }
+    }
+  ]
+}

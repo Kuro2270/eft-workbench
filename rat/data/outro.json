@@ -1,0 +1,12 @@
+{
+  "_about": "動画の終わり方（台本の outro で、スポットごとに変えられる）。kind … card（まとめカード：画面を止めてぼかし、スポットのまとめを出す）／ fade（余韻：そのまま黒へ溶けていく）。line … まとめカードでのずんだもんのセリフ［英語, 日本語訳］。follow … まとめカードの画面下の一言。se … まとめカードに切り替わるときの効果音（assets/se/ の名前。null で鳴らさない）",
+  "kind": "card",
+  "card_sec": 3.0,
+  "fade_sec": 2.5,
+  "line": [
+    "See you at\nthe next spot!",
+    "次のスポットで\n会うのだ！"
+  ],
+  "follow": "Follow for more rat spots",
+  "se": "click"
+}
