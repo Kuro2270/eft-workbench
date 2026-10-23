@@ -1,0 +1,50 @@
+name: SNS｜動画を Bluesky で告知する（手動）
+
+# ラットスポットのショート動画を、Bluesky に1本ずつ告知する。役割はこれだけ（いいねは「SNS｜Bluesky のいいね」）。
+#   中身（本文・YouTube のリンク・横長のサムネイル）は rat/data/spots.json から作る（sns/bsky-post-video.mjs）。
+#   使い方：動画を YouTube に上げ、その URL を spots.json の videos.short に入れて GitHub に上げたあと、この画面で「Run workflow」を押す。
+#     スポットを空のままにすると、まだ告知していない動画の最初の1本を告知する（同じ動画は2回告知しない）。
+#     はじめは「内容を見るだけ」にして、実行結果の Summary で本文を確かめてから、チェックを外して押すと安心。
+# 必要な設定：Secrets の BSKY_HANDLE・BSKY_APP_PASSWORD（いいねと同じ）
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "内容を見るだけ（投稿しない）"
+        type: boolean
+        default: true
+      spot:
+        description: "告知するスポットの id（例 streets-zmejskij-tree）。空なら、まだ告知していない動画の最初の1本"
+        default: ""
+      force:
+        description: "告知済みでも、もう一度投稿する"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bsky-post-video
+  cancel-in-progress: false
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: 動画を告知する
+        env:
+          DRY_RUN: ${{ inputs.dry_run == true && '1' || '' }}
+          SPOT: ${{ inputs.spot }}
+          FORCE: ${{ inputs.force == true && '1' || '' }}
+          BSKY_HANDLE: ${{ secrets.BSKY_HANDLE }}
+          BSKY_APP_PASSWORD: ${{ secrets.BSKY_APP_PASSWORD }}
+        run: node sns/bsky-post-video.mjs

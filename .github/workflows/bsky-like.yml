@@ -1,0 +1,69 @@
+name: SNS｜Bluesky のいいね（自動・毎日）
+
+# Bluesky で、タルコフ（Escape from Tarkov）についての最近の投稿（英語・日本語）を探して、いいねを付ける。役割はこれだけで、投稿はしない。
+# 自動の実行は1日1回、決めた件数を付ける。
+#   GitHub の定時実行は混むと数時間遅れたり飛ばされたりするので、夜に4回の時刻を入れてある（21:17・22:47・翌0:17・翌2:47）。
+#   最初に動いた回だけがいいねを付け、あとの回は「今日の分はもう済んでいる」と調べて何もしない（調べるのは sns/bsky-like-done.mjs）。
+#   「今日」は日本時間の朝4時から翌朝4時まで。1件も付けられずに失敗した回は済んだことにせず、次の時刻にもう一度動く。
+#   その日に手で付けたいいね・手で押した実行の分は、件数に数えない。
+# 必要な設定（Settings → Secrets and variables → Actions）
+#   Secrets  : BSKY_HANDLE（tarkov-workbench.bsky.social）、BSKY_APP_PASSWORD（Bluesky の設定で作るアプリパスワード）
+#   Variables: BSKY_LIKE_LIMIT（1回に付ける数。無ければ 50 件。50〜200 件の間で使う）。「Repository variables」に登録する
+# いいねとの間は「20 秒〜75 秒のランダム」あける（50 件で 40 分ほど、200 件で 2 時間半ほど）。付けたいいねは、実行結果の Summary に一覧で出る。
+# 同じ人には、きのう・きょういいねを付けていたら付けない（1日以上あける。手で付けたいいねも含む）。
+# 止めるとき：Actions の画面でこのワークフローを開き、右上の「…」→「Disable workflow」。
+# 手で押すときは「候補を見るだけ」にすると、いいねを付けずに候補だけ見られる。
+# 手で押して付けるときは、指定の件数（空なら設定の値）まで付ける。手で押した実行は、自動の1日1回とは別に数える（自動の分は減らない）。
+
+on:
+  schedule:
+    - cron: "17 12 * * *"      # 毎日 21:17（日本時間）。ふだんはこの回が付ける（MTG サイトのいいねと時刻をずらしている）
+    - cron: "47 13 * * *"      # 22:47（予備。その日の分が済んでいれば何もしない）
+    - cron: "17 15 * * *"      # 翌 0:17（予備。朝4時までは前の日の分として数える）
+    - cron: "47 17 * * *"      # 翌 2:47（予備）
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "候補を見るだけ（いいねは付けない）"
+        type: boolean
+        default: true
+      limit:
+        description: "今回付ける件数（1〜200）。空なら設定（BSKY_LIKE_LIMIT）の値"
+        default: ""
+
+permissions:
+  contents: read
+  actions: read     # 今日の自動の実行がもう済んだかを調べるため（実行の一覧を見るだけ）
+
+concurrency:
+  group: bsky-like
+  cancel-in-progress: false
+
+jobs:
+  like:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300    # 間をあけるので、上限 200 件（最長で4時間15分ほど）でも収まるように
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: 今日の自動の分がもう済んだかを調べる（自動の実行のときだけ）
+        id: done
+        if: github.event_name == 'schedule'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node sns/bsky-like-done.mjs
+
+      - name: いいねを付ける
+        if: steps.done.outputs.done != 'true'
+        env:
+          DRY_RUN: ${{ inputs.dry_run == true && '1' || '' }}
+          LIKE_LIMIT: ${{ inputs.limit || vars.BSKY_LIKE_LIMIT || '50' }}
+          LIKE_LIMIT_SRC: ${{ inputs.limit && 'input' || vars.BSKY_LIKE_LIMIT && 'var' || 'default' }}
+          MANUAL: ${{ github.event_name == 'workflow_dispatch' && '1' || '' }}
+          BSKY_HANDLE: ${{ secrets.BSKY_HANDLE }}
+          BSKY_APP_PASSWORD: ${{ secrets.BSKY_APP_PASSWORD }}
+        run: node sns/bsky-like.mjs
