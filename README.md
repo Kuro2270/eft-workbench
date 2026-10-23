@@ -27,6 +27,9 @@ Escape from Tarkov の無料ツール集。tarkov.dev のデータを使う。
 | `functions/data/[mode].js` | 公開サイトの `/data/<モード>.json` を返す（Cloudflare の保存場所 Workers KV から） |
 | `snapshot.mjs` | 価格を tarkov.dev から取って `public/data/<モード>.json` に保存する |
 | `.github/workflows/snapshot.yml` | 「価格｜価格を取って保存する」：1時間おきに snapshot.mjs を動かし、Workers KV に置く |
+| `.github/workflows/bsky-like.yml` | 「SNS｜Bluesky のいいね」：タルコフの投稿にいいねを付ける（自動・1日1回。夜に予備の時刻つき） |
+| `.github/workflows/bsky-post-video.yml` | 「SNS｜動画を Bluesky で告知する」：ラットスポットのショート動画を1本ずつ告知する（手動） |
+| `sns/` | Bluesky とのやり取り（`bsky.mjs`）・いいね（`bsky-like.mjs`）・1日1回の確認（`bsky-like-done.mjs`）・動画の告知（`bsky-post-video.mjs`） |
 | `tools/` | 手元専用の道具（マップ作成） |
 | `rat/` | ラットスポットの動画を作る道具と、ラットスポットのページの元データ（公開されない。使い方は `rat/README.md`） |
 | `test/` | 確認用（`node test/test.mjs` など） |

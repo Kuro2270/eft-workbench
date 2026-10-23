@@ -1,5 +1,7 @@
-# YouTube チャンネル「Rat of Tarkov」のバナーとアイコンを作る。役割はこれだけ（設定は YouTube Studio で手作業）。
-#   python3 channel_art.py   … out/channel/banner.png（2560×1440）・icon.png（800×800）
+# SNS のバナーとアイコンを作る。役割はこれだけ（設定は各サービスの画面で手作業）。
+#   python3 channel_art.py   … out/channel/ に
+#     banner.png（2560×1440）・icon.png（800×800） … YouTube チャンネル「Rat of Tarkov」
+#     bluesky-banner.jpg（3000×1000）             … Bluesky「tarkov-workbench」（サイトのツールとラットスポットの両方を知らせる）
 #   コンセプト：「エイムが下手でも、タルコフは勝てる」。待ち伏せ（ラット）で勝つチャンネル
 #   バナーは端末で見える範囲が違う。文字とキャラクターは、どの端末でも見える真ん中の 1546×423 に収める
 #   文字のフォント：assets/fonts/BlackOpsOne-Regular.ttf（SIL Open Font License）
@@ -67,4 +69,32 @@ def icon():
     im.paste(bg, (0, 0), mask); im.save(f"{OUT}/icon.png", optimize=True)
     prev = Image.new("RGB", (S, S), "#FFFFFF"); prev.paste(im, (0, 0), im); prev.resize((200, 200)).save(f"{OUT}/icon-small-check.png")
 
-banner(); icon(); print(OUT)
+def bluesky_banner():
+    # Bluesky：左下にアイコンが重なり、スマートフォンでは上下が少し切れるので、左の 28%・上下の 12% には文字を置かない
+    W, H = 3000, 1000; L, T, B = round(W * 0.28), round(H * 0.12), round(H * 0.88)
+    im = backdrop(W, H); d = ImageDraw.Draw(im)
+    # 右：フードのずんだもん（下端はバナーの下まで。切れ目が見えないように）
+    ch = 900; cw = round(ZUNDA.width * ch / ZUNDA.height); z = ZUNDA.resize((cw, ch), Image.LANCZOS)
+    zx = W - cw - 40
+    glow = Image.new("RGBA", (W, H), (0, 0, 0, 0)); ImageDraw.Draw(glow).ellipse((zx - 40, H - ch + 20, zx + cw + 40, H + 120), fill=(255, 214, 64, 70))
+    im.alpha_composite(glow.filter(ImageFilter.GaussianBlur(80))); im.alpha_composite(z, (zx, H - ch + 10)); d = ImageDraw.Draw(im)
+    # 真ん中：サイト名・ひと言（英語と日本語）・できること
+    x, right = L + 40, zx - 30
+    title = "EFT WORKBENCH"; fs = 170
+    while d.textlength(title, font=tfont(fs)) > right - x: fs -= 4
+    d.text((x, T + 40), title, font=tfont(fs), fill=P.WHITE, stroke_width=3, stroke_fill="#000000")
+    d.text((x + 4, T + 290), "Free Tarkov tools & rat spots", font=P.font(70), fill=P.YELLOW, anchor="lm", stroke_width=2, stroke_fill="#000000")
+    d.text((x + 4, T + 390), "タルコフの無料ツールとラットスポット", font=jfont(58), fill=P.WHITE, anchor="lm", stroke_width=2, stroke_fill="#000000")
+    cx = x + 4
+    for chip in ["FLIP BOARD", "LOOT TIERS", "BUY & SELL", "RAT SPOTS"]:
+        w = d.textlength(chip, font=P.font(36)) + 46
+        d.rounded_rectangle((cx, T + 470, cx + w, T + 532), radius=12, outline=P.YELLOW, width=3, fill=(10, 12, 14, 170))
+        d.text((cx + w / 2, T + 501), chip, font=P.font(36), fill=P.YELLOW, anchor="mm"); cx += w + 18
+    d.text((x + 4, B - 70), "eft-workbench.com", font=P.font(46), fill=P.GREY, anchor="lm", stroke_width=2, stroke_fill="#000000")
+    im.convert("RGB").save(f"{OUT}/bluesky-banner.jpg", quality=88, optimize=True)   # Bluesky は 1MB までなので JPEG
+    chk = im.copy(); c = ImageDraw.Draw(chk)
+    c.rectangle((L, T, W - 1, B), outline="#FF3B30", width=5)                           # 文字を置いてよい範囲
+    c.ellipse((90, H - 300, 90 + 420, H + 120), outline="#30A0FF", width=5)               # アイコンが重なるあたり
+    chk.convert("RGB").resize((1500, 500)).save(f"{OUT}/bluesky-banner-check.jpg", quality=88)
+
+banner(); icon(); bluesky_banner(); print(OUT)

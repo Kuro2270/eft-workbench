@@ -4,6 +4,7 @@
 #     map-<マップ>-<ja|en>.jpg … 見取り図（幅 1600）
 #     <スポット>-view.jpg      … 待つ位置から見える景色（幅 960）
 #     <スポット>-thumb.jpg     … ショート動画のサムネイル（thumb.py の thumb-short.jpg を 540×960 に。動画を押す前に見せる絵）
+#     <スポット>-card.jpg      … SNS で動画を告知するときのリンクの絵（thumb.py の thumb-long.jpg。横長）
 import os
 from PIL import Image
 from lib import parts as P
@@ -21,3 +22,5 @@ for sp in P.spots()["spots"]:
     save(P.path(P.script(sp["id"])["sources"]["view"]), f"{sp['id']}-view.jpg", 960)
     th = f"{P.OUT}/{sp['id']}/thumb-short.jpg"
     if os.path.exists(th): save(th, f"{sp['id']}-thumb.jpg", 540)
+    card = f"{P.OUT}/{sp['id']}/thumb-long.jpg"
+    if os.path.exists(card): save(card, f"{sp['id']}-card.jpg", 1200)

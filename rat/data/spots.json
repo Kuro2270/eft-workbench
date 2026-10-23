@@ -1,5 +1,5 @@
 {
-  "_about": "ラットスポットの一覧。ratings は 1〜5（5 がいちばん良い）。並べ替えや絞り込みに使う。pos_pct は地図（assets/maps/<map>-en.jpg）の左上からの位置（%）。長尺動画では、マップごとに、この並び順でつなぐ。videos.short はショート動画の URL（サイトの一覧に出す）。長尺動画はできあがるまで載せない",
+  "_about": "ラットスポットの一覧。ratings は 1〜5（5 がいちばん良い）。並べ替えや絞り込みに使う。pos_pct は地図（assets/maps/<map>-en.jpg）の左上からの位置（%）。長尺動画では、マップごとに、この並び順でつなぐ。videos.short はショート動画の URL（サイトの一覧に出す）。長尺動画はできあがるまで載せない。summary は SNS で動画を告知するときのひと言（英語・日本語）",
   "rating_keys": {
     "sightline": {
       "ja": "見晴らし",
@@ -56,6 +56,10 @@
       ],
       "videos": {
         "short": "https://youtube.com/shorts/aiN82Z9kjJY"
+      },
+      "summary": {
+        "en": "Climb the truck, get into the tree, and wait. They never look up.",
+        "ja": "トラックに上がって木の中へ。あとは待つだけ。みんな上は見ません。"
       }
     }
   ]

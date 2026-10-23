@@ -31,9 +31,10 @@ python3 music.py c <秒数> out/<id>/short/bgm.wav <締めの和音の秒>   # �
 python3 mix.py out/<id>/short/clean-card.mp4 out/<id>/short/timeline-card.json out/<id>/short/bgm.wav out/<id>/short/rat-<id>.mp4
 python3 thumb.py <id>                       # サムネイル（ショート用・長尺用）
 ```
-3. YouTube に上げたら、ショートの URL を `data/spots.json` の `videos.short` に入れる
+3. YouTube に上げたら、ショートの URL を `data/spots.json` の `videos.short` に、SNS で告知するときのひと言を `summary`（英語・日本語）に入れる
 4. サイト用の画像を作る：`python3 site_images.py`
 5. リポジトリの一番上で `node build.mjs`（サイトのラットスポットのページに出る）
+6. GitHub に上げたら、Actions の「SNS｜動画を Bluesky で告知する」を押す（まだ告知していない動画を1本告知する）
 
 ## 長尺（作業中は公開しない）
 長尺の章は、上の 2 の `short` を `long` にして `build_clip.py` → `outro.py` まで。そのあと
