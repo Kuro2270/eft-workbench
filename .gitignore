@@ -2,3 +2,8 @@
 public/data/
 node_modules/
 test/*.png
+# ラットスポット：元の動画・読み上げのモデル・できた動画（大きいので入れない。長尺はできあがるまで公開しない）
+rat/sources/
+rat/kokoro/
+rat/out/
+__pycache__/
