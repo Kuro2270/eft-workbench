@@ -61,6 +61,43 @@
         "en": "Climb the truck, get into the tree, and wait. They never look up.",
         "ja": "トラックに上がって木の中へ。あとは待つだけ。みんな上は見ません。"
       }
+    },
+    {
+      "id": "streets-nikitskaya-balcony",
+      "map": "streets",
+      "zone": "industrial",
+      "name_ja": "ニキツカヤ通りの角のバルコニー",
+      "name_en": "Nikitskaya Corner Balcony",
+      "pos_pct": [
+        71.8,
+        58.8
+      ],
+      "facing_deg": -20,
+      "ratings": {
+        "sightline": 5,
+        "audio": 4,
+        "scav_safe": 2,
+        "access": 2
+      },
+      "route_ja": [
+        "建物に入り、階段を上がる",
+        "レストランを抜ける",
+        "窓を割って外に出る",
+        "出っ張りを伝ってバルコニーへ"
+      ],
+      "route_en": [
+        "Go in and take the stairs up",
+        "Cross the restaurant",
+        "Break the window, climb out",
+        "Walk the ledge to the balcony"
+      ],
+      "videos": {
+        "short": "https://youtube.com/shorts/HEwIONpV8hA"
+      },
+      "summary": {
+        "en": "Out the window, along the ledge, onto the corner balcony. Hard to reach, but you see the whole street.",
+        "ja": "窓から出て出っ張りを伝い、角のバルコニーへ。行くのは大変ですが、通りがよく見えます。"
+      }
     }
   ]
 }
