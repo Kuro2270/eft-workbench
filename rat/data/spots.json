@@ -1,5 +1,5 @@
 {
-  "_about": "ラットスポットの一覧。ratings は 1〜5（5 がいちばん良い）。並べ替えや絞り込みに使う。pos_pct は地図（assets/maps/<map>-en.jpg）の左上からの位置（%）。長尺動画では、マップごとに、この並び順でつなぐ。videos.short はショート動画の URL（サイトの一覧に出す）。長尺動画はできあがるまで載せない。summary は SNS で動画を告知するときのひと言（英語・日本語）",
+  "_about": "ラットスポットの一覧。ratings は 1〜5（5 がいちばん良い）。並べ替えや絞り込みに使う。pos_pct は地図（assets/maps/<map>-en.jpg）の左上からの位置（%）。長尺動画では、マップごとに、この並び順でつなぐ。videos.short はショート動画の URL（サイトの一覧に出す）。長尺動画はできあがるまで載せない。view_deg は見る範囲の広さ（度。地図の扇の開き。省くと 50）、summary は SNS で動画を告知するときのひと言（英語・日本語）",
   "rating_keys": {
     "sightline": {
       "ja": "見晴らし",
@@ -98,6 +98,42 @@
         "en": "Out the window, along the ledge, onto the corner balcony. Hard to reach, but you see the whole street.",
         "ja": "窓から出て出っ張りを伝い、角のバルコニーへ。行くのは大変ですが、通りがよく見えます。"
       }
+    },
+    {
+      "id": "streets-cinema-stairs",
+      "map": "streets",
+      "zone": "cinema",
+      "name_ja": "映画館前の階段の壁の上",
+      "name_en": "Cinema Stairs Ledge",
+      "pos_pct": [
+        69.6,
+        74.2
+      ],
+      "facing_deg": -65,
+      "ratings": {
+        "sightline": 4,
+        "audio": 4,
+        "scav_safe": 2,
+        "access": 2
+      },
+      "route_ja": [
+        "大きな階段を上がる",
+        "上で手すりを越える",
+        "壁の上を下り、端でしゃがむ"
+      ],
+      "route_en": [
+        "Climb the big stairs",
+        "Hop over the rail at the top",
+        "Walk down the wall, crouch at the end"
+      ],
+      "videos": {
+        "short": "https://youtube.com/shorts/Hu7rAf6bEgk"
+      },
+      "summary": {
+        "en": "Climb the stairs, hop the rail, and crouch at the end of the wall. Pop up when they pass the bus.",
+        "ja": "階段を上がって手すりを越え、壁の端でしゃがんで待つ。バスの横を通ったら顔を出して撃つだけ。"
+      },
+      "view_deg": 130
     }
   ]
 }
