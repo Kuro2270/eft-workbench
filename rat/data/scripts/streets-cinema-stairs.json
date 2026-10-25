@@ -1,0 +1,146 @@
+{
+  "_about": "1つのスポットの動画の台本。sources は元の動画・画像、segments は場面（kind: still=静止画 / clip=動画、src は sources の名前、start=元の動画の開始秒、dur=長さ、caption=画面下の一言、lines=ずんだもんのセリフ［出す秒, 英語, 日本語訳（吹き出しの下に（）で出す）］。\\n は吹き出しの改行）。thumbnail はサムネイル（main＝大きな見出しの行［1行目は黄色］, ja＝日本語のひと言, badge＝札, bg＝背景にする画面［sources の名前, 秒］）",
+  "spot": "streets-cinema-stairs",
+  "sources": {
+    "view": "assets/spots/streets-cinema-stairs/view.jpg",
+    "1-route": "footage/streets-cinema-stairs/1-route.mp4",
+    "2-route": "footage/streets-cinema-stairs/2-route.mp4",
+    "3-route": "footage/streets-cinema-stairs/3-route.mp4",
+    "4-kill": "footage/streets-cinema-stairs/4-kill.mp4",
+    "5-kill2": "footage/streets-cinema-stairs/5-kill2.mp4"
+  },
+  "segments": [
+    {
+      "kind": "still",
+      "src": "view",
+      "start": 0,
+      "dur": 3.0,
+      "caption": "Hide on the stair wall",
+      "lines": [
+        [
+          0,
+          "Let's wait\nright here.",
+          "ここで\n待つのだ"
+        ]
+      ]
+    },
+    {
+      "kind": "clip",
+      "src": "1-route",
+      "start": 1.0,
+      "dur": 5.0,
+      "caption": "① Climb the big stairs",
+      "lines": [
+        [
+          0.4,
+          "Up the stairs!",
+          "階段を\n上がるのだ"
+        ]
+      ]
+    },
+    {
+      "kind": "clip",
+      "src": "2-route",
+      "start": 1.0,
+      "dur": 3.0,
+      "caption": "② Hop over the rail at the top",
+      "lines": [
+        [
+          0.3,
+          "Over the rail.",
+          "手すりを\n越えるのだ"
+        ]
+      ]
+    },
+    {
+      "kind": "clip",
+      "src": "3-route",
+      "start": 1.0,
+      "dur": 8.6,
+      "caption": "③ Walk down the wall, crouch at the end",
+      "lines": [
+        [
+          0.5,
+          "It's narrow.\nCareful!",
+          "細いから\n気をつけるのだ"
+        ],
+        [
+          6.2,
+          "Crouch here.",
+          "ここで\nしゃがむのだ"
+        ]
+      ]
+    },
+    {
+      "kind": "clip",
+      "src": "4-kill",
+      "start": 1.0,
+      "dur": 10.0,
+      "caption": "Kill 1: Pop up by the bus",
+      "lines": [
+        [
+          0.3,
+          "Wait for it...",
+          "まだなのだ…"
+        ],
+        [
+          2.0,
+          "Now! Pop up.",
+          "今なのだ！"
+        ],
+        [
+          9.0,
+          "Got him!",
+          "やったのだ！"
+        ]
+      ]
+    },
+    {
+      "kind": "clip",
+      "src": "5-kill2",
+      "start": 0.6,
+      "dur": 20.2,
+      "caption": "Kill 2: Spray away, still unseen",
+      "lines": [
+        [
+          0.3,
+          "There!\nBy the truck.",
+          "いた！\nトラックのそばなのだ"
+        ],
+        [
+          3.9,
+          "He can't\nfind me!",
+          "こっちに\n気づいてないのだ"
+        ],
+        [
+          6.4,
+          "Duck and reload.",
+          "隠れて\nリロードなのだ"
+        ],
+        [
+          11.2,
+          "Still clueless!",
+          "まだ\n気づいてないのだ"
+        ],
+        [
+          17.6,
+          "That's two!",
+          "これで2人なのだ！"
+        ]
+      ]
+    }
+  ],
+  "thumbnail": {
+    "main": [
+      "BAD AIM?",
+      "DUCK BEHIND",
+      "THIS WALL"
+    ],
+    "ja": "顔を出して撃つだけ",
+    "badge": "2 KILLS",
+    "bg": [
+      "4-kill",
+      10.1
+    ]
+  }
+}

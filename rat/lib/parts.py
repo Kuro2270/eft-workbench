@@ -21,6 +21,10 @@ def maps(): return load("maps.json")["maps"]
 def map_of(mid): return next(m for m in maps() if m["id"] == mid)
 def script(sid): return load(f"scripts/{sid}.json")
 def has_script(sid): return os.path.exists(f"{ROOT}/data/scripts/{sid}.json")
+def spot_no(sid):
+    # マップの中で何番目のスポットか（spots.json の並び順。台本のあるスポットだけを数える。サイトの見取り図の番号と同じ）
+    sp = spot(sid); same = [s["id"] for s in spots()["spots"] if s["map"] == sp["map"] and has_script(s["id"])]
+    return same.index(sid) + 1
 def outro(sid):
     # 終わり方の設定（data/outro.json に、台本の outro を上書き）
     o = load("outro.json"); o.update(script(sid).get("outro", {})); return o
@@ -56,7 +60,7 @@ def map_inset(sp, width, legend=True, crop=CROP):
     left = min(max(0, round(x - cw * 0.48)), im.width - cw); top = min(max(0, round(y - chh * 0.52)), im.height - chh)
     m = im.crop((left, top, left + cw, top + chh)); px, py = x - left, y - top
     ov = Image.new("RGBA", m.size, (0, 0, 0, 0)); o = ImageDraw.Draw(ov)
-    ang, spread, r = sp["facing_deg"], 50, 150
+    ang, spread, r = sp["facing_deg"], int(sp.get("view_deg", 50)), 150   # view_deg：見る範囲の広さ（スポットごと。省くと 50 度）
     o.polygon([(px, py)] + [(px + r * math.cos(math.radians(a)), py + r * math.sin(math.radians(a))) for a in range(ang - spread // 2, ang + spread // 2 + 1, 2)],
               fill=(255, 214, 64, 110), outline=(255, 214, 64, 255))
     o.polygon([(px + (24 if i % 2 == 0 else 10) * math.cos(math.radians(-90 + i * 36)), py + (24 if i % 2 == 0 else 10) * math.sin(math.radians(-90 + i * 36))) for i in range(10)],
