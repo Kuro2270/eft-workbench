@@ -12,7 +12,7 @@ Escape from Tarkov の無料ツール集。tarkov.dev のデータを使う。
 | `watch.html` 売り時・買い時 | 底値付近（買い場）・高値付近（売り場）のランキング、おすすめの値段、移動平均のグラフ |
 | `rat.html` ラットスポット | マップを選ぶと、見取り図の上に待つ位置（★）、その下にスポットの一覧（評価・行き方・見える景色・ショート動画）。動画は押すまで読み込まない |
 | `settings.html` プレイヤー設定 | レベル・LL・インテルセンターなど。全ツール共通 |
-| `privacy.html`・`contact.html`・`404.html` | プライバシーポリシー（運営者情報・データの出どころ・非公式であることもここだけに書く）・お問い合わせ・見つからないとき。`about.html` は `privacy.html` へ転送するだけ |
+| `about.html`・`faq.html`・`privacy.html`・`contact.html`（英語はそれぞれ `.en.html`）・`404.html` | このサイトについて（目的・できること・使い方）・よくある質問（文面は `site/about.mjs`）・プライバシーポリシー（運営者情報・データの出どころ・非公式であることもここだけに書く）・お問い合わせ・見つからないとき |
 
 マップ作成（`tools/mapmaker.html`）は手元専用。公開するサイトには入れない（入口も出さない）。
 
@@ -21,7 +21,7 @@ Escape from Tarkov の無料ツール集。tarkov.dev のデータを使う。
 | 場所 | 役割 |
 | --- | --- |
 | `src/` | ツールの画面の本体（直すのはここ）。`app.html` に `data.js`・`market.js`・`market-ui.js`・`stock-ui.js`・`rat-ui.js` を埋め込む |
-| `site/` | ページを作る処理。`tools.mjs`（ツールの6ページ）・`rat.mjs`（ラットスポットのデータと画像）・`info.mjs`（プライバシーポリシーなど）・`seo.mjs`（robots.txt・sitemap.xml）・`config.mjs`（サイト名・URL・お問い合わせフォーム） |
+| `site/` | ページを作る処理。`tools.mjs`（ツールの6ページ）・`rat.mjs`（ラットスポットのデータと画像）・`info.mjs`（このサイトについて・よくある質問・プライバシーポリシーなどのページ）・`about.mjs`（このサイトについて・よくある質問の文面）・`legal.mjs`（プライバシーポリシー・お問い合わせの文面）・`seo.mjs`（robots.txt・sitemap.xml）・`config.mjs`（サイト名・URL・お問い合わせフォーム） |
 | `build.mjs` | `site/` の3つを順番に呼んで `public/` を作る |
 | `public/` | 公開するもの（build.mjs が作る。直接は直さない）。Cloudflare Pages がここを配信する |
 | `functions/data/[mode].js` | 公開サイトの `/data/<モード>.json` を返す（Cloudflare の保存場所 Workers KV から） |

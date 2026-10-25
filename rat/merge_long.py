@@ -43,7 +43,8 @@ for mid in MAPS:
     parts.append(card); chapters.append((at, mp["name_en"])); at += P.duration(card)
     for sp in sps:
         clip, tlp = chap(sp["id"]); tl = json.load(open(tlp)); last_outro = at + tl["outro_at"]
-        for e in tl["events"]: events.append({"at": round(at + e["at"], 3), "voice": e["voice"], "base": f"{P.OUT}/{sp['id']}"})
+        for e in tl["events"]:   # 声（スポットの out/ から）と効果音（assets/se/）
+            events.append({**e, "at": round(at + e["at"], 3), **({"base": f"{P.OUT}/{sp['id']}"} if "voice" in e else {})})
         parts.append(clip); chapters.append((at, sp["name_en"])); at += P.duration(clip)
 
 lst = f"{work}/list.txt"; open(lst, "w").write("".join(f"file '{p}'\n" for p in parts))

@@ -85,6 +85,37 @@ console.log("\nトップ（index.html）");
   ok(cards.length === 5 && cards.map(c => c.split(":")[0]).join(",") === "flip.html,loot.html,watch.html,rat.html,settings.html", "5つの入口が並ぶ（マップ作成は公開しない） / " + cards.join(" "));
   ok(await page.$eval(".bar", n => n.hidden) && await page.$eval("#tierBoard", n => n.hidden) && await page.$eval("#settingsBox", n => n.hidden), "ツールの部品は出ない");
   ok(await page.evaluate(() => !window.__fetched), "価格データを読みに行かない");
+  const foot = await page.$$eval("#footer a", ns => ns.map(n => n.getAttribute("href")).join(","));
+  ok(foot === "about.html,faq.html,privacy.html,contact.html", "ページ下に、このサイトについて・よくある質問・プライバシーポリシー・お問い合わせ / " + foot);
+  ok(errs.length === 0, "エラーなし " + errs.join(";"));
+  await page.close();
+}
+console.log("\nこのサイトについて・よくある質問（about.html・faq.html）");
+{
+  const { page, errs } = await open("about.html");
+  const tools = await page.$$eval(".tools a", ns => ns.map(n => n.getAttribute("href")).join(","));
+  ok(tools === "flip.html,loot.html,watch.html,rat.html,settings.html", "できることに、すべてのツールが並ぶ / " + tools);
+  ok(errs.length === 0, "エラーなし " + errs.join(";"));
+  await page.goto("file://" + join(ROOT, "public", "faq.html"));
+  const n = await page.$$eval(".faq details", ns => ns.length);
+  const ld = await page.$eval('script[type="application/ld+json"]', s => JSON.parse(s.textContent));
+  ok(n > 0 && ld["@type"] === "FAQPage" && ld.mainEntity.length === n, `質問と、検索向けの FAQ のデータの数がそろう / ${n}問`);
+  await page.click(".faq details summary");
+  ok(await page.$eval(".faq details", d => d.open), "質問を押すと答えが開く");
+  for (const f of ["about.en.html", "faq.en.html", "privacy.en.html", "contact.en.html"]) {
+    await page.goto("file://" + join(ROOT, "public", f));
+    const st = await page.evaluate(() => ({ lang: document.documentElement.lang, sw: document.querySelector("header .lang a") && document.querySelector("header .lang a").getAttribute("href"),
+      foot: [...document.querySelectorAll("footer a")].map(n => n.getAttribute("href")).join(","), alt: document.querySelectorAll('link[rel="alternate"]').length }));
+    ok(st.lang === "en" && st.sw === f.replace(".en", "") && st.alt === 2 && /about\.en\.html,faq\.en\.html,privacy\.en\.html,contact\.en\.html/.test(st.foot), `${f}：英語のページで、日本語への切り替えと英語の案内がある`);
+  }
+  await page.goto("file://" + join(ROOT, "public", "faq.en.html"));
+  ok(await page.$$eval(".faq details", ns => ns.length) === n, "英語の質問の数は日本語と同じ");
+  await page.goto("file://" + join(ROOT, "public", "contact.en.html"));
+  ok(await page.$$eval("#openForm", ns => ns.length) === 1, "英語のお問い合わせにも、同じフォームを開くボタンがある");
+  const ja = await open("index.html"), en = ja.page;
+  await en.click('.lang button[data-lang="en"]');
+  ok(/about\.en\.html.*faq\.en\.html.*privacy\.en\.html.*contact\.en\.html/.test(await en.$eval("#footer", n => n.innerHTML)), "ツールのページを英語にすると、下のリンクも英語のページへ");
+  await en.close();
   ok(errs.length === 0, "エラーなし " + errs.join(";"));
   await page.close();
 }
