@@ -15,6 +15,6 @@ ${pages.map(p => `  <url><loc>${url(p.file)}</loc><lastmod>${day}</lastmod><prio
 </urlset>
 `;
   writeFileSync(join(ROOT, "public", "sitemap.xml"), xml);
-  writeFileSync(join(ROOT, "public", "robots.txt"), `User-agent: *\nAllow: /\nDisallow: /data/\n\nSitemap: ${SITE}/sitemap.xml\n`);
+  writeFileSync(join(ROOT, "public", "robots.txt"), `User-agent: *\nAllow: /\nDisallow: /data/\nDisallow: /icon/\n\nSitemap: ${SITE}/sitemap.xml\n`);
   console.log(`作成: public/sitemap.xml（${pages.length}ページ）・public/robots.txt`);
 }

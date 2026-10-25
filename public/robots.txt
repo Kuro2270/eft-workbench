@@ -1,5 +1,6 @@
 User-agent: *
 Allow: /
 Disallow: /data/
+Disallow: /icon/
 
 Sitemap: https://eft-workbench.com/sitemap.xml

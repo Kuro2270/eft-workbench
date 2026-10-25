@@ -178,6 +178,32 @@ console.log("\nラットスポット（rat.html）");
   ok(errs.length === 0, "エラーなし " + errs.join(";"));
   await page.close();
 }
+console.log("\n持ち帰りティア表を画像で共有");
+{
+  const { page, errs } = await open("loot.html");
+  await page.waitForSelector("#tierBoard .ti", { timeout: 15000 });
+  ok(await page.$eval("#shareBtn", n => !n.hidden && n.textContent === "画像で共有"), "ティア表のときは「画像で共有」が出る");
+  await page.click("#shareBtn");
+  await page.waitForSelector("#shareDlg .shimg", { timeout: 15000 });
+  const d = await page.evaluate(async () => {
+    const img = document.querySelector("#shareDlg .shimg"); await img.decode();
+    const c = document.createElement("canvas"); c.width = img.naturalWidth; c.height = img.naturalHeight; c.getContext("2d").drawImage(img, 0, 0);
+    const a = sel => document.querySelector(`#shareDlg [data-sh="${sel}"]`);
+    return { w: img.naturalWidth, h: img.naturalHeight, png: c.toDataURL("image/png").split(",")[1], text: document.querySelector("#shareDlg .shtext").value,
+      x: a("x").href, line: a("line").href, save: a("save").getAttribute("download") };
+  });
+  const { writeFileSync } = await import("node:fs"); writeFileSync("/tmp/out/share-tier.png", Buffer.from(d.png, "base64"));
+  ok(d.w === 1200 && d.h > 400, `ティア表の画像ができる / ${d.w}×${d.h}`);
+  ok(/eft-workbench\.com\/loot/.test(d.text) && /youtube\.com\/@RatofTarkov/.test(d.text), "共有の文に、サイトと YouTube のリンクが入る");
+  ok(decodeURIComponent(d.x).includes("eft-workbench.com/loot") && decodeURIComponent(d.line).includes("youtube.com/@RatofTarkov"), "X・LINE の投稿画面にも、同じ文が渡る");
+  ok(/^eft-loot-tier-regular-\d{4}-\d\d-\d\d\.png$/.test(d.save), "画像を保存できる / " + d.save);
+  await page.keyboard.press("Escape");
+  ok(await page.$eval("#shareDlg", n => n.hidden), "Esc で閉じる");
+  await page.click("#viewBtn");
+  ok(await page.$eval("#shareBtn", n => n.hidden), "一覧表のときは出ない");
+  ok(errs.length === 0, "エラーなし " + errs.join(";"));
+  await page.close();
+}
 console.log("\n持ち帰りティア表（loot.html）のクリック");
 {
   const { page, errs } = await open("loot.html");

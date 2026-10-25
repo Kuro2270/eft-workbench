@@ -92,6 +92,15 @@ svg.spark{display:block}
 #tip b.n{display:block;font-size:13.5px;margin-bottom:2px}
 #tip .k{color:var(--muted)}
 #marketPanel{margin:0 0 10px}
+/* 持ち帰りティア表を画像で共有する窓（src/share-ui.js） */
+.shdlg{position:fixed;inset:0;z-index:100;background:rgba(10,14,16,.72);display:flex;align-items:center;justify-content:center;padding:16px}
+.shbox{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px 18px;width:min(760px,100%);max-height:calc(100vh - 32px);overflow:auto}
+.shbox h2{font-size:17px;margin:0 0 10px}
+.shimg{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:4px;margin:0 0 10px}
+.shtext{width:100%;font:inherit;font-size:12px;resize:none;margin:0 0 10px;color:var(--text);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:6px 8px}
+.shbtns{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 6px}
+.shbtns a.shbtn{font-size:inherit;color:var(--text);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:5px 10px;text-decoration:none}
+.shbtns .shmain{background:var(--tan);color:#1E2528;border-color:var(--tan);font-weight:700}
 /* 情報を取っているあいだの網（一覧に掛けて、触れないようにする。setBusy） */
 .busy{position:relative;min-height:160px}
 .busyveil{position:absolute;inset:0;z-index:30;background:rgba(120,128,128,.38);cursor:progress;display:flex;justify-content:center;align-items:flex-start;border-radius:6px}
@@ -228,6 +237,7 @@ footer a{color:var(--muted)}
     <span class="note hides" id="lootHideWrap" hidden></span>
     <span class="note hides" id="lootRareWrap" hidden><label><span data-i18n="lootRare1"></span><input type="number" id="lootMinOffers" min="0" max="999" style="width:4.5em"><span data-i18n="lootRare2"></span></label> <span id="lootCut"></span></span>
     <button id="viewBtn" hidden></button>
+    <button id="shareBtn" hidden></button>
     <span class="note" id="progress"></span>
   </div>
 
@@ -244,6 +254,7 @@ footer a{color:var(--muted)}
   <div id="tierBoard" hidden></div>
   <div class="tablewrap" id="listWrap"><table id="tbl"><thead></thead><tbody></tbody></table></div>
 </main>
+<div id="shareDlg" class="shdlg" hidden></div>
 <footer id="footer"></footer>
 <div id="tip" hidden></div>
 
@@ -999,6 +1010,7 @@ function render(){
     : msg(t(useLiq ? "emptyLiq" : "empty", {n: fmt(hiddenN)}));
   const b = document.getElementById("banner");
   b.innerHTML = (TAB === "t2f" || TAB === "b2f") && DATA && DATA.flea && DATA.flea.foundInRaidRequired ? `<div class="banner">${t("firBanner")}</div>` : "";
+  paintShareBtn();
 }
 /* ティア表：アイコンだけを並べ、カーソルを乗せると値段が出る */
 function lootTipHtml(r){
@@ -1281,7 +1293,7 @@ function setupPage(){
   hide(".tabs");
   for(const id of ["topN", "daysSel"]) document.getElementById(id).closest("label").hidden = true;
   if(PAGE === "watch"){
-    hide(".bar", "#lootFilterWrap", "#lootHideWrap", "#lootRareWrap", "#viewBtn", "#listWrap", "#tierLegend", "#tierBoard", "#banner");   // モードはヘッダーにあるので、この段には何も残らない
+    hide(".bar", "#lootFilterWrap", "#lootHideWrap", "#lootRareWrap", "#viewBtn", "#shareBtn", "#listWrap", "#tierLegend", "#tierBoard", "#banner");   // モードはヘッダーにあるので、この段には何も残らない
     show("marketPanel");
   }
 }
@@ -1323,6 +1335,7 @@ document.querySelector("#tbl tbody").addEventListener("click", e => {
 /*@@MARKET_UI_JS@@*/
 /*@@STOCK_UI_JS@@*/
 /*@@RAT_UI_JS@@*/
+/*@@SHARE_UI_JS@@*/
 
 setupPage();
 applyLang();

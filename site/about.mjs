@@ -8,7 +8,7 @@ const TOOLS = {
     ["flip.html", "転売ボード", "フリマとトレーダーの値段の差で、利益が出る品を一覧にします。",
       ["フリマで買ってトレーダーに売る・トレーダーで買ってフリマで売る・交換で手に入れてフリマで売る、の3つ", "手数料・購入上限・ロイヤリティレベルを計算に入れる", "上位の品は過去の値動きから「利益が出た割合」と「売れやすさ」も出す"]],
     ["loot.html", "持ち帰りティア表", "レイドで拾った品を、1マスあたりの売値で S〜D の段に分けます。",
-      ["トレーダーとフリマ（手数料を引いた手取り）の高いほうで計算", "弾薬箱は、開けて中身を売ったほうが高ければその値段で見る", "分類や出品数で絞り込める"]],
+      ["トレーダーとフリマ（手数料を引いた手取り）の高いほうで計算", "弾薬箱は、開けて中身を売ったほうが高ければその値段で見る", "分類や出品数で絞り込める", "ティア表を画像にして、LINE・X などで共有できる"]],
     ["watch.html", "売り時・買い時", "いまの値段が過去の底値付近の品（買い場）と、高値付近の品（売り場）を並べます。",
       ["おすすめの買値・売値と、値動き・移動平均のグラフ", "仕込んだ品を「在庫」に記録して、売り時を見張れる"]],
     ["rat.html", "ラットスポット", "待ち伏せ（ラット）で勝てる場所を、マップごとに紹介します。",
@@ -20,7 +20,7 @@ const TOOLS = {
     ["flip.html", "Flip board", "Lists items you can profit from, using the price gap between the flea market and traders.",
       ["Three ways: buy on flea and sell to traders, buy from traders and sell on flea, barter at traders and sell on flea", "Fees, buy limits and loyalty levels are included", "For the top items, past prices show the profitable share and how easily they sell"]],
     ["loot.html", "Loot tier list", "Sorts what you find in raid into tiers S to D by value per slot.",
-      ["Uses the better of the trader price and the flea take-home (after fees)", "Ammo boxes are valued by their contents when that pays more", "Filter by category and number of offers"]],
+      ["Uses the better of the trader price and the flea take-home (after fees)", "Ammo boxes are valued by their contents when that pays more", "Filter by category and number of offers", "Turn the tier list into an image to share on LINE, X and more"]],
     ["watch.html", "Buy & sell signals", "Ranks items priced near their past low (buy zone) and near their past high (sell zone).",
       ["Suggested buy and sell prices, with a price and moving-average chart", "Record what you bought as stock and watch for the moment to sell"]],
     ["rat.html", "Rat spots", "Ambush (rat) spots that win fights, map by map.",
@@ -49,7 +49,8 @@ const FAQ = {
     ]],
     ["持ち帰りティア表", [
       ["段位（S〜D）はどう決めていますか？", "1マスあたりの売値（トレーダーとフリマの手取りの高いほう）で並べて、段に分けています。大きくて安い品より、小さくて高い品が上になります。"],
-      ["ティア表に出ない品があるのはなぜですか？", "分類のチェックを外した品と、フリマの出品数が少なすぎる品は外しています。条件はページの上で変えられます。"]
+      ["ティア表に出ない品があるのはなぜですか？", "分類のチェックを外した品と、フリマの出品数が少なすぎる品は外しています。条件はページの上で変えられます。"],
+      ["ティア表を友達に共有できますか？", "ページの上の「画像で共有」を押すと、いま出ているティア表が1枚の画像になります。スマホは「共有する」から LINE・X などに画像ごと送れます。パソコンでは画像を保存して、X・LINE の投稿画面に添付してください。"]
     ]],
     ["売り時・買い時", [
       ["「買い場」「売り場」とは何ですか？", "いまの値段が、選んだ期間（7日・14日・30日）の値動きの中で底値に近い品が「買い場」、高値に近い品が「売り場」です。品を選ぶと、値動きと移動平均のグラフ、おすすめの買値・売値が出ます。"],
@@ -80,7 +81,8 @@ const FAQ = {
     ]],
     ["Loot tier list", [
       ["How are the tiers (S to D) decided?", "Items are ranked by value per slot (the better of the trader price and the flea take-home) and split into tiers. Small, valuable items rank above big, cheap ones."],
-      ["Why are some items missing?", "Categories you untick and items with too few flea offers are left out. You can change both at the top of the page."]
+      ["Why are some items missing?", "Categories you untick and items with too few flea offers are left out. You can change both at the top of the page."],
+      ["Can I share the tier list with friends?", "Press “Share as image” at the top of the page to turn the current tier list into one image. On a phone, “Share” sends it straight to LINE, X and other apps. On a computer, save the image and attach it in X or LINE."]
     ]],
     ["Buy & sell signals", [
       ["What are the buy zone and sell zone?", "Items whose current price sits near the low of the period you choose (7, 14 or 30 days) are in the buy zone, and items near the high are in the sell zone. Select an item to see its price and moving-average chart with suggested buy and sell prices."],

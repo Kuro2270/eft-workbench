@@ -8,7 +8,8 @@
    ・test/all.html         … 開発・テスト用（全部入り。公開しない）
    中身は同じで、PAGE の値と、検索・SNS 向けの説明だけが違う。
    src/data.js（データの組み立て。snapshot.mjs と共通）、src/market.js（相場の位置の計算）、
-   src/market-ui.js（売り時・買い時の画面）、src/stock-ui.js（在庫）、src/rat-ui.js（ラットスポットの画面）は、ここで画面に埋め込む。
+   src/market-ui.js（売り時・買い時の画面）、src/stock-ui.js（在庫）、src/rat-ui.js（ラットスポットの画面）、
+   src/share-ui.js（持ち帰りティア表を画像で共有）は、ここで画面に埋め込む。
    マップ作成ツール（tools/mapmaker.html）は手元専用なので、公開するトップには入口を出さない */
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -19,7 +20,7 @@ import { ratData } from "./rat.mjs";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const PAGE_MARK = 'const PAGE = "all";';
 const MAPMAKER_CARD = /\n\s*<a class="card sub" href="mapmaker\.html">[^\n]*<\/a>/;
-const PARTS = [["/*@@DATA_JS@@*/", "data.js"], ["/*@@MARKET_JS@@*/", "market.js"], ["/*@@MARKET_UI_JS@@*/", "market-ui.js"], ["/*@@STOCK_UI_JS@@*/", "stock-ui.js"], ["/*@@RAT_UI_JS@@*/", "rat-ui.js"]];
+const PARTS = [["/*@@DATA_JS@@*/", "data.js"], ["/*@@MARKET_JS@@*/", "market.js"], ["/*@@MARKET_UI_JS@@*/", "market-ui.js"], ["/*@@STOCK_UI_JS@@*/", "stock-ui.js"], ["/*@@RAT_UI_JS@@*/", "rat-ui.js"], ["/*@@SHARE_UI_JS@@*/", "share-ui.js"]];
 const RAT_MARK = "/*@@RAT_DATA@@*/null";
 
 /* ページごとの題と説明（検索結果や SNS のカードに出る。画面の中の題は src/app.html の言語ごとの文言） */
