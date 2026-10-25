@@ -1,0 +1,141 @@
+{
+  "_about": "1つのスポットの動画の台本。sources は元の動画・画像、segments は場面（kind: still=静止画 / clip=動画、src は sources の名前、start=元の動画の開始秒、dur=長さ、caption=画面下の一言、lines=ずんだもんのセリフ［出す秒, 英語, 日本語訳（吹き出しの下に（）で出す）］。\\n は吹き出しの改行）。thumbnail はサムネイル（main＝大きな見出しの行［1行目は黄色］, ja＝日本語のひと言, badge＝札, bg＝背景にする画面［sources の名前, 秒］）",
+  "spot": "streets-nikitskaya-balcony",
+  "sources": {
+    "view": "assets/spots/streets-nikitskaya-balcony/view.jpg",
+    "1-route": "footage/streets-nikitskaya-balcony/1-route.mp4",
+    "2-route": "footage/streets-nikitskaya-balcony/2-route.mp4",
+    "3-route": "footage/streets-nikitskaya-balcony/3-route.mp4",
+    "4-route": "footage/streets-nikitskaya-balcony/4-route.mp4",
+    "5-kill": "footage/streets-nikitskaya-balcony/5-kill.mp4",
+    "6-kill2": "footage/streets-nikitskaya-balcony/6-kill2.mp4"
+  },
+  "segments": [
+    {
+      "kind": "still",
+      "src": "view",
+      "start": 0,
+      "dur": 3.0,
+      "caption": "Wait on this corner balcony",
+      "lines": [
+        [
+          0,
+          "Let's watch\nfrom up here.",
+          "ここから\n見張るのだ"
+        ]
+      ]
+    },
+    {
+      "kind": "clip",
+      "src": "1-route",
+      "start": 1.0,
+      "dur": 6.0,
+      "caption": "① Go in and take the stairs up",
+      "lines": [
+        [
+          0.3,
+          "This way.\nStay quiet.",
+          "こっちなのだ。\n静かにね"
+        ]
+      ]
+    },
+    {
+      "kind": "clip",
+      "src": "2-route",
+      "start": 1.0,
+      "dur": 6.0,
+      "caption": "② Cross the restaurant",
+      "lines": [
+        [
+          0.5,
+          "Right through\nhere.",
+          "ここを\n抜けるのだ"
+        ]
+      ]
+    },
+    {
+      "kind": "clip",
+      "src": "3-route",
+      "start": 1.0,
+      "dur": 5.5,
+      "caption": "③ Break the window, climb out",
+      "lines": [
+        [
+          0.6,
+          "Out the window!",
+          "窓から外へ\n出るのだ！"
+        ]
+      ]
+    },
+    {
+      "kind": "clip",
+      "src": "4-route",
+      "start": 1.0,
+      "dur": 8.0,
+      "caption": "④ Walk the ledge to the balcony",
+      "lines": [
+        [
+          0.5,
+          "Don't look down!",
+          "下は見ないのだ！"
+        ]
+      ]
+    },
+    {
+      "kind": "clip",
+      "src": "5-kill",
+      "start": 1.0,
+      "dur": 5.3,
+      "caption": "Kill 1: Catch them by the tram",
+      "lines": [
+        [
+          0.2,
+          "There!\nBy the tram.",
+          "いた！\n電車のそばなのだ"
+        ],
+        [
+          3.6,
+          "Got him!",
+          "やったのだ！"
+        ]
+      ]
+    },
+    {
+      "kind": "clip",
+      "src": "6-kill2",
+      "start": 1.0,
+      "dur": 12.9,
+      "caption": "Kill 2: Stay low, then pop up",
+      "lines": [
+        [
+          0.3,
+          "Shh...\nKeep low.",
+          "しっ…\n伏せて待つのだ"
+        ],
+        [
+          5.0,
+          "Here they come.",
+          "来たのだ"
+        ],
+        [
+          11.6,
+          "That's two!",
+          "これで2人なのだ！"
+        ]
+      ]
+    }
+  ],
+  "thumbnail": {
+    "main": [
+      "BAD AIM?",
+      "CAMP",
+      "THIS BALCONY"
+    ],
+    "ja": "エイム下手でも勝てる",
+    "badge": "2 KILLS",
+    "bg": [
+      "6-kill2",
+      10.4
+    ]
+  }
+}
