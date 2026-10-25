@@ -98,14 +98,13 @@ function mkCandidates(){
 async function mkFetch(items){
   const need = [...new Map(items.filter(it => { const c = MK_HIST.get(it.id); return !c || Date.now() - c.at > 30 * 60000; }).map(it => [it.id, it])).values()];
   if(!need.length || MK_BUSY) return;
-  MK_BUSY = {i: 0, n: need.length}; paintMarket();
+  MK_BUSY = {i: 0, n: need.length}; paintMarket();           // 取っているあいだは網を掛け、一覧は描き直さない（数だけ進める）
   for(let i = 0; i < need.length; i += 6){
     await Promise.all(need.slice(i, i + 6).map(async it => {
       const hist = await getJson("prices/" + it.id, "prices").catch(() => null);
       MK_HIST.set(it.id, {hist: hist || [], at: Date.now()});
-      MK_BUSY.i++;
+      MK_BUSY.i++; setBusy($mk, mt("loading", MK_BUSY));
     }));
-    paintMarket();
   }
   MK_BUSY = null;
   paintMarket();
@@ -202,7 +201,10 @@ function mkBar(){
 function paintMarket(){
   if(!$mk || !MK_PAGE) return;
   $mk.hidden = false;
-  if(!DATA){ $mk.innerHTML = mkBar() + `<p class="note">${esc(mt("needData"))}</p>`; return; }
+  if(!DATA){                                                   // 価格を読んでいるあいだは網だけ（読めなかったときは上の表示でわかる）
+    $mk.innerHTML = mkBar();
+    setBusy($mk, STATUS.k === "loading" ? mt("needData") : null); return;
+  }
   const c = mkCandidates();
   const focusQ = document.activeElement && document.activeElement.dataset && document.activeElement.dataset.mk === "q";
   $mk.innerHTML = mkBar()
@@ -210,7 +212,8 @@ function paintMarket(){
     + (c.found.length ? mkSection("found", c.found) : "")
     + mkSection("buy", c.buy) + mkSection("sell", c.sell)
 ;
-  if(focusQ){ const q = $mk.querySelector('[data-mk="q"]'); q.focus(); q.setSelectionRange(q.value.length, q.value.length); }
+  setBusy($mk, MK_BUSY ? mt("loading", MK_BUSY) : null);
+  if(focusQ && !MK_BUSY){ const q = $mk.querySelector('[data-mk="q"]'); q.focus(); q.setSelectionRange(q.value.length, q.value.length); }
   mkFetch([...stockItems(), ...c.found, ...c.buy, ...c.sell]);
 }
 

@@ -92,6 +92,13 @@ svg.spark{display:block}
 #tip b.n{display:block;font-size:13.5px;margin-bottom:2px}
 #tip .k{color:var(--muted)}
 #marketPanel{margin:0 0 10px}
+/* 情報を取っているあいだの網（一覧に掛けて、触れないようにする。setBusy） */
+.busy{position:relative;min-height:160px}
+.busyveil{position:absolute;inset:0;z-index:30;background:rgba(120,128,128,.38);cursor:progress;display:flex;justify-content:center;align-items:flex-start;border-radius:6px}
+.busyveil span{position:sticky;top:45vh;margin-top:40px;display:inline-flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:9px 18px;font-size:13px;color:var(--text);box-shadow:0 6px 22px rgba(0,0,0,.45)}
+.busyveil i{width:16px;height:16px;border:2px solid var(--line);border-top-color:var(--tan);border-radius:50%;animation:busyspin .8s linear infinite}
+@keyframes busyspin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.busyveil i{animation:none}}
 .mbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:10px 12px;margin-bottom:12px}
 .mbar input[type=number]{width:4.6em}
 .note.ok{color:var(--gain)} .note.warn{color:var(--warn)}
@@ -1055,6 +1062,23 @@ function recompute(){
   render();
 }
 
+/* 情報を取っているあいだ、一覧（box）に灰色の網を掛けて、押せないようにする。label … 網の上に出す文字（null で網を外す）。
+   転売ボードの表と、売り時・買い時の欄で共通 */
+function setBusy(box, label){
+  if(!box) return;
+  let veil = box.querySelector(":scope > .busyveil");
+  if(label == null){ box.classList.remove("busy"); box.inert = false; box.removeAttribute("aria-busy"); if(veil) veil.remove(); return; }
+  box.classList.add("busy"); box.inert = true; box.setAttribute("aria-busy", "true");
+  if(!veil){ veil = document.createElement("div"); veil.className = "busyveil"; veil.innerHTML = '<span role="status"><i aria-hidden="true"></i><b></b></span>'; box.appendChild(veil); }
+  veil.querySelector("b").textContent = label;
+}
+/* 転売ボード：価格を読んでいるあいだと、上位の推移を取っているあいだは、表に網を掛ける */
+function paintListBusy(){
+  if(PAGE !== "flip" && PAGE !== "all") return;
+  const on = analyzing || (!DATA && STATUS.k === "loading");
+  setBusy(document.getElementById("listWrap"), on ? (PROGRESS ? t(PROGRESS.k, PROGRESS.vars) : t("loading")) : null);
+}
+
 /* 画面の固定文言を現在の言語で描き直す */
 let STATUS = {k: "loading"}, PROGRESS = null;
 function setStatus(k, vars){ STATUS = {k, vars}; paintStatus(); }
@@ -1066,6 +1090,7 @@ function paintStatus(){
   if(v.count != null) v.n = fmt(v.count);
   $status.textContent = t(STATUS.k, v);
   $progress.textContent = PROGRESS ? t(PROGRESS.k, PROGRESS.vars) : "";
+  paintListBusy();
 }
 function applyLang(){
   document.documentElement.lang = S.lang;
@@ -1172,6 +1197,7 @@ async function analyzeTop(resort = true){
   const tab = TAB;
   if(TAB === "loot"){ analyzing = false; return; }
   const targets = [...ROWS].sort((a,b) => b.profit - a.profit).slice(0, n);
+  paintListBusy();
   const need = [...new Map(targets.filter(r => !HIST_CACHE.has(r.it.id)).map(r => [r.it.id, r])).values()];
   try{
     setProgress("autoAnalyzing", {n: targets.length});
@@ -1195,6 +1221,7 @@ async function analyzeTop(resort = true){
   }finally{
     analyzing = false;
     if(rerun){ rerun = false; analyzeTop(resort); }
+    else paintListBusy();
   }
 }
 document.getElementById("topN").addEventListener("change", () => analyzeTop(false));

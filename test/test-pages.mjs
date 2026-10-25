@@ -6,10 +6,10 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const browser = await pw.chromium.launch({ executablePath: "/opt/pw-browsers/chromium-1194/chrome-linux/chrome", args: ["--no-sandbox"] });
 let fail = 0;
 const ok = (c, m) => { console.log((c ? "  ok " : "  NG ") + m); if (!c) fail++; };
-async function open(file){
+async function open(file, slowMs = 0){     // slowMs … 価格の推移を返すのを遅らせる（取っているあいだの網を確かめる）
   const page = await browser.newPage({ viewport: { width: 1400, height: 900 } });
   const errs = []; page.on("pageerror", e => errs.push(e.message));
-  await page.addInitScript(({ items, traders, flea, hist }) => {
+  await page.addInitScript(({ items, traders, flea, hist, slowMs }) => {
     window.fetch = async (url) => {
       const u = String(url), json = d => ({ ok: true, status: 200, json: async () => ({ data: d }) });
       const m = u.match(/\/(regular|pve|pvp-season)\/(.+)$/), path = m ? m[2] : "";
@@ -18,10 +18,10 @@ async function open(file){
       if (/^(items|traders)_(ja|en)$/.test(path)) return json({});
       if (path === "traders") return json(traders);
       if (/^(tasks|hideout|barters|crafts)$/.test(path)) return json(null);
-      const ph = path.match(/^prices\/(.+)$/); if (ph) return json(hist[ph[1]] || []);
+      const ph = path.match(/^prices\/(.+)$/); if (ph){ if (slowMs) await new Promise(r => setTimeout(r, slowMs)); return json(hist[ph[1]] || []); }
       return { ok: false, status: 404, json: async () => ({}) };
     };
-  }, { items: ITEMS, traders: TRADERS, flea: FLEA, hist: Object.fromEntries(Object.keys(ITEMS).map(k => [k, history(k)])) });
+  }, { items: ITEMS, traders: TRADERS, flea: FLEA, hist: Object.fromEntries(Object.keys(ITEMS).map(k => [k, history(k)])), slowMs });
   await page.goto("file://" + join(ROOT, "public", file), { waitUntil: "load" });
   await page.evaluate(() => localStorage.clear());
   await page.evaluate(() => localStorage.setItem("eftflip.settings", JSON.stringify({ lang: "ja", mode: "regular", playerLevel: 40, intel: 3, mgmt: 0, minProfit: 3000, minOffers: 5, days: 7 })));
@@ -107,6 +107,26 @@ console.log("\n売り時・買い時（watch.html）");
   ok(!(await page.$eval("#marketPanel", n => n.hidden)), "売り時・買い時の欄が出る");
   ok(await page.$eval("#lootHideWrap", n => n.hidden) && await page.$eval("#listWrap", n => n.hidden) && await page.$eval(".tabs", n => n.hidden) && await page.$eval("#tierBoard", n => n.hidden), "ティア表・転売の表・絞り込みは出ない");
   ok(await page.$eval("#pgWatch", n => n.getAttribute("aria-current") === "page" && /売り時・買い時/.test(n.textContent)), "上のリンクの名前も「売り時・買い時」");
+  ok(errs.length === 0, "エラーなし " + errs.join(";"));
+  await page.close();
+}
+console.log("\n取っているあいだの網（売り時・買い時・転売ボード）");
+for (const [file, box, row] of [["watch.html", "#marketPanel", ".msec"], ["flip.html", "#listWrap", "#tbl tbody td.item"]]) {
+  const { page, errs } = await open(file, 1500);
+  await page.waitForSelector(`${box}.busy .busyveil`, { timeout: 15000 });
+  const st = await page.$eval(box, n => ({ inert: n.inert, busy: n.getAttribute("aria-busy"), text: n.querySelector(".busyveil").innerText }));
+  ok(st.inert && st.busy === "true" && st.text.length > 0, `${file}：取っているあいだは網が掛かり、押せない / 「${st.text}」`);
+  await page.screenshot({ path: `/tmp/out/busy-${file.replace(".html", "")}.png` });
+  const cover = await page.$eval(box, n => { const a = n.getBoundingClientRect(), b = n.querySelector(".busyveil").getBoundingClientRect(); return Math.abs(a.width - b.width) <= 2 && Math.abs(a.height - b.height) <= 2; });
+  ok(cover, `${file}：網が一覧の全体を覆う`);
+  if (file === "flip.html") {
+    const before = await page.$eval("#tbl thead", n => n.innerText);
+    await page.mouse.click(...await page.$eval("#tbl thead th", n => { const r = n.getBoundingClientRect(); return [r.left + 10, r.top + 10]; }));
+    ok(await page.$eval("#tbl thead", n => n.innerText) === before, "転売ボード：網が掛かっているあいだは、見出しを押しても並び替わらない");
+  }
+  await page.waitForFunction(sel => !document.querySelector(sel).classList.contains("busy"), box, { timeout: 30000 });
+  ok(await page.$eval(box, n => !n.inert && !n.querySelector(".busyveil")), `${file}：取り終わると網が外れて押せる`);
+  ok((await page.$$(row)).length > 0, `${file}：一覧が出ている`);
   ok(errs.length === 0, "エラーなし " + errs.join(";"));
   await page.close();
 }
