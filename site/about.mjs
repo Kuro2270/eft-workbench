@@ -50,7 +50,7 @@ const FAQ = {
     ["持ち帰りティア表", [
       ["段位（S〜D）はどう決めていますか？", "1マスあたりの売値（トレーダーとフリマの手取りの高いほう）で並べて、段に分けています。大きくて安い品より、小さくて高い品が上になります。"],
       ["ティア表に出ない品があるのはなぜですか？", "分類のチェックを外した品と、フリマの出品数が少なすぎる品は外しています。条件はページの上で変えられます。"],
-      ["ティア表を友達に共有できますか？", "ページの上の「画像で共有」を押すと、いま出ているティア表が1枚の画像になります。スマホは「共有する」から LINE・X などに画像ごと送れます。パソコンでは画像を保存して、X・LINE の投稿画面に添付してください。"]
+      ["ティア表を友達に共有できますか？", "ページの上の「画像で共有」を押すと、いま出ているティア表が1枚の画像になります。スマホは「共有する」から LINE・X などに画像ごと送れます。パソコンでは「X に投稿」「LINE で送る」を押すと画像がコピーされるので、開いた投稿欄に貼り付けてください。"]
     ]],
     ["売り時・買い時", [
       ["「買い場」「売り場」とは何ですか？", "いまの値段が、選んだ期間（7日・14日・30日）の値動きの中で底値に近い品が「買い場」、高値に近い品が「売り場」です。品を選ぶと、値動きと移動平均のグラフ、おすすめの買値・売値が出ます。"],
@@ -82,7 +82,7 @@ const FAQ = {
     ["Loot tier list", [
       ["How are the tiers (S to D) decided?", "Items are ranked by value per slot (the better of the trader price and the flea take-home) and split into tiers. Small, valuable items rank above big, cheap ones."],
       ["Why are some items missing?", "Categories you untick and items with too few flea offers are left out. You can change both at the top of the page."],
-      ["Can I share the tier list with friends?", "Press “Share as image” at the top of the page to turn the current tier list into one image. On a phone, “Share” sends it straight to LINE, X and other apps. On a computer, save the image and attach it in X or LINE."]
+      ["Can I share the tier list with friends?", "Press “Share as image” at the top of the page to turn the current tier list into one image. On a phone, “Share” sends it straight to LINE, X and other apps. On a computer, “Post on X” and “Send on LINE” copy the image first, so paste it into the post box that opens."]
     ]],
     ["Buy & sell signals", [
       ["What are the buy zone and sell zone?", "Items whose current price sits near the low of the period you choose (7, 14 or 30 days) are in the buy zone, and items near the high are in the sell zone. Select an item to see its price and moving-average chart with suggested buy and sell prices."],

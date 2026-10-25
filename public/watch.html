@@ -109,7 +109,7 @@ svg.spark{display:block}
 .shtext{width:100%;font:inherit;font-size:12px;resize:none;margin:0 0 10px;color:var(--text);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:6px 8px}
 .shbtns{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 6px}
 .shbtns a.shbtn{font-size:inherit;color:var(--text);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:5px 10px;text-decoration:none}
-.shbtns .shmain{background:var(--tan);color:#1E2528;border-color:var(--tan);font-weight:700}
+.shbtns .shmain,.shbtns a.shbtn.shmain{background:var(--tan);color:#1E2528;border-color:var(--tan);font-weight:700}
 /* 情報を取っているあいだの網（一覧に掛けて、触れないようにする。setBusy） */
 .busy{position:relative;min-height:160px}
 .busyveil{position:absolute;inset:0;z-index:30;background:rgba(120,128,128,.38);cursor:progress;display:flex;justify-content:center;align-items:flex-start;border-radius:6px}
@@ -2033,8 +2033,9 @@ document.getElementById("ratPanel").addEventListener("click", e => {
 /* ================= 持ち帰りティア表：画像にして共有する =================
    役割はこれだけ。いま画面に出ているティア表（TIER_ROWS）を1枚の画像（PNG）に描き、共有の窓を開く。
    ・画像の下と、共有の文には、サイトのリンクと YouTube のチャンネルのリンクを必ず入れる（文を消されても、画像に残る）
-   ・スマホなど画像ごと共有できるブラウザは「共有する」で LINE・X などのアプリを選べる。
-     できないとき（パソコンなど）は、画像を保存して、X・LINE の投稿画面に添付してもらう
+   ・スマホなど画像ごと共有できるブラウザは「共有する」だけを出す（LINE・X などのアプリに、画像と文がいっしょに渡る）。
+     できないとき（パソコンなど）は、「X に投稿」「LINE で送る」で、画像をクリップボードにコピー（できなければ保存）してから
+     投稿画面を開き、投稿欄に貼り付けてもらう（X・LINE の投稿画面には、画像を直接渡せないため）
    ・アイコンは tarkov.dev の画像。直接読めないとき（画像として書き出せないとき）は、このサイトの icon/（functions/icon）を通して読む。
      それも読めない品は、名前の文字で描く */
 
@@ -2044,14 +2045,20 @@ const SH_I18N = {
   ja: {
     btn: "画像で共有", title: "ティア表を画像で共有", share: "共有する（LINE・X など）", save: "画像を保存", x: "X に投稿", line: "LINE で送る",
     copy: "文をコピー", copied: "コピーしました", close: "閉じる", making: "画像を作っています…",
-    hint: "X・LINE には、保存した画像を添付してください。スマホは「共有する」から画像ごと送れます。",
+    hint: "「X に投稿」「LINE で送る」は、画像をコピーしてから投稿画面を開きます。投稿欄で貼り付け（Ctrl+V、Mac は ⌘+V）すると画像が入ります。",
+    pasted: "画像をコピーしました。開いた投稿欄で Ctrl+V（Mac は ⌘+V）を押すと、画像が入ります。",
+    saved: "画像を保存しました。開いた投稿欄に、保存した画像を添付してください。",
+    hintApp: "共有先のアプリに、画像と文がいっしょに渡ります。",
     head: "タルコフ 持ち帰りティア表", asOf: "{date} {time} 時点の価格", cutOver: "以上／マス", cutBelow: "それ未満", cutBelow2: "／マス", more: "ほか{n}品",
     text: "タルコフ 持ち帰りティア表（{mode}・{date} {time} 時点）\n{url}\nYouTube：{yt}\n#タルコフ #EFT"
   },
   en: {
     btn: "Share as image", title: "Share the tier list as an image", share: "Share (LINE, X, …)", save: "Save image", x: "Post on X", line: "Send on LINE",
     copy: "Copy text", copied: "Copied", close: "Close", making: "Making the image…",
-    hint: "For X and LINE, attach the saved image. On a phone, “Share” sends the image too.",
+    hint: "“Post on X” and “Send on LINE” copy the image first, then open the post screen. Paste (Ctrl+V, or ⌘+V on a Mac) in the post box to add the image.",
+    pasted: "Image copied. Press Ctrl+V (⌘+V on a Mac) in the post box that opened to add it.",
+    saved: "Image saved. Attach the saved image in the post box that opened.",
+    hintApp: "The image and the text are passed to the app you choose.",
     head: "Tarkov loot tier list", asOf: "Prices as of {date} {time}", cutOver: "+ per slot", cutBelow: "below", cutBelow2: "per slot", more: "+{n} more",
     text: "Tarkov loot tier list ({mode}, prices as of {date} {time})\n{url}\nYouTube: {yt}\n#Tarkov #EscapeFromTarkov"
   }
@@ -2167,15 +2174,18 @@ async function openShare(){
     <h2>${esc(st("title"))}</h2>
     <img class="shimg" src="${url}" alt="${esc(st("head"))}">
     <textarea class="shtext" readonly rows="4">${esc(text)}</textarea>
-    <div class="shbtns">
-      ${canFile ? `<button type="button" class="shmain" data-sh="share">${esc(st("share"))}</button>` : ""}
+    <div class="shbtns">${canFile
+      /* スマホなど：画像ごと渡せる共有だけにする（X・LINE の投稿画面を直接開くと、文だけになってしまうため） */
+      ? `<button type="button" class="shmain" data-sh="share">${esc(st("share"))}</button>
+      <a class="shbtn" href="${url}" download="${esc(shName())}" data-sh="save">${esc(st("save"))}</a>`
+      /* パソコンなど：X・LINE は、画像をコピー（できなければ保存）してから投稿画面を開く。投稿欄に貼り付けてもらう */
+      : `<a class="shbtn shmain" href="${x}" target="_blank" rel="noopener" data-sh="x">${esc(st("x"))}</a>
+      <a class="shbtn shmain" href="${line}" target="_blank" rel="noopener" data-sh="line">${esc(st("line"))}</a>
       <a class="shbtn" href="${url}" download="${esc(shName())}" data-sh="save">${esc(st("save"))}</a>
-      <a class="shbtn" href="${x}" target="_blank" rel="noopener" data-sh="x">${esc(st("x"))}</a>
-      <a class="shbtn" href="${line}" target="_blank" rel="noopener" data-sh="line">${esc(st("line"))}</a>
-      <button type="button" data-sh="copy">${esc(st("copy"))}</button>
+      <button type="button" data-sh="copy">${esc(st("copy"))}</button>`}
       <button type="button" data-sh="close">${esc(st("close"))}</button>
     </div>
-    <p class="note">${esc(st("hint"))}</p></div>`;
+    <p class="note shmsg" role="status">${esc(st(canFile ? "hintApp" : "hint"))}</p></div>`;
   dlg.onclick = async e => {
     const b = e.target.closest("[data-sh]");
     if(!b){ if(e.target === dlg) closeShare(); return; }
@@ -2183,6 +2193,17 @@ async function openShare(){
     if(k === "close"){ closeShare(); return; }
     if(k === "copy"){ if(await copyText(text)){ b.textContent = st("copied"); setTimeout(() => { b.textContent = st("copy"); }, 1200); } return; }
     if(k === "share"){ try{ await navigator.share({files: [file], text, title: st("head")}); }catch(err){} return; }
+    if(k === "x" || k === "line"){
+      // 画像をクリップボードへ（投稿画面を開く前に。開いたあとでは、押した操作として扱われず失敗するため）。できなければ保存する
+      e.preventDefault();
+      let copied = null;
+      try{ if(window.ClipboardItem && navigator.clipboard && navigator.clipboard.write) copied = navigator.clipboard.write([new ClipboardItem({"image/png": blob})]); }catch(err){ copied = null; }
+      window.open(b.href, "_blank", "noopener");
+      const msg = dlg.querySelector(".shmsg");
+      const saveFile = () => { const a = dlg.querySelector('[data-sh="save"]'); a.click(); msg.textContent = st("saved"); };
+      if(copied) copied.then(() => { msg.textContent = st("pasted"); }, saveFile); else saveFile();
+      return;
+    }
   };
   dlg.dataset.url = url;
   const first = dlg.querySelector("[data-sh]"); if(first) first.focus();
