@@ -39,8 +39,11 @@ function paintRat(){
       </div>
     </article>`;
   }).join("");
+  // 縦長の見取り図は、画面の高さに収まる幅まで狭める（スポットの一覧まで遠くならないように）
+  const size = map.size || { w: 1600, h: 1227 };
+  const tall = size.h > size.w ? ` style="max-width:min(1100px, calc(85vh * ${(size.w / size.h).toFixed(4)}))"` : "";
   box.innerHTML = `${tabs}
-    <figure class="ratmap"><a class="full" href="${ja ? map.img.ja : map.img.en}" target="_blank" rel="noopener"><img src="${ja ? map.img.ja : map.img.en}" alt="${esc(nmOf(map))}" width="1600" height="1227"></a>${pins}</figure>
+    <figure class="ratmap"${tall}><a class="full" href="${ja ? map.img.ja : map.img.en}" target="_blank" rel="noopener"><img src="${ja ? map.img.ja : map.img.en}" alt="${esc(nmOf(map))}" width="${size.w}" height="${size.h}"></a>${pins}</figure>
     <div class="ratlist">${cards}</div>`;
 }
 document.getElementById("ratPanel").addEventListener("click", e => {

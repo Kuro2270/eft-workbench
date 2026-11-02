@@ -1,0 +1,140 @@
+{
+  "_about": "1つのスポットの動画の台本。sources は元の動画・画像、segments は場面（kind: still=静止画 / clip=動画、src は sources の名前、start=元の動画の開始秒、dur=長さ、caption=画面下の一言、lines=ずんだもんのセリフ［出す秒, 英語, 日本語訳（吹き出しの下に（）で出す）］。\\n は吹き出しの改行）。thumbnail はサムネイル（main＝大きな見出しの行［1行目は黄色］, ja＝日本語のひと言, badge＝札（省くと出さない）, bg＝背景にする画面［sources の名前, 秒］）",
+  "spot": "ground-zero-mira-bush",
+  "sources": {
+    "view": "assets/spots/ground-zero-mira-bush/view.jpg",
+    "1-route": "footage/ground-zero-mira-bush/1-route.mp4",
+    "2-route": "footage/ground-zero-mira-bush/2-route.mp4",
+    "3-route": "footage/ground-zero-mira-bush/3-route.mp4",
+    "4-kill1": "footage/ground-zero-mira-bush/4-kill1.mp4",
+    "5-kill2": "footage/ground-zero-mira-bush/5-kill2.mp4"
+  },
+  "segments": [
+    {
+      "kind": "still",
+      "src": "view",
+      "start": 0,
+      "dur": 3.0,
+      "caption": "Hide in the Mira Street bush",
+      "lines": [
+        [
+          0,
+          "Let's wait\nright here.",
+          "ここで\n待つのだ"
+        ]
+      ]
+    },
+    {
+      "kind": "clip",
+      "src": "1-route",
+      "start": 0.5,
+      "dur": 6.5,
+      "caption": "① Cross the plaza to Mira Street",
+      "lines": [
+        [
+          0.4,
+          "Through the plaza!",
+          "広場を\n抜けるのだ"
+        ]
+      ]
+    },
+    {
+      "kind": "clip",
+      "src": "2-route",
+      "start": 1.0,
+      "dur": 4.5,
+      "caption": "② Walk into the bush by the road",
+      "lines": [
+        [
+          0.3,
+          "Into this bush!",
+          "この茂みに\n入るのだ"
+        ]
+      ]
+    },
+    {
+      "kind": "clip",
+      "src": "3-route",
+      "start": 1.0,
+      "dur": 5.5,
+      "caption": "③ Face up the street and wait",
+      "lines": [
+        [
+          0.4,
+          "All the way in.",
+          "奥まで\n入るのだ"
+        ],
+        [
+          3.6,
+          "Stop here.",
+          "ここで\n止まるのだ"
+        ]
+      ]
+    },
+    {
+      "kind": "clip",
+      "src": "4-kill1",
+      "start": 1.0,
+      "dur": 12.5,
+      "caption": "Kill 1: Scope up the street",
+      "lines": [
+        [
+          0.3,
+          "Wait in\nthe leaves...",
+          "葉っぱの中で\n待つのだ…"
+        ],
+        [
+          4.6,
+          "Someone's coming!",
+          "来たのだ！"
+        ],
+        [
+          9.6,
+          "Got him!",
+          "やったのだ！"
+        ]
+      ]
+    },
+    {
+      "kind": "clip",
+      "src": "5-kill2",
+      "start": 1.0,
+      "dur": 22.3,
+      "caption": "Kill 2: Still hidden in the bush",
+      "lines": [
+        [
+          0.4,
+          "Someone's\nby the fire.",
+          "たき火のそばに\nだれかいるのだ"
+        ],
+        [
+          4.6,
+          "They can't\nsee me.",
+          "こっちに\n気づいてないのだ"
+        ],
+        [
+          11.2,
+          "Fire!",
+          "撃つのだ！"
+        ],
+        [
+          20.8,
+          "That's two!",
+          "これで2人なのだ！"
+        ]
+      ]
+    }
+  ],
+  "thumbnail": {
+    "main": [
+      "BAD AIM?",
+      "JUST HIDE",
+      "IN A BUSH"
+    ],
+    "ja": "茂みに入って待つだけ",
+    "bg": [
+      "4-kill1",
+      6.4
+    ]
+  }
+}

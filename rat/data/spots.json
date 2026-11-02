@@ -134,6 +134,42 @@
         "ja": "階段を上がって手すりを越え、壁の端でしゃがんで待つ。バスの横を通ったら顔を出して撃つだけ。"
       },
       "view_deg": 130
+    },
+    {
+      "id": "ground-zero-mira-bush",
+      "map": "ground-zero",
+      "zone": "mira",
+      "name_ja": "ミラ通りの茂みの中",
+      "name_en": "Mira Street Bush",
+      "pos_pct": [
+        7.8,
+        48.4
+      ],
+      "facing_deg": -98,
+      "ratings": {
+        "sightline": 4,
+        "audio": 4,
+        "scav_safe": 5,
+        "access": 5
+      },
+      "route_ja": [
+        "広場を抜けてミラ通りへ",
+        "道沿いの茂みに入る",
+        "通りの先に向いて待つ"
+      ],
+      "route_en": [
+        "Cross the plaza to Mira Street",
+        "Walk into the bush by the road",
+        "Face up the street and wait"
+      ],
+      "videos": {
+        "short": "https://youtube.com/shorts/kZqDOB52Wco"
+      },
+      "summary": {
+        "en": "Walk into the bush on Mira Street and wait. Nobody checks the leaves.",
+        "ja": "ミラ通りの茂みに入って待つだけ。葉っぱの中まではだれも見ません。"
+      },
+      "view_deg": 40
     }
   ]
 }

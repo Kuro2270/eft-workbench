@@ -7,6 +7,13 @@
       "name_ja": "ストリートオブタルコフ",
       "map_en": "assets/maps/streets-en.jpg",
       "map_ja": "assets/maps/streets-ja.jpg"
+    },
+    {
+      "id": "ground-zero",
+      "name_en": "Ground Zero",
+      "name_ja": "グラウンドゼロ",
+      "map_en": "assets/maps/ground-zero-en.jpg",
+      "map_ja": "assets/maps/ground-zero-ja.jpg"
     }
   ]
 }
