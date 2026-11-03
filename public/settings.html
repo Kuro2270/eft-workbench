@@ -136,7 +136,7 @@ svg.spark{display:block}
 .mtag.buy{background:#7FA8C9} .mtag.sell{background:var(--gain)}
 .mprofit b{color:var(--gain);font-size:14px}
 .mtag.held{background:var(--tan)}
-/* 「仕込んだ」：表の右の外に置く（品物の情報と分けて、押せるボタンだと分かるように）。タグ（平らな色）と違うグラデーション */
+/* 「在庫に記録」：表の右の外に置く（品物の情報と分けて、押せるボタンだと分かるように）。タグ（平らな色）と違うグラデーション */
 .mtbl th.sact,.mtbl td.sact{border-top:0;border-bottom:0;padding:4px 0 4px 14px;background:none !important;cursor:default}
 .sadd{padding:5px 14px;font-size:12.5px;font-weight:700;color:#1E2528;border:1px solid #F3C47A;border-radius:6px;cursor:pointer;
   background:linear-gradient(180deg,#F2B861 0%,#C9782E 100%);box-shadow:0 1px 3px #0006}
@@ -700,7 +700,7 @@ function buyProfit(buyPrice, sellAt, feeOf, traderPrice){
   const profit = sellNet - buyPrice;
   return {sellNet, via: viaTrader ? "trader" : "flea", profit, rate: buyPrice > 0 ? profit / buyPrice : 0};
 }
-/* 在庫（仕込んだ品）の状態。v＝marketView の結果、cost＝1個あたりの買値、netNow＝いま売ったときの1個あたりの手取り
+/* 在庫（買った品の記録）の状態。v＝marketView の結果、cost＝1個あたりの買値、netNow＝いま売ったときの1個あたりの手取り
    sell：売り場（高値付近か、おすすめ売値に届いた）で、売れば利益が出る／high：高値付近だが、買値が高く売ると赤字／plus：売れば利益は出るが、まだ上がる余地あり／hold：待ち／few：判定できない */
 function stockState(v, cost, netNow){
   if(!v || v.zone === "few") return "few";
@@ -1710,7 +1710,7 @@ function mkProfit(it, v){
 function mkRow(it, v, side, pf){
   const icon = it.iconLink ? `<img src="${esc(it.iconLink)}" alt="" loading="lazy">` : "";
   const tag = v.zone === "buy" ? `<span class="mtag buy">${mt("tagBuy")}</span>` : v.zone === "sell" ? `<span class="mtag sell">${mt("tagSell")}</span>` : "";
-  const open = MK_OPEN === it.id, act = side !== "sell";      // act：表の右の外に「仕込んだ」のボタンを置くか（売り場には置かない）
+  const open = MK_OPEN === it.id, act = side !== "sell";      // act：表の右の外に「在庫に記録」のボタンを置くか（売り場には置かない）
   return `<tr class="mrow${open ? " open" : ""}" data-id="${esc(it.id)}" tabindex="0">`
     + `<td class="l"><span class="wico">${icon}</span>${esc(nm(it.name))}${copyBtn(nm(it.name))}${tag}${stockTagHtml(it.id)}</td>`
     + `<td>${yen(v.price)}</td>`
@@ -1811,7 +1811,7 @@ if($mk){
     const b = e.target.closest("button[data-copy]"); if(b){ onCopyClick(b); return; }   // 名前のコピー（行は開かない）
     try{ if(onStockClick(e)) return; }                                                 // 在庫の操作（stock-ui.js）
     catch(err){ console.error(err); alert("在庫の操作でエラーが起きました：" + err.message); return; }
-    if(e.target.closest("tr.mform, tr.sedit, td.sact")) return;                     // 表の外（「仕込んだ」の列）を押しても行は開かない
+    if(e.target.closest("tr.mform, tr.sedit, td.sact")) return;                     // 表の外（「在庫に記録」の列）を押しても行は開かない
     const row = e.target.closest("tr.mrow"); if(row) toggle(row);
   });
   $mk.addEventListener("keydown", e => { if(e.target.closest("button")) return; const row = e.target.closest("tr.mrow"); if(row && (e.key === "Enter" || e.key === " ")){ e.preventDefault(); toggle(row); } });
@@ -1836,31 +1836,31 @@ if($mk){
   $mk.addEventListener("mouseleave", () => { const tip = document.getElementById("tip"); if(tip.dataset.from === "chart"){ tip.hidden = true; delete tip.dataset.from; } });
 }
 
-/* ================= 売り時・買い時：在庫（仕込んだ品） =================
-   買い場の品の右（表の外）の「仕込んだ」を押す → 数量と、おおよその平均買値（1個あたり）を入れて記録する（このブラウザに保存）
+/* ================= 売り時・買い時：在庫（買った品の記録） =================
+   買い場の品の右（表の外）の「在庫に記録」を押す → 数量と、おおよその平均買値（1個あたり）を入れて記録する（このブラウザに保存）
    在庫の欄で、いまの相場・おすすめ売値・いま売ったときの損益を見せ、売り場になった品を「売り時」として上に出す
    売ったら「売った」で記録から外す。判定は market.js の stockState、相場の見方は売り時・買い時と同じ（marketView） */
 
 const ST_I18N = {
   ja: {
-    title: "在庫（仕込んだ品）", sellN: "売り時 {n}品",
-    empty: "まだありません。買い場の品の「仕込んだ」を押すと、ここに記録されます。",
+    title: "在庫", sellN: "売り時 {n}品",
+    empty: "まだありません。買い場の品の「在庫に記録」を押すと、ここに記録されます。",
     cName: "品物", cQty: "数量", cCost: "平均買値／個", cNow: "いまの相場", cTarget: "おすすめ売値", cPL: "いま売ると", cState: "状態",
     plSub: "1個 {each}（手取り {net}）", targetSub: "手取り {net}・合計 {total}",
     sell: "売り時", high: "高値付近（売ると赤字）", plus: "売れば利益（まだ上がる余地）", hold: "待ち", few: "記録が少ない", wait: "確認中",
     sold: "売った", soldAsk: "{name} を在庫から外しますか？",
-    add: "仕込んだ", addTitle: "{name} を在庫に記録", qty: "数量", cost: "おおよその平均買値", save: "記録する", cancel: "やめる",
+    add: "在庫に記録", addTitle: "{name} を在庫に記録", qty: "数量", cost: "おおよその平均買値", save: "記録する", cancel: "やめる",
     held: "在庫 {n}", otherMode: "ほかのモードの在庫 {n}品（モードを切り替えると表示）",
     total: "在庫の合計：買値 {cost}・いま売ると {now}（{pl}）",
   },
   en: {
     title: "Stock (items you bought)", sellN: "{n} to sell",
-    empty: "Nothing yet. Press \"Bought\" on a buy-zone item to record it here.",
+    empty: "Nothing yet. Press \"Add to stock\" on a buy-zone item to record it here.",
     cName: "Item", cQty: "Qty", cCost: "Avg cost / unit", cNow: "Market now", cTarget: "Suggested sell", cPL: "If sold now", cState: "Status",
     plSub: "{each} each (take-home {net})", targetSub: "take-home {net}, total {total}",
     sell: "Sell", high: "Near the high (would be a loss)", plus: "In profit (may rise further)", hold: "Hold", few: "Not enough data", wait: "Checking",
     sold: "Sold", soldAsk: "Remove {name} from stock?",
-    add: "Bought", addTitle: "Record {name} as stock", qty: "Qty", cost: "Approx. average cost", save: "Save", cancel: "Cancel",
+    add: "Add to stock", addTitle: "Record {name} as stock", qty: "Qty", cost: "Approx. average cost", save: "Save", cancel: "Cancel",
     held: "stock {n}", otherMode: "{n} items in other modes (switch mode to see them)",
     total: "Stock total: cost {cost}, if sold now {now} ({pl})",
   },
@@ -1881,7 +1881,7 @@ function stockTagHtml(id){
   return n ? `<span class="mtag held">${esc(stt("held", {n: fmt(n)}))}</span>` : "";
 }
 function stockAddBtn(id){ return `<button type="button" class="sadd" data-stock-add="${esc(id)}">${esc(stt("add"))}</button>`; }
-/* 「仕込んだ」の入力欄：一覧の外（画面の上に浮かぶ小窓）に出す。
+/* 「在庫に記録」の入力欄：一覧の外（画面の上に浮かぶ小窓）に出す。
    一覧は価格記録を取るたびに描き直されるので、その中に置くと入力中に消えたり、開いたのに見えなかったりするため */
 function stockDialog(it, v){
   let dlg = document.getElementById("stockDlg");

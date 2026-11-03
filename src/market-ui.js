@@ -131,7 +131,7 @@ function mkProfit(it, v){
 function mkRow(it, v, side, pf){
   const icon = it.iconLink ? `<img src="${esc(it.iconLink)}" alt="" loading="lazy">` : "";
   const tag = v.zone === "buy" ? `<span class="mtag buy">${mt("tagBuy")}</span>` : v.zone === "sell" ? `<span class="mtag sell">${mt("tagSell")}</span>` : "";
-  const open = MK_OPEN === it.id, act = side !== "sell";      // act：表の右の外に「仕込んだ」のボタンを置くか（売り場には置かない）
+  const open = MK_OPEN === it.id, act = side !== "sell";      // act：表の右の外に「在庫に記録」のボタンを置くか（売り場には置かない）
   return `<tr class="mrow${open ? " open" : ""}" data-id="${esc(it.id)}" tabindex="0">`
     + `<td class="l"><span class="wico">${icon}</span>${esc(nm(it.name))}${copyBtn(nm(it.name))}${tag}${stockTagHtml(it.id)}</td>`
     + `<td>${yen(v.price)}</td>`
@@ -232,7 +232,7 @@ if($mk){
     const b = e.target.closest("button[data-copy]"); if(b){ onCopyClick(b); return; }   // 名前のコピー（行は開かない）
     try{ if(onStockClick(e)) return; }                                                 // 在庫の操作（stock-ui.js）
     catch(err){ console.error(err); alert("在庫の操作でエラーが起きました：" + err.message); return; }
-    if(e.target.closest("tr.mform, tr.sedit, td.sact")) return;                     // 表の外（「仕込んだ」の列）を押しても行は開かない
+    if(e.target.closest("tr.mform, tr.sedit, td.sact")) return;                     // 表の外（「在庫に記録」の列）を押しても行は開かない
     const row = e.target.closest("tr.mrow"); if(row) toggle(row);
   });
   $mk.addEventListener("keydown", e => { if(e.target.closest("button")) return; const row = e.target.closest("tr.mrow"); if(row && (e.key === "Enter" || e.key === " ")){ e.preventDefault(); toggle(row); } });

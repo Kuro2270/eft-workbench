@@ -97,7 +97,7 @@ function buyProfit(buyPrice, sellAt, feeOf, traderPrice){
   const profit = sellNet - buyPrice;
   return {sellNet, via: viaTrader ? "trader" : "flea", profit, rate: buyPrice > 0 ? profit / buyPrice : 0};
 }
-/* 在庫（仕込んだ品）の状態。v＝marketView の結果、cost＝1個あたりの買値、netNow＝いま売ったときの1個あたりの手取り
+/* 在庫（買った品の記録）の状態。v＝marketView の結果、cost＝1個あたりの買値、netNow＝いま売ったときの1個あたりの手取り
    sell：売り場（高値付近か、おすすめ売値に届いた）で、売れば利益が出る／high：高値付近だが、買値が高く売ると赤字／plus：売れば利益は出るが、まだ上がる余地あり／hold：待ち／few：判定できない */
 function stockState(v, cost, netNow){
   if(!v || v.zone === "few") return "few";

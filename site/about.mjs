@@ -10,7 +10,7 @@ const TOOLS = {
     ["loot.html", "持ち帰りティア表", "レイドで拾った品を、1マスあたりの売値で S〜D の段に分けます。",
       ["トレーダーとフリマ（手数料を引いた手取り）の高いほうで計算", "弾薬箱は、開けて中身を売ったほうが高ければその値段で見る", "分類や出品数で絞り込める", "ティア表を画像にして、LINE・X などで共有できる"]],
     ["watch.html", "売り時・買い時", "いまの値段が過去の底値付近の品（買い場）と、高値付近の品（売り場）を並べます。",
-      ["おすすめの買値・売値と、値動き・移動平均のグラフ", "仕込んだ品を「在庫」に記録して、売り時を見張れる"]],
+      ["おすすめの買値・売値と、値動き・移動平均のグラフ", "買った品を「在庫」に記録して、売り時を見張れる"]],
     ["rat.html", "ラットスポット", "待ち伏せ（ラット）で勝てる場所を、マップごとに紹介します。",
       ["見取り図の位置・行き方・見える景色", "見晴らし・聞き取りやすさ・Scav回避・行きやすさの評価", "実際のキル動画つき"]],
     ["settings.html", "プレイヤー設定", "プレイヤーレベル・トレーダーのロイヤリティレベル・インテルセンターなどを入れておく場所です。",
@@ -54,7 +54,7 @@ const FAQ = {
     ]],
     ["売り時・買い時", [
       ["「買い場」「売り場」とは何ですか？", "いまの値段が、選んだ期間（7日・14日・30日）の値動きの中で底値に近い品が「買い場」、高値に近い品が「売り場」です。品を選ぶと、値動きと移動平均のグラフ、おすすめの買値・売値が出ます。"],
-      ["「在庫」は何に使いますか？", "買い場の品の「仕込んだ」を押して数量と買値を記録すると、在庫の欄に、いま売ったときの損益と、売り時になったかどうかが出ます。記録はモードごとに分かれ、お使いのブラウザにだけ保存されます。"]
+      ["「在庫」は何に使いますか？", "買い場の品の「在庫に記録」を押して数量とおおよその平均買値を記録すると、在庫の欄に、いま売ったときの損益と、売り時になったかどうかが出ます。記録はモードごとに分かれ、お使いのブラウザにだけ保存されます。"]
     ]],
     ["ラットスポット", [
       ["評価の4つの項目は何ですか？", "見晴らし（待つ位置から見える範囲）、聞き取りやすさ（近づく足音の聞こえやすさ）、Scav回避（Scav に見つかりにくいか）、行きやすさ（迷わず安全に着けるか）を、それぞれ5段階で付けています。"],
@@ -86,7 +86,7 @@ const FAQ = {
     ]],
     ["Buy & sell signals", [
       ["What are the buy zone and sell zone?", "Items whose current price sits near the low of the period you choose (7, 14 or 30 days) are in the buy zone, and items near the high are in the sell zone. Select an item to see its price and moving-average chart with suggested buy and sell prices."],
-      ["What is “Stock” for?", "Press “Bought” on a buy-zone item and enter the quantity and cost. The stock list then shows your profit or loss if you sold now, and whether it is time to sell. Stock is kept per mode, in your browser only."]
+      ["What is “Stock” for?", "Press “Add to stock” on a buy-zone item and enter the quantity and approximate average cost. The stock list then shows your profit or loss if you sold now, and whether it is time to sell. Stock is kept per mode, in your browser only."]
     ]],
     ["Rat spots", [
       ["What do the four ratings mean?", "View (how much you can see from the spot), Sound (how easily you hear footsteps coming), Scav-safe (how unlikely Scavs are to find you) and Easy to reach (how safely you get there). Each is rated from 1 to 5."],

@@ -1,28 +1,28 @@
-/* ================= 売り時・買い時：在庫（仕込んだ品） =================
-   買い場の品の右（表の外）の「仕込んだ」を押す → 数量と、おおよその平均買値（1個あたり）を入れて記録する（このブラウザに保存）
+/* ================= 売り時・買い時：在庫（買った品の記録） =================
+   買い場の品の右（表の外）の「在庫に記録」を押す → 数量と、おおよその平均買値（1個あたり）を入れて記録する（このブラウザに保存）
    在庫の欄で、いまの相場・おすすめ売値・いま売ったときの損益を見せ、売り場になった品を「売り時」として上に出す
    売ったら「売った」で記録から外す。判定は market.js の stockState、相場の見方は売り時・買い時と同じ（marketView） */
 
 const ST_I18N = {
   ja: {
-    title: "在庫（仕込んだ品）", sellN: "売り時 {n}品",
-    empty: "まだありません。買い場の品の「仕込んだ」を押すと、ここに記録されます。",
+    title: "在庫", sellN: "売り時 {n}品",
+    empty: "まだありません。買い場の品の「在庫に記録」を押すと、ここに記録されます。",
     cName: "品物", cQty: "数量", cCost: "平均買値／個", cNow: "いまの相場", cTarget: "おすすめ売値", cPL: "いま売ると", cState: "状態",
     plSub: "1個 {each}（手取り {net}）", targetSub: "手取り {net}・合計 {total}",
     sell: "売り時", high: "高値付近（売ると赤字）", plus: "売れば利益（まだ上がる余地）", hold: "待ち", few: "記録が少ない", wait: "確認中",
     sold: "売った", soldAsk: "{name} を在庫から外しますか？",
-    add: "仕込んだ", addTitle: "{name} を在庫に記録", qty: "数量", cost: "おおよその平均買値", save: "記録する", cancel: "やめる",
+    add: "在庫に記録", addTitle: "{name} を在庫に記録", qty: "数量", cost: "おおよその平均買値", save: "記録する", cancel: "やめる",
     held: "在庫 {n}", otherMode: "ほかのモードの在庫 {n}品（モードを切り替えると表示）",
     total: "在庫の合計：買値 {cost}・いま売ると {now}（{pl}）",
   },
   en: {
     title: "Stock (items you bought)", sellN: "{n} to sell",
-    empty: "Nothing yet. Press \"Bought\" on a buy-zone item to record it here.",
+    empty: "Nothing yet. Press \"Add to stock\" on a buy-zone item to record it here.",
     cName: "Item", cQty: "Qty", cCost: "Avg cost / unit", cNow: "Market now", cTarget: "Suggested sell", cPL: "If sold now", cState: "Status",
     plSub: "{each} each (take-home {net})", targetSub: "take-home {net}, total {total}",
     sell: "Sell", high: "Near the high (would be a loss)", plus: "In profit (may rise further)", hold: "Hold", few: "Not enough data", wait: "Checking",
     sold: "Sold", soldAsk: "Remove {name} from stock?",
-    add: "Bought", addTitle: "Record {name} as stock", qty: "Qty", cost: "Approx. average cost", save: "Save", cancel: "Cancel",
+    add: "Add to stock", addTitle: "Record {name} as stock", qty: "Qty", cost: "Approx. average cost", save: "Save", cancel: "Cancel",
     held: "stock {n}", otherMode: "{n} items in other modes (switch mode to see them)",
     total: "Stock total: cost {cost}, if sold now {now} ({pl})",
   },
@@ -43,7 +43,7 @@ function stockTagHtml(id){
   return n ? `<span class="mtag held">${esc(stt("held", {n: fmt(n)}))}</span>` : "";
 }
 function stockAddBtn(id){ return `<button type="button" class="sadd" data-stock-add="${esc(id)}">${esc(stt("add"))}</button>`; }
-/* 「仕込んだ」の入力欄：一覧の外（画面の上に浮かぶ小窓）に出す。
+/* 「在庫に記録」の入力欄：一覧の外（画面の上に浮かぶ小窓）に出す。
    一覧は価格記録を取るたびに描き直されるので、その中に置くと入力中に消えたり、開いたのに見えなかったりするため */
 function stockDialog(it, v){
   let dlg = document.getElementById("stockDlg");

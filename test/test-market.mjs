@@ -128,13 +128,13 @@ const sellNames = await page.$$eval(".msec.sell tr.mrow", ns => ns.map(n => n.qu
 ok(buyNames.some(n => /Unlimited Item.*底値付近/.test(n)), "底値付近の品が買い場に出る / " + buyNames.slice(0, 4).join(" | "));
 ok(/Graphics Card.*高値付近/.test(sellNames[0] || ""), "売り場の先頭に高値付近の品 / " + sellNames.slice(0, 3).join(" | "));
 {
-  const heads = await page.$$eval(".msec.buy thead th:not(.sact)", ns => ns.map(n => n.textContent));   // .sact は表の外の「仕込んだ」の列（見出しなし）
+  const heads = await page.$$eval(".msec.buy thead th:not(.sact)", ns => ns.map(n => n.textContent));   // .sact は表の外の「在庫に記録」の列（見出しなし）
   const sheads = await page.$$eval(".msec.sell thead th", ns => ns.map(n => n.textContent));
   ok(heads.join("|") === "品物|いまの相場|過去30日の幅（底値〜高値）|見込み利益／個|出品" && sheads.join("|") === "品物|いまの相場|過去30日の幅（底値〜高値）|出品",
      "列は 品物・いまの相場・過去の幅・見込み利益（買い場だけ）・出品 だけ（位置・おすすめ・流れ・底値→売値は無い） / " + heads.join("|"));
   const act = await page.$$eval(".msec.buy tr.mrow", rs => rs.every(r => { const c = r.lastElementChild; return c.classList.contains("sact") && c.querySelector("[data-stock-add]") && !r.querySelector("td.l [data-stock-add]"); }));
   const sact = await page.$$eval(".msec.sell [data-stock-add]", ns => ns.length);
-  ok(act && sact === 0, "「仕込んだ」は、買い場の行の右（出品の外）にだけあり、品物の欄の中には無い（売り場には無い）");
+  ok(act && sact === 0, "「在庫に記録」は、買い場の行の右（出品の外）にだけあり、品物の欄の中には無い（売り場には無い）");
 }
 const prof = await page.$eval(".msec.buy tr.mrow .mprofit", n => n.textContent).catch(() => "");
 ok(/^₽[\d,]+ \(\+\d+%\)$/.test(prof.trim()), "買い場の見込み利益は 金額と利益率だけ（1マスあたり・手取りの説明は無い） / " + prof);
@@ -225,7 +225,7 @@ ok(/まだありません/.test(await page.$eval(".msec.stock", n => n.textConte
   });
 }
 await page.waitForSelector(".sform", { timeout: 3000 }).catch(() => {});
-ok(await page.$eval("#stockDlg", n => !n.hidden && !!n.querySelector(".sform")) && !(await page.$(".mdetail")), "「仕込んだ」で入力の小窓が開く（グラフは開かない）");
+ok(await page.$eval("#stockDlg", n => !n.hidden && !!n.querySelector(".sform")) && !(await page.$(".mdetail")), "「在庫に記録」で入力の小窓が開く（グラフは開かない）");
 await page.fill('.sform [data-sf="qty"]', "5");
 await page.fill('.sform [data-sf="cost"]', "40000");
 await page.click(".sform [data-stock-save]");
