@@ -127,7 +127,11 @@ svg.spark{display:block}
 .mtag.buy{background:#7FA8C9} .mtag.sell{background:var(--gain)}
 .mprofit b{color:var(--gain);font-size:14px}
 .mtag.held{background:var(--tan)}
-.sadd{margin-left:8px;padding:1px 8px;font-size:12px}
+/* 「仕込んだ」：表の右の外に置く（品物の情報と分けて、押せるボタンだと分かるように）。タグ（平らな色）と違うグラデーション */
+.mtbl th.sact,.mtbl td.sact{border-top:0;border-bottom:0;padding:4px 0 4px 14px;background:none !important;cursor:default}
+.sadd{padding:5px 14px;font-size:12.5px;font-weight:700;color:#1E2528;border:1px solid #F3C47A;border-radius:6px;cursor:pointer;
+  background:linear-gradient(180deg,#F2B861 0%,#C9782E 100%);box-shadow:0 1px 3px #0006}
+.sadd:hover{background:linear-gradient(180deg,#F7C877 0%,#D88A3A 100%)}
 .sform{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}
 #stockDlg{position:fixed;z-index:60;left:50%;top:24px;transform:translateX(-50%);background:var(--panel);border:2px solid var(--tan);border-radius:6px;padding:14px 18px;box-shadow:0 8px 28px #000c;max-width:calc(100vw - 32px)}
 .msec.stock{border-color:var(--tan)} .msec.stock h2{color:var(--tan)}

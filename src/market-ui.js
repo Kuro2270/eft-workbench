@@ -131,14 +131,15 @@ function mkProfit(it, v){
 function mkRow(it, v, side, pf){
   const icon = it.iconLink ? `<img src="${esc(it.iconLink)}" alt="" loading="lazy">` : "";
   const tag = v.zone === "buy" ? `<span class="mtag buy">${mt("tagBuy")}</span>` : v.zone === "sell" ? `<span class="mtag sell">${mt("tagSell")}</span>` : "";
-  const open = MK_OPEN === it.id;
+  const open = MK_OPEN === it.id, act = side !== "sell";      // act：表の右の外に「仕込んだ」のボタンを置くか（売り場には置かない）
   return `<tr class="mrow${open ? " open" : ""}" data-id="${esc(it.id)}" tabindex="0">`
-    + `<td class="l"><span class="wico">${icon}</span>${esc(nm(it.name))}${copyBtn(nm(it.name))}${tag}${stockTagHtml(it.id)}${side !== "sell" ? stockAddBtn(it.id) : ""}</td>`
+    + `<td class="l"><span class="wico">${icon}</span>${esc(nm(it.name))}${copyBtn(nm(it.name))}${tag}${stockTagHtml(it.id)}</td>`
     + `<td>${yen(v.price)}</td>`
     + `<td><span class="mrange" title="${esc(yen(v.low) + " 〜 " + yen(v.high))}"><i style="left:${(v.pos * 100).toFixed(1)}%"></i></span><div class="mrangeL"><span>${yen(v.low)}</span><span>${yen(v.high)}</span></div></td>`
     + (pf ? `<td class="mprofit"><b>${yen(pf.profit)}</b> <span class="note">(${pctTxt(pf.rate)})</span></td>` : "")
-    + `<td>${fmt(it.lastOfferCount || 0)}</td></tr>`
-    + (open ? `<tr class="mdetail"><td colspan="${pf ? 5 : 4}">${mkDetail(it, v)}</td></tr>` : "");
+    + `<td>${fmt(it.lastOfferCount || 0)}</td>`
+    + (act ? `<td class="sact">${stockAddBtn(it.id)}</td>` : "") + `</tr>`
+    + (open ? `<tr class="mdetail"><td colspan="${pf ? 5 : 4}">${mkDetail(it, v)}</td>${act ? `<td class="sact"></td>` : ""}</tr>` : "");
 }
 /* ---- 開いた行：グラフと説明 ---- */
 const CH = {w: 720, h: 160, padL: 4, padR: 58, padY: 8};
@@ -180,7 +181,7 @@ function mkSection(side, items){
     views.sort((a, b) => b.pf.profit - a.pf.profit);
   }
   else if(side === "sell") views = views.filter(x => x.v.pos >= 0.6).sort((a, b) => b.v.pos - a.v.pos);
-  const head = `<thead><tr><th class="l">${mt("cName")}</th><th>${mt("cNow")}</th><th>${mt("cRange", {d})}</th>${side === "buy" ? `<th>${mt("cProfit")}</th>` : ""}<th>${mt("cOffers")}</th></tr></thead>`;
+  const head = `<thead><tr><th class="l">${mt("cName")}</th><th>${mt("cNow")}</th><th>${mt("cRange", {d})}</th>${side === "buy" ? `<th>${mt("cProfit")}</th>` : ""}<th>${mt("cOffers")}</th>${side !== "sell" ? `<th class="sact"></th>` : ""}</tr></thead>`;
   const title = side === "found" ? mt("searchTitle") : mt(side === "buy" ? "buyTitle" : "sellTitle", {d});
   const body = views.length ? `<table class="mtbl">${head}<tbody>${views.map(x => mkRow(x.it, x.v, side, x.pf)).join("")}</tbody></table>`
     : `<p class="note">${esc(mt("none"))}</p>`;
@@ -231,7 +232,7 @@ if($mk){
     const b = e.target.closest("button[data-copy]"); if(b){ onCopyClick(b); return; }   // 名前のコピー（行は開かない）
     try{ if(onStockClick(e)) return; }                                                 // 在庫の操作（stock-ui.js）
     catch(err){ console.error(err); alert("在庫の操作でエラーが起きました：" + err.message); return; }
-    if(e.target.closest("tr.mform, tr.sedit")) return;
+    if(e.target.closest("tr.mform, tr.sedit, td.sact")) return;                     // 表の外（「仕込んだ」の列）を押しても行は開かない
     const row = e.target.closest("tr.mrow"); if(row) toggle(row);
   });
   $mk.addEventListener("keydown", e => { if(e.target.closest("button")) return; const row = e.target.closest("tr.mrow"); if(row && (e.key === "Enter" || e.key === " ")){ e.preventDefault(); toggle(row); } });
