@@ -17,6 +17,7 @@ import { fileURLToPath } from "node:url";
 import { SITE, SITE_NAME } from "./config.mjs";
 import { ratData } from "./rat.mjs";
 import { enLinks } from "./lang.mjs";
+import { adsHead } from "./ads.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const PAGE_MARK = 'const PAGE = "all";';
@@ -67,7 +68,8 @@ function headFor(p, lang){
 <meta property="og:url" content="${url}">
 <meta property="og:locale" content="${lang === "ja" ? "ja_JP" : "en_US"}">
 <meta name="twitter:card" content="summary">
-<link rel="icon" href="favicon.svg" type="image/svg+xml">`;
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+${adsHead()}`;
 }
 
 export function buildTools(){

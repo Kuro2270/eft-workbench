@@ -21,8 +21,8 @@ Escape from Tarkov の無料ツール集。tarkov.dev のデータを使う。
 | 場所 | 役割 |
 | --- | --- |
 | `src/` | ツールの画面の本体（直すのはここ）。`app.html` に `data.js`・`market.js`・`market-ui.js`・`stock-ui.js`・`rat-ui.js` を埋め込む |
-| `site/` | ページを作る処理。`tools.mjs`（ツールの6ページ）・`rat.mjs`（ラットスポットのデータと画像）・`info.mjs`（このサイトについて・よくある質問・プライバシーポリシーなどのページ）・`about.mjs`（このサイトについて・よくある質問の文面）・`legal.mjs`（プライバシーポリシー・お問い合わせの文面）・`seo.mjs`（robots.txt・sitemap.xml）・`config.mjs`（サイト名・URL・お問い合わせフォーム） |
-| `build.mjs` | `site/` の3つを順番に呼んで `public/` を作る |
+| `site/` | ページを作る処理。`tools.mjs`（ツールの6ページ）・`rat.mjs`（ラットスポットのデータと画像）・`info.mjs`（このサイトについて・よくある質問・プライバシーポリシーなどのページ）・`about.mjs`（このサイトについて・よくある質問の文面）・`legal.mjs`（プライバシーポリシー・お問い合わせの文面）・`seo.mjs`（robots.txt・sitemap.xml）・`ads.mjs`（広告：ページの AdSense のコードと ads.txt）・`config.mjs`（サイト名・URL・AdSense の ID・お問い合わせフォーム） |
+| `build.mjs` | `site/` の処理を順番に呼んで `public/` を作る |
 | `public/` | 公開するもの（build.mjs が作る。直接は直さない）。Cloudflare Pages がここを配信する |
 | `functions/data/[mode].js` | 公開サイトの `/data/<モード>.json` を返す（Cloudflare の保存場所 Workers KV から） |
 | `snapshot.mjs` | 価格を tarkov.dev から取って `public/data/<モード>.json` に保存する |

@@ -8,7 +8,7 @@ const TD = `<a href="https://tarkov.dev" target="_blank" rel="noopener">tarkov.d
 
 const PRIVACY = {
   ja: { title: "プライバシーポリシー",
-    desc: "EFT Workbench の運営者情報とプライバシーポリシーです。データの出どころ、ブラウザに保存する情報、アクセス解析、お問い合わせの扱いをまとめています。",
+    desc: "EFT Workbench の運営者情報とプライバシーポリシーです。データの出どころ、ブラウザに保存する情報、アクセス解析、広告、お問い合わせの扱いをまとめています。",
     body: `<h1>プライバシーポリシー</h1>
 <h2>運営者情報</h2>
 <table class="info">
@@ -31,15 +31,19 @@ const PRIVACY = {
 <p>ラットスポットのページでは、YouTube の動画を埋め込んでいます。動画は、再生のボタンを押したときにはじめて YouTube（プライバシー強化モード）から読み込みます。読み込んだあとは、YouTube に通信情報などが送られ、その取り扱いは Google のプライバシーポリシーに従います。</p>
 <h2>アクセス解析</h2>
 <p>サイトの改善のため、Cloudflare Web Analytics でアクセス数などを集計しています。Cookie を使わず、個人を特定する情報は集めません。</p>
+<h2>広告について</h2>
+<p>当サイトでは、第三者配信の広告サービス（Google AdSense）を利用しています。広告配信事業者は、Cookie を使用して、利用者が当サイトや他のサイトにアクセスした際の情報に基づく広告を表示することがあります。</p>
+<p>パーソナライズ広告は、Google の<a href="https://myadcenter.google.com/" target="_blank" rel="noopener">広告設定</a>で無効にできます。また、<a href="https://www.aboutads.info/choices/" target="_blank" rel="noopener">aboutads.info</a> で第三者配信事業者の Cookie を無効にすることもできます。Google による情報の取り扱いは、<a href="https://policies.google.com/technologies/ads?hl=ja" target="_blank" rel="noopener">Google の広告に関するポリシー</a>をご覧ください。</p>
+<p>どの広告を表示するかは、当サイトが個別に指定するものではありません。</p>
 <h2>お問い合わせ</h2>
 <p>お問い合わせには <b>Google フォーム</b>を使っています。入力された内容（本文と、任意で入力されたメールアドレス）は、Google のサービス上で保存され、運営者が確認します。いただいた情報は、お返事と、不具合の確認・サイトの改善のためだけに使います。法令に基づく場合を除き、本人の同意なく第三者に提供することはありません。</p>
 <h2>免責事項</h2>
 <p>当サイトの値段や計算結果は、正確さを保証するものではありません。当サイトの利用によって生じた損害（ゲーム内の損失を含む）について、運営者は責任を負いかねます。</p>
 <h2>改定</h2>
-<p>本ポリシーは、必要に応じて予告なく改定することがあります。広告を載せるなど、扱う情報が変わるときは、このページを更新してお知らせします。</p>
-<p class="lead">最終更新：2026年10月</p>` },
+<p>本ポリシーは、必要に応じて予告なく改定することがあります。扱う情報が変わるときは、このページを更新してお知らせします。</p>
+<p class="lead">最終更新：2026年11月</p>` },
   en: { title: "Privacy Policy",
-    desc: "Who runs EFT Workbench and its privacy policy: where the data comes from, what is stored in your browser, analytics and how contact messages are handled.",
+    desc: "Who runs EFT Workbench and its privacy policy: where the data comes from, what is stored in your browser, analytics, ads and how contact messages are handled.",
     body: `<h1>Privacy Policy</h1>
 <h2>About the operator</h2>
 <table class="info">
@@ -62,13 +66,17 @@ const PRIVACY = {
 <p>The Rat spots page embeds YouTube videos. A video is loaded from YouTube (privacy-enhanced mode) only when you press its play button. After that, connection details are sent to YouTube and handled under Google’s privacy policy.</p>
 <h2>Analytics</h2>
 <p>To improve the site, visits are counted with Cloudflare Web Analytics. It uses no cookies and collects nothing that identifies you.</p>
+<h2>Advertising</h2>
+<p>This site uses a third-party advertising service, Google AdSense. Ad vendors, including Google, may use cookies to show ads based on your visits to this site and other sites.</p>
+<p>You can turn off personalized ads in Google’s <a href="https://myadcenter.google.com/" target="_blank" rel="noopener">ad settings</a>, and opt out of third-party vendors’ cookies at <a href="https://www.aboutads.info/choices/" target="_blank" rel="noopener">aboutads.info</a>. For how Google uses this information, see <a href="https://policies.google.com/technologies/ads" target="_blank" rel="noopener">How Google uses cookies in advertising</a>.</p>
+<p>This site does not choose the individual ads that are shown.</p>
 <h2>Contact</h2>
 <p>The contact form uses <b>Google Forms</b>. What you enter (your message and, if you choose, your email address) is stored on Google’s service and read by the operator. It is used only to reply, to check reported bugs and to improve the site, and is never given to third parties without your consent, except where required by law.</p>
 <h2>Disclaimer</h2>
 <p>Prices and results on this site are not guaranteed to be accurate. The operator is not responsible for any loss arising from use of the site, including in-game losses.</p>
 <h2>Changes</h2>
-<p>This policy may change without notice. If the information handled changes, for example if ads are added, this page will be updated.</p>
-<p class="lead">Last updated: October 2026</p>` }
+<p>This policy may change without notice. If the information handled changes, this page will be updated.</p>
+<p class="lead">Last updated: November 2026</p>` }
 };
 
 const CONTACT = {

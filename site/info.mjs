@@ -8,7 +8,8 @@ import { fileURLToPath } from "node:url";
 import { SITE, SITE_NAME } from "./config.mjs";
 import { aboutPage, faqPage } from "./about.mjs";
 import { privacyPage, contactPage } from "./legal.mjs";
-import { enLinks } from "./lang.mjs";   // 英語のページの本文のリンク（ツールの紹介など）を、英語版のツールへ
+import { enLinks } from "./lang.mjs";
+import { adsHead } from "./ads.mjs";   // 英語のページの本文のリンク（ツールの紹介など）を、英語版のツールへ
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const esc = s => String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
@@ -34,7 +35,7 @@ function layout({ title, desc, body, file, noindex, lang = "ja", base }){
 <meta name="description" content="${esc(desc)}">
 ${noindex ? `<meta name="robots" content="noindex">` : `<link rel="canonical" href="${url}">`}${alt}
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
-<style>
+${noindex ? "" : adsHead() + "\n"}<style>
 :root{--bg:#1E2528;--panel:#263034;--line:#3A474C;--text:#E3DDD0;--muted:#98A29F;--tan:#C9A66B}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font-family:"BIZ UDPGothic","Hiragino Sans","Yu Gothic UI",Meiryo,sans-serif;font-size:15px;line-height:1.85}

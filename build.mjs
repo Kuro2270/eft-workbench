@@ -2,10 +2,13 @@
    ・ツールのページ（index・flip・loot・watch・rat・settings）… site/tools.mjs（ラットスポットのデータと画像は site/rat.mjs）
    ・このサイトについて・よくある質問・プライバシーポリシー・お問い合わせ・404 … site/info.mjs
    ・robots.txt と sitemap.xml                       … site/seo.mjs
+   ・ads.txt（広告）                                 … site/ads.mjs（ページの広告のコードも ads.mjs）
    役割ごとにファイルを分けている。ここは順番に呼ぶだけ。直すのは src/ と site/ の中だけ（public/ は直接直さない） */
 import { buildTools } from "./site/tools.mjs";
 import { buildInfo } from "./site/info.mjs";
 import { buildSeo } from "./site/seo.mjs";
+import { buildAds } from "./site/ads.mjs";
 
 const pages = [...buildTools(), ...buildInfo()];
 buildSeo(pages);
+buildAds();
