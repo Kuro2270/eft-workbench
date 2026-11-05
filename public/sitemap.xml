@@ -1,17 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://eft-workbench.com/</loc><lastmod>2026-11-03</lastmod><priority>1.0</priority></url>
-  <url><loc>https://eft-workbench.com/flip</loc><lastmod>2026-11-03</lastmod><priority>0.8</priority></url>
-  <url><loc>https://eft-workbench.com/loot</loc><lastmod>2026-11-03</lastmod><priority>0.8</priority></url>
-  <url><loc>https://eft-workbench.com/watch</loc><lastmod>2026-11-03</lastmod><priority>0.8</priority></url>
-  <url><loc>https://eft-workbench.com/rat</loc><lastmod>2026-11-03</lastmod><priority>0.8</priority></url>
-  <url><loc>https://eft-workbench.com/settings</loc><lastmod>2026-11-03</lastmod><priority>0.5</priority></url>
-  <url><loc>https://eft-workbench.com/about</loc><lastmod>2026-11-03</lastmod><priority>0.5</priority></url>
-  <url><loc>https://eft-workbench.com/faq</loc><lastmod>2026-11-03</lastmod><priority>0.5</priority></url>
-  <url><loc>https://eft-workbench.com/privacy</loc><lastmod>2026-11-03</lastmod><priority>0.3</priority></url>
-  <url><loc>https://eft-workbench.com/contact</loc><lastmod>2026-11-03</lastmod><priority>0.3</priority></url>
-  <url><loc>https://eft-workbench.com/about.en</loc><lastmod>2026-11-03</lastmod><priority>0.5</priority></url>
-  <url><loc>https://eft-workbench.com/faq.en</loc><lastmod>2026-11-03</lastmod><priority>0.5</priority></url>
-  <url><loc>https://eft-workbench.com/privacy.en</loc><lastmod>2026-11-03</lastmod><priority>0.3</priority></url>
-  <url><loc>https://eft-workbench.com/contact.en</loc><lastmod>2026-11-03</lastmod><priority>0.3</priority></url>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url><loc>https://eft-workbench.com/</loc><lastmod>2026-11-05</lastmod><priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://eft-workbench.com/"/><xhtml:link rel="alternate" hreflang="en" href="https://eft-workbench.com/index.en"/><xhtml:link rel="alternate" hreflang="x-default" href="https://eft-workbench.com/"/>
+  </url>
+  <url><loc>https://eft-workbench.com/index.en</loc><lastmod>2026-11-05</lastmod><priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://eft-workbench.com/"/><xhtml:link rel="alternate" hreflang="en" href="https://eft-workbench.com/index.en"/><xhtml:link rel="alternate" hreflang="x-default" href="https://eft-workbench.com/"/>
+  </url>
+  <url><loc>https://eft-workbench.com/flip</loc><lastmod>2026-11-05</lastmod><priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://eft-workbench.com/flip"/><xhtml:link rel="alternate" hreflang="en" href="https://eft-workbench.com/flip.en"/><xhtml:link rel="alternate" hreflang="x-default" href="https://eft-workbench.com/flip"/>
+  </url>
+  <url><loc>https://eft-workbench.com/flip.en</loc><lastmod>2026-11-05</lastmod><priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://eft-workbench.com/flip"/><xhtml:link rel="alternate" hreflang="en" href="https://eft-workbench.com/flip.en"/><xhtml:link rel="alternate" hreflang="x-default" href="https://eft-workbench.com/flip"/>
+  </url>
+  <url><loc>https://eft-workbench.com/loot</loc><lastmod>2026-11-05</lastmod><priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://eft-workbench.com/loot"/><xhtml:link rel="alternate" hreflang="en" href="https://eft-workbench.com/loot.en"/><xhtml:link rel="alternate" hreflang="x-default" href="https://eft-workbench.com/loot"/>
+  </url>
+  <url><loc>https://eft-workbench.com/loot.en</loc><lastmod>2026-11-05</lastmod><priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://eft-workbench.com/loot"/><xhtml:link rel="alternate" hreflang="en" href="https://eft-workbench.com/loot.en"/><xhtml:link rel="alternate" hreflang="x-default" href="https://eft-workbench.com/loot"/>
+  </url>
+  <url><loc>https://eft-workbench.com/watch</loc><lastmod>2026-11-05</lastmod><priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://eft-workbench.com/watch"/><xhtml:link rel="alternate" hreflang="en" href="https://eft-workbench.com/watch.en"/><xhtml:link rel="alternate" hreflang="x-default" href="https://eft-workbench.com/watch"/>
+  </url>
+  <url><loc>https://eft-workbench.com/watch.en</loc><lastmod>2026-11-05</lastmod><priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://eft-workbench.com/watch"/><xhtml:link rel="alternate" hreflang="en" href="https://eft-workbench.com/watch.en"/><xhtml:link rel="alternate" hreflang="x-default" href="https://eft-workbench.com/watch"/>
+  </url>
+  <url><loc>https://eft-workbench.com/rat</loc><lastmod>2026-11-05</lastmod><priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://eft-workbench.com/rat"/><xhtml:link rel="alternate" hreflang="en" href="https://eft-workbench.com/rat.en"/><xhtml:link rel="alternate" hreflang="x-default" href="https://eft-workbench.com/rat"/>
+  </url>
+  <url><loc>https://eft-workbench.com/rat.en</loc><lastmod>2026-11-05</lastmod><priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://eft-workbench.com/rat"/><xhtml:link rel="alternate" hreflang="en" href="https://eft-workbench.com/rat.en"/><xhtml:link rel="alternate" hreflang="x-default" href="https://eft-workbench.com/rat"/>
+  </url>
+  <url><loc>https://eft-workbench.com/settings</loc><lastmod>2026-11-05</lastmod><priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://eft-workbench.com/settings"/><xhtml:link rel="alternate" hreflang="en" href="https://eft-workbench.com/settings.en"/><xhtml:link rel="alternate" hreflang="x-default" href="https://eft-workbench.com/settings"/>
+  </url>
+  <url><loc>https://eft-workbench.com/settings.en</loc><lastmod>2026-11-05</lastmod><priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://eft-workbench.com/settings"/><xhtml:link rel="alternate" hreflang="en" href="https://eft-workbench.com/settings.en"/><xhtml:link rel="alternate" hreflang="x-default" href="https://eft-workbench.com/settings"/>
+  </url>
+  <url><loc>https://eft-workbench.com/about</loc><lastmod>2026-11-05</lastmod><priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://eft-workbench.com/about"/><xhtml:link rel="alternate" hreflang="en" href="https://eft-workbench.com/about.en"/><xhtml:link rel="alternate" hreflang="x-default" href="https://eft-workbench.com/about"/>
+  </url>
+  <url><loc>https://eft-workbench.com/about.en</loc><lastmod>2026-11-05</lastmod><priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://eft-workbench.com/about"/><xhtml:link rel="alternate" hreflang="en" href="https://eft-workbench.com/about.en"/><xhtml:link rel="alternate" hreflang="x-default" href="https://eft-workbench.com/about"/>
+  </url>
+  <url><loc>https://eft-workbench.com/faq</loc><lastmod>2026-11-05</lastmod><priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://eft-workbench.com/faq"/><xhtml:link rel="alternate" hreflang="en" href="https://eft-workbench.com/faq.en"/><xhtml:link rel="alternate" hreflang="x-default" href="https://eft-workbench.com/faq"/>
+  </url>
+  <url><loc>https://eft-workbench.com/faq.en</loc><lastmod>2026-11-05</lastmod><priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://eft-workbench.com/faq"/><xhtml:link rel="alternate" hreflang="en" href="https://eft-workbench.com/faq.en"/><xhtml:link rel="alternate" hreflang="x-default" href="https://eft-workbench.com/faq"/>
+  </url>
+  <url><loc>https://eft-workbench.com/privacy</loc><lastmod>2026-11-05</lastmod><priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://eft-workbench.com/privacy"/><xhtml:link rel="alternate" hreflang="en" href="https://eft-workbench.com/privacy.en"/><xhtml:link rel="alternate" hreflang="x-default" href="https://eft-workbench.com/privacy"/>
+  </url>
+  <url><loc>https://eft-workbench.com/privacy.en</loc><lastmod>2026-11-05</lastmod><priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://eft-workbench.com/privacy"/><xhtml:link rel="alternate" hreflang="en" href="https://eft-workbench.com/privacy.en"/><xhtml:link rel="alternate" hreflang="x-default" href="https://eft-workbench.com/privacy"/>
+  </url>
+  <url><loc>https://eft-workbench.com/contact</loc><lastmod>2026-11-05</lastmod><priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://eft-workbench.com/contact"/><xhtml:link rel="alternate" hreflang="en" href="https://eft-workbench.com/contact.en"/><xhtml:link rel="alternate" hreflang="x-default" href="https://eft-workbench.com/contact"/>
+  </url>
+  <url><loc>https://eft-workbench.com/contact.en</loc><lastmod>2026-11-05</lastmod><priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://eft-workbench.com/contact"/><xhtml:link rel="alternate" hreflang="en" href="https://eft-workbench.com/contact.en"/><xhtml:link rel="alternate" hreflang="x-default" href="https://eft-workbench.com/contact"/>
+  </url>
 </urlset>

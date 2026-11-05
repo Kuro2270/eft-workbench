@@ -8,6 +8,7 @@ import { fileURLToPath } from "node:url";
 import { SITE, SITE_NAME } from "./config.mjs";
 import { aboutPage, faqPage } from "./about.mjs";
 import { privacyPage, contactPage } from "./legal.mjs";
+import { enLinks } from "./lang.mjs";   // 英語のページの本文のリンク（ツールの紹介など）を、英語版のツールへ
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const esc = s => String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
@@ -15,14 +16,14 @@ const esc = s => String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replac
 /* 言語ごとの、ページの下のリンク */
 const FOOT = {
   ja: [["index.html", "トップ"], ["about.html", "このサイトについて"], ["faq.html", "よくある質問"], ["privacy.html", "プライバシーポリシー"], ["contact.html", "お問い合わせ"]],
-  en: [["index.html", "Home"], ["about.en.html", "About"], ["faq.en.html", "FAQ"], ["privacy.en.html", "Privacy"], ["contact.en.html", "Contact"]]
+  en: [["index.en.html", "Home"], ["about.en.html", "About"], ["faq.en.html", "FAQ"], ["privacy.en.html", "Privacy"], ["contact.en.html", "Contact"]]
 };
 const page = (base, lang) => `${base}${lang === "en" ? ".en" : ""}.html`;
 const urlOf = f => `${SITE}/${f.replace(/\.html$/, "")}`;
 
 function layout({ title, desc, body, file, noindex, lang = "ja", base }){
   const url = urlOf(file);
-  const alt = base ? `\n<link rel="alternate" hreflang="ja" href="${urlOf(page(base, "ja"))}">\n<link rel="alternate" hreflang="en" href="${urlOf(page(base, "en"))}">` : "";
+  const alt = base ? `\n<link rel="alternate" hreflang="ja" href="${urlOf(page(base, "ja"))}">\n<link rel="alternate" hreflang="en" href="${urlOf(page(base, "en"))}">\n<link rel="alternate" hreflang="x-default" href="${urlOf(page(base, "ja"))}">` : "";
   const sw = base ? `<span class="lang">${lang === "en" ? `<a href="${page(base, "ja")}" lang="ja">日本語</a><b>English</b>` : `<b>日本語</b><a href="${page(base, "en")}" lang="en">English</a>`}</span>` : "";
   return `<!doctype html>
 <html lang="${lang}">
@@ -74,9 +75,9 @@ footer a{color:var(--muted)}
 </style>
 </head>
 <body>
-<header><a class="home" href="index.html">${SITE_NAME}</a>${sw}</header>
+<header><a class="home" href="${lang === "en" ? "index.en.html" : "index.html"}">${SITE_NAME}</a>${sw}</header>
 <main>
-${body}
+${lang === "en" ? enLinks(body) : body}
 </main>
 <footer>${FOOT[lang].map(([h, l]) => `<a href="${h}">${l}</a>`).join(lang === "en" ? " · " : "・")}</footer>
 </body>
@@ -122,5 +123,6 @@ export function buildInfo(){
   }
   writeFileSync(join(ROOT, "public", "_redirects"), redirects.join("\n") + "\n");   // Cloudflare Pages の転送設定
   console.log("作成: public/_redirects");
-  return PAGES.filter(p => !p.noindex).map(p => ({ file: p.file, priority: p.priority || "0.3" }));
+  // サイトマップ用：日本語版に英語版を組にして返す（英語版も日本語版と同じ扱いで載る）
+  return PAGES.filter(p => !p.noindex && p.lang !== "en").map(p => ({ file: p.file, en: p.base ? page(p.base, "en") : undefined, priority: p.priority || "0.3" }));
 }

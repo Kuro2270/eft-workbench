@@ -3,14 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>EFT 売り時・買い時 | EFT Workbench</title>
+<title>タルコフ（EFT）売り時・買い時 | EFT Workbench</title>
 <meta name="description" content="いまの値段が過去の底値付近の品（買い場）と高値付近の品（売り場）をランキングで並べ、おすすめの買値・売値と移動平均のグラフを出します。">
 <link rel="canonical" href="https://eft-workbench.com/watch">
+<link rel="alternate" hreflang="ja" href="https://eft-workbench.com/watch">
+<link rel="alternate" hreflang="en" href="https://eft-workbench.com/watch.en">
+<link rel="alternate" hreflang="x-default" href="https://eft-workbench.com/watch">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="EFT Workbench">
-<meta property="og:title" content="EFT 売り時・買い時 | EFT Workbench">
+<meta property="og:title" content="タルコフ（EFT）売り時・買い時 | EFT Workbench">
 <meta property="og:description" content="いまの値段が過去の底値付近の品（買い場）と高値付近の品（売り場）をランキングで並べ、おすすめの買値・売値と移動平均のグラフを出します。">
 <meta property="og:url" content="https://eft-workbench.com/watch">
+<meta property="og:locale" content="ja_JP">
 <meta name="twitter:card" content="summary">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -436,8 +440,19 @@ function loadSettings(){
   try{ const s = JSON.parse(localStorage.getItem("eftflip.settings") || "null"); if(s && migrate(s)) return {...DEFAULTS, ...s, ll:{...DEFAULTS.ll, ...(s.ll||{})}}; }catch(e){}
   return structuredClone(DEFAULTS);
 }
-function saveSettings(){ try{ localStorage.setItem("eftflip.settings", JSON.stringify(S)); }catch(e){} }
+function saveSettings(){ try{ localStorage.setItem("eftflip.settings", JSON.stringify(PAGE_LANG ? {...S, lang: LANG_PREF} : S)); }catch(e){} }
+/* 日本語と英語で URL を分けている（英語版は <名前>.en.html。site/tools.mjs が作る。2026年11月から）。
+   このページの言語は URL で決まる（PAGE_LANG）。ブラウザの言語では変えない（英語の設定で見に来る検索エンジンにも、日本語版は日本語のまま載るように）。
+   前に選んだ言語（LANG_PREF。保存した設定の lang）がこのページと違えば、その言語のページへ移る。言語のボタンを押すと、もう片方のページへ移る */
+const PAGE_LANG = "ja";
+const langUrl = to => {
+  const m = location.pathname.match(/([^\/]*?)(\.en)?(\.html)?$/), base = (m && m[1]) || "index";
+  return location.pathname.replace(/[^\/]*$/, base + (to === "en" ? ".en" : "") + ".html") + location.search + location.hash;
+};
+let LANG_PREF = (() => { try{ const v = (JSON.parse(localStorage.getItem("eftflip.settings") || "null") || {}).lang; return v === "ja" || v === "en" ? v : undefined; }catch(e){ return undefined; } })();
+if(PAGE_LANG && LANG_PREF && LANG_PREF !== PAGE_LANG) location.replace(langUrl(LANG_PREF));
 let S = loadSettings();
+if(PAGE_LANG) S.lang = PAGE_LANG;
 
 const L = () => I18N[S.lang] || I18N.ja;
 function t(key, vars){
@@ -1351,7 +1366,7 @@ function paintStatus(){
 }
 function applyLang(){
   document.documentElement.lang = S.lang;
-  document.title = t(PAGE_TITLE[PAGE] || "title") + " | EFT Workbench";
+  if(!PAGE_LANG) document.title = t(PAGE_TITLE[PAGE] || "title") + " | EFT Workbench";   // 公開のページは、作るときに書いた題（site/tools.mjs）のまま
   document.querySelectorAll("[data-i18n]").forEach(el => { el.textContent = t(el.dataset.i18n); });
   document.querySelectorAll(".lang button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lang === S.lang)));
   $mode.innerHTML = MODE_KEYS.map(v => `<option value="${v}">${t("modes")[v]}</option>`).join("");
@@ -1551,6 +1566,7 @@ function paintView(){
 $view.addEventListener("click", () => { S.lootView = lootView() === "tier" ? "list" : "tier"; saveSettings(); paintView(); render(); });
 document.querySelector(".lang").addEventListener("click", e => {
   const b = e.target.closest("button[data-lang]"); if(!b || b.dataset.lang === S.lang) return;
+  if(PAGE_LANG){ LANG_PREF = b.dataset.lang; saveSettings(); location.href = langUrl(LANG_PREF); return; }   // もう片方の言語のページへ
   S.lang = b.dataset.lang; saveSettings(); applyLang();
 });
 

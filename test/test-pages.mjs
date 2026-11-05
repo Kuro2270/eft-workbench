@@ -80,7 +80,7 @@ console.log("\n転売ボード（flip.html）");
 console.log("\nトップ（index.html）");
 {
   const { page, errs } = await open("index.html");
-  ok(/EFT ツール/.test(await page.title()), "タイトル / " + await page.title());
+  ok(/タルコフ（EFT）ツール/.test(await page.title()), "タイトル / " + await page.title());
   const cards = await page.$$eval("#topCards a.card", ns => ns.map(n => n.getAttribute("href") + ":" + n.textContent.trim().slice(0, 12)));
   ok(cards.length === 5 && cards.map(c => c.split(":")[0]).join(",") === "flip.html,loot.html,watch.html,rat.html,settings.html", "5つの入口が並ぶ（マップ作成は公開しない） / " + cards.join(" "));
   ok(await page.$eval(".bar", n => n.hidden) && await page.$eval("#tierBoard", n => n.hidden) && await page.$eval("#settingsBox", n => n.hidden), "ツールの部品は出ない");
@@ -106,15 +106,19 @@ console.log("\nこのサイトについて・よくある質問（about.html・f
     await page.goto("file://" + join(ROOT, "public", f));
     const st = await page.evaluate(() => ({ lang: document.documentElement.lang, sw: document.querySelector("header .lang a") && document.querySelector("header .lang a").getAttribute("href"),
       foot: [...document.querySelectorAll("footer a")].map(n => n.getAttribute("href")).join(","), alt: document.querySelectorAll('link[rel="alternate"]').length }));
-    ok(st.lang === "en" && st.sw === f.replace(".en", "") && st.alt === 2 && /about\.en\.html,faq\.en\.html,privacy\.en\.html,contact\.en\.html/.test(st.foot), `${f}：英語のページで、日本語への切り替えと英語の案内がある`);
+    ok(st.lang === "en" && st.sw === f.replace(".en", "") && st.alt === 3 && /about\.en\.html,faq\.en\.html,privacy\.en\.html,contact\.en\.html/.test(st.foot), `${f}：英語のページで、日本語への切り替えと英語の案内がある`);
   }
   await page.goto("file://" + join(ROOT, "public", "faq.en.html"));
   ok(await page.$$eval(".faq details", ns => ns.length) === n, "英語の質問の数は日本語と同じ");
   await page.goto("file://" + join(ROOT, "public", "contact.en.html"));
   ok(await page.$$eval("#openForm", ns => ns.length) === 1, "英語のお問い合わせにも、同じフォームを開くボタンがある");
   const ja = await open("index.html"), en = ja.page;
-  await en.click('.lang button[data-lang="en"]');
-  ok(/about\.en\.html.*faq\.en\.html.*privacy\.en\.html.*contact\.en\.html/.test(await en.$eval("#footer", n => n.innerHTML)), "ツールのページを英語にすると、下のリンクも英語のページへ");
+  await Promise.all([en.waitForNavigation({ waitUntil: "load" }), en.click('.lang button[data-lang="en"]')]);
+  ok(/index\.en\.html$/.test(en.url()) && await en.evaluate(() => document.documentElement.lang) === "en", "ツールのページで English を押すと、英語版のページ（index.en.html）へ移る / " + en.url().split("/").pop());
+  ok(/about\.en\.html.*faq\.en\.html.*privacy\.en\.html.*contact\.en\.html/.test(await en.$eval("#footer", n => n.innerHTML)), "英語版のツールのページは、下のリンクも英語のページへ");
+  ok(await en.$$eval("#pages a, .cards a", ns => ns.length > 0 && ns.every(a => /\.en\.html$/.test(a.getAttribute("href")))), "英語版のツールのページは、上のリンクと入口も英語版へ");
+  await en.goto("file://" + join(ROOT, "public", "flip.html"), { waitUntil: "load" }); await en.waitForTimeout(300);
+  ok(/flip\.en\.html$/.test(en.url()), "英語を選んだあとは、日本語版を開いても英語版へ移る / " + en.url().split("/").pop());
   await en.close();
   ok(errs.length === 0, "エラーなし " + errs.join(";"));
   await page.close();
@@ -173,8 +177,8 @@ console.log("\nラットスポット（rat.html）");
   ok(await page.$eval(".ratmap img", n => n.complete && n.naturalWidth > 0), "見取り図の画像が出る");
   ok(!(await page.$("#ratPanel iframe")), "動画は押すまで読み込まない");
   ok(await page.evaluate(() => !window.__fetched), "価格データを読みに行かない");
-  await page.click('.lang button[data-lang="en"]');
-  ok(/Route/.test(await page.$eval("#ratPanel", n => n.innerText)), "英語に切り替わる");
+  await Promise.all([page.waitForNavigation({ waitUntil: "load" }), page.click('.lang button[data-lang="en"]')]);
+  ok(/rat\.en\.html$/.test(page.url()) && /Route/.test(await page.$eval("#ratPanel", n => n.innerText)), "英語に切り替わる（英語版のページへ移る）");
   ok(errs.length === 0, "エラーなし " + errs.join(";"));
   await page.close();
 }
