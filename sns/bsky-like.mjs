@@ -7,7 +7,7 @@
  *   DRY_RUN=1 node sns/bsky-like.mjs       … 付ける候補を見るだけ（いいねはしない）
  *
  * 環境変数：BSKY_HANDLE, BSKY_APP_PASSWORD（無ければ何もしない）
- *           LIKE_LIMIT … 1回の実行で付ける数。既定 50。50〜200 の間で使う（50 より小さい数は 50、200 より大きい数は 200）。
+ *           LIKE_LIMIT … 1回の実行で付ける数。既定 10。10〜200 の間で使う（10 より小さい数は 10、200 より大きい数は 200）。
  *                        その日に手で付けたいいねや、手で押した実行の分は数えない。自動の実行が1日1回だけ動くようにするのは bsky-like-done.mjs
  *           LIKE_LIMIT_SRC … 件数をどこから取ったか（input / var / default。Summary に出すだけ）
  *           MANUAL     … 1 なら手で押した実行（手で入れた件数は 1〜200 で試せる）
@@ -24,7 +24,7 @@ const DRY = process.env.DRY_RUN === "1";
 const MANUAL = process.env.MANUAL === "1";
 // 全角の数字（「５０」）や「50件」のような書き方でも読めるようにする
 const RAW_LIMIT = String(process.env.LIKE_LIMIT || "").replace(/[０-９]/g, ch => String.fromCharCode(ch.charCodeAt(0) - 0xFEE0)).trim();
-const LIMIT_MIN = 50, LIMIT_MAX = 200;
+const LIMIT_MIN = 10, LIMIT_MAX = 200;   // 2026年11月：既定を 50 件から 10 件に
 const LIMIT = (() => {
   const n = parseInt(RAW_LIMIT || String(LIMIT_MIN), 10) || LIMIT_MIN;
   return Math.min(LIMIT_MAX, Math.max(MANUAL && process.env.LIKE_LIMIT_SRC === "input" ? 1 : LIMIT_MIN, n));
