@@ -1,16 +1,17 @@
-name: 価格｜価格を取って保存する（自動・1時間おき）
+name: 価格｜価格を取って保存する（自動・2時間おき）
 
 # tarkov.dev から3つのモード（PvP・PvP シーズナル・PvE）の価格を取り、Cloudflare の保存場所（Workers KV）に置く。役割はこれだけ。
 #   公開サイトは /data/<モード>.json（functions/data/[mode].js）でこれを返し、画面は開いたときにまずこれを読む。
-#   リポジトリにはコミットしない（1時間おきに履歴が増えて重くなるため）。
+#   リポジトリにはコミットしない（2時間おきに履歴が増えて重くなるため）。
 #   tarkov.dev の値段の読み取りは品物によって1〜2時間おきなので、これより細かく回しても意味はない。
+#   2026年11月：1時間おきから2時間おきにした（Actions の回数を半分に。買い時・売り時の線は tarkov.dev の履歴から引くので変わらない）。
 # 必要な設定（Settings → Secrets and variables → Actions）
 #   Secrets  : CLOUDFLARE_API_TOKEN（Workers KV の編集ができるトークン）、CLOUDFLARE_ACCOUNT_ID
 #   Variables: KV_NAMESPACE_ID（保存場所の ID）
 
 on:
   schedule:
-    - cron: "23 * * * *"     # 毎時23分（ちょうどの時刻は混み合って遅れやすいため）
+    - cron: "23 */2 * * *"   # 2時間おきの23分（ちょうどの時刻は混み合って遅れやすいため）
   workflow_dispatch:
 
 permissions:
