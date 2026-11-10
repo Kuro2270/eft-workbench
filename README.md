@@ -26,7 +26,7 @@ Escape from Tarkov の無料ツール集。tarkov.dev のデータを使う。
 | `public/` | 公開するもの（build.mjs が作る。直接は直さない）。Cloudflare Pages がここを配信する |
 | `functions/data/[mode].js` | 公開サイトの `/data/<モード>.json` を返す（Cloudflare の保存場所 Workers KV から） |
 | `snapshot.mjs` | 価格を tarkov.dev から取って `public/data/<モード>.json` に保存する |
-| `.github/workflows/snapshot.yml` | 「価格｜価格を取って保存する」：1時間おきに snapshot.mjs を動かし、Workers KV に置く |
+| `.github/workflows/snapshot.yml` | 「価格｜価格を取って保存する」：2時間おきに snapshot.mjs を動かし、Workers KV に置く |
 | `.github/workflows/bsky-like.yml` | 「SNS｜Bluesky のいいね」：タルコフの投稿にいいねを付ける（自動・1日1回。夜に予備の時刻つき） |
 | `.github/workflows/bsky-post-video.yml` | 「SNS｜動画を Bluesky で告知する」：ラットスポットのショート動画を1本ずつ告知する（手動） |
 | `sns/` | Bluesky とのやり取り（`bsky.mjs`）・いいね（`bsky-like.mjs`）・1日1回の確認（`bsky-like-done.mjs`）・動画の告知（`bsky-post-video.mjs`） |
@@ -37,13 +37,13 @@ Escape from Tarkov の無料ツール集。tarkov.dev のデータを使う。
 
 ## 価格データの流れ
 
-1. GitHub Actions「価格｜価格を取って保存する」が、毎時23分に3つのモード（PvP・PvP シーズナル・PvE）の価格を取る
+1. GitHub Actions「価格｜価格を取って保存する」が、2時間おきの23分に3つのモード（PvP・PvP シーズナル・PvE）の価格を取る
 2. Cloudflare の Workers KV（名前 `eft-snapshots`）に `regular.json`・`pvp-season.json`・`pve.json` として置く
 3. サイトの `/data/<モード>.json` を開くと、`functions/data/[mode].js` がそれを返す
 4. 画面は開いたときにまずこれを読んで、すぐ表示する（無ければその場で tarkov.dev から取る）
 5. 開いたままでも、手元のデータが1時間ほど古くなったら新しい保存データを読み直して差し替える（更新ボタンは無い。画面を見ていないあいだは読みに行かない）
 
-リポジトリには価格データをコミットしない（1時間おきに履歴が増えて重くなるため。`public/data/` は .gitignore）。
+リポジトリには価格データをコミットしない（2時間おきに履歴が増えて重くなるため。`public/data/` は .gitignore）。
 
 ## 公開の手順（はじめの1回だけ）
 

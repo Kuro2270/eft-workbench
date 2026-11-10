@@ -36,7 +36,7 @@ const FAQ = {
     ["全般", [
       ["無料ですか？登録は必要ですか？", "すべて無料で、アカウントの登録もいりません。ブラウザで開くだけで使えます。"],
       ["スマートフォンでも使えますか？", "使えます。表が横に長いページは、横にスクロールして見てください。"],
-      ["値段はいつの時点のものですか？", "各ツールの題の横に「○時○分 時点の価格」と出ています。価格はおよそ1時間ごとに新しくなり、ページを開いたままでも、新しい価格が出ると自動で差し替わります。"],
+      ["値段はいつの時点のものですか？", "各ツールの題の横に「○時○分 時点の価格」と出ています。価格はおよそ2時間ごとに新しくなり、ページを開いたままでも、新しい価格が出ると自動で差し替わります。"],
       ["PvP と PvE で値段は違いますか？", "違います。左上の切り替えで「PvP（通常）」「PvP シーズナル」「PvE」を選ぶと、そのモードの相場で計算し直します。"],
       ["設定や在庫は保存されますか？", "お使いのブラウザに保存され、次に開いたときもそのまま使えます。別の端末やブラウザには引き継がれません。"],
       ["英語でも使えますか？", "ツールのページは、右上で日本語と英語を切り替えられます。"]
@@ -68,7 +68,7 @@ const FAQ = {
     ["General", [
       ["Is it free? Do I need an account?", "Everything is free and there is no sign-up. Just open it in your browser."],
       ["Does it work on a phone?", "Yes. On pages with wide tables, scroll sideways to see every column."],
-      ["How fresh are the prices?", "Each tool shows “Prices as of …” next to its title. Prices refresh about once an hour, and an open page swaps in the new prices on its own."],
+      ["How fresh are the prices?", "Each tool shows “Prices as of …” next to its title. Prices refresh about every two hours, and an open page swaps in the new prices on its own."],
       ["Are PvP and PvE prices different?", "Yes. Use the switch at the top left to pick PvP (regular), PvP seasonal or PvE, and everything is recalculated for that mode."],
       ["Are my settings and stock saved?", "They are saved in your browser, so they are still there next time. They do not carry over to other devices or browsers."],
       ["Can I use it in Japanese?", "Yes. The tool pages switch between English and Japanese at the top right."]
