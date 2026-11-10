@@ -2,14 +2,15 @@ name: SNS｜Bluesky のいいね（自動・毎日）
 
 # Bluesky で、タルコフ（Escape from Tarkov）についての最近の投稿（英語・日本語）を探して、いいねを付ける。役割はこれだけで、投稿はしない。
 # 自動の実行は1日1回、決めた件数を付ける。
-#   GitHub の定時実行は混むと数時間遅れたり飛ばされたりするので、夜に4回の時刻を入れてある（21:17・22:47・翌0:17・翌2:47）。
+#   GitHub の定時実行は混むと数時間遅れたり飛ばされたりするので、夜に2回の時刻を入れてある（21:17・翌0:17）。
+#   2026年11月：1日4回・50件（1回40分ほど）は多すぎるので、2回・10件（1回8分ほど）にした。
 #   最初に動いた回だけがいいねを付け、あとの回は「今日の分はもう済んでいる」と調べて何もしない（調べるのは sns/bsky-like-done.mjs）。
 #   「今日」は日本時間の朝4時から翌朝4時まで。1件も付けられずに失敗した回は済んだことにせず、次の時刻にもう一度動く。
 #   その日に手で付けたいいね・手で押した実行の分は、件数に数えない。
 # 必要な設定（Settings → Secrets and variables → Actions）
 #   Secrets  : BSKY_HANDLE（tarkov-workbench.bsky.social）、BSKY_APP_PASSWORD（Bluesky の設定で作るアプリパスワード）
-#   Variables: BSKY_LIKE_LIMIT（1回に付ける数。無ければ 50 件。50〜200 件の間で使う）。「Repository variables」に登録する
-# いいねとの間は「20 秒〜75 秒のランダム」あける（50 件で 40 分ほど、200 件で 2 時間半ほど）。付けたいいねは、実行結果の Summary に一覧で出る。
+#   Variables: BSKY_LIKE_LIMIT（1回に付ける数。無ければ 10 件。10〜200 件の間で使う）。「Repository variables」に登録する
+# いいねとの間は「20 秒〜75 秒のランダム」あける（10 件で 8 分ほど、50 件で 40 分ほど）。付けたいいねは、実行結果の Summary に一覧で出る。
 # 同じ人には、きのう・きょういいねを付けていたら付けない（1日以上あける。手で付けたいいねも含む）。
 # 止めるとき：Actions の画面でこのワークフローを開き、右上の「…」→「Disable workflow」。
 # 手で押すときは「候補を見るだけ」にすると、いいねを付けずに候補だけ見られる。
@@ -18,9 +19,7 @@ name: SNS｜Bluesky のいいね（自動・毎日）
 on:
   schedule:
     - cron: "17 12 * * *"      # 毎日 21:17（日本時間）。ふだんはこの回が付ける（MTG サイトのいいねと時刻をずらしている）
-    - cron: "47 13 * * *"      # 22:47（予備。その日の分が済んでいれば何もしない）
-    - cron: "17 15 * * *"      # 翌 0:17（予備。朝4時までは前の日の分として数える）
-    - cron: "47 17 * * *"      # 翌 2:47（予備）
+    - cron: "17 15 * * *"      # 翌 0:17（予備。その日の分が済んでいれば何もしない。朝4時までは前の日の分として数える）
   workflow_dispatch:
     inputs:
       dry_run:
@@ -61,7 +60,7 @@ jobs:
         if: steps.done.outputs.done != 'true'
         env:
           DRY_RUN: ${{ inputs.dry_run == true && '1' || '' }}
-          LIKE_LIMIT: ${{ inputs.limit || vars.BSKY_LIKE_LIMIT || '50' }}
+          LIKE_LIMIT: ${{ inputs.limit || vars.BSKY_LIKE_LIMIT || '10' }}
           LIKE_LIMIT_SRC: ${{ inputs.limit && 'input' || vars.BSKY_LIKE_LIMIT && 'var' || 'default' }}
           MANUAL: ${{ github.event_name == 'workflow_dispatch' && '1' || '' }}
           BSKY_HANDLE: ${{ secrets.BSKY_HANDLE }}
