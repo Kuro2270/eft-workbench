@@ -1,0 +1,68 @@
+name: SNS｜Bluesky のいいね・MTG（自動・毎日）
+
+# MTG のサイト（リミテッド・ワークベンチ）の Bluesky アカウントで、MTGアリーナ・マジック：ザ・ギャザリングについての
+# 最近の投稿（英語・日本語）を探して、いいねを付ける。役割はこれだけで、投稿はしない。
+#   2026年11月：MTG のリポジトリ（非公開）から移した。公開リポジトリは Actions の時間が無料なので、件数を増やせる。
+#   タルコフのいいね（「SNS｜Bluesky のいいね」＝bsky-like.yml）とは別のワークフロー・別のアカウント。
+#   このリポジトリは実行結果が誰でも見られるので、どの投稿・誰に付けたかは出さない（ログにも Summary にも、件数だけ）。
+#
+#   自動の実行は1日1回。GitHub の定時実行は遅れたり飛ばされたりするので、夜に2回の時刻を入れてある（20:43・23:43）。
+#   最初に動いた回だけがいいねを付け、あとの回は「今日の分はもう済んでいる」と調べて何もしない（sns/bsky-like-done.mjs）。
+#   「今日」は日本時間の朝4時から翌朝4時まで。1件も付けられずに失敗した回は済んだことにせず、次の時刻にもう一度動く。
+# 件数の変え方：Settings → Secrets and variables → Actions → Variables（Repository variables）に「MTG_BSKY_LIKE_LIMIT」を登録・編集する。
+#   登録が無ければ 30 件。10〜200 件の間で使う。いいねとの間は「20 秒〜75 秒のランダム」あける（30 件で 25 分ほど、50 件で 40 分ほど）。
+# 必要な Secrets：MTG_BSKY_HANDLE、MTG_BSKY_APP_PASSWORD（MTG のアカウントのハンドルと、アプリパスワード）
+# 止めるとき：Actions の画面でこのワークフローを開き、右上の「…」→「Disable workflow」。
+# 手で押すときは「候補を見るだけ」にすると、いいねを付けずに、候補が何件あるかだけ見られる。
+
+on:
+  schedule:
+    - cron: "43 11 * * *"      # 毎日 20:43（日本時間）。ふだんはこの回が付ける（MTG のリポジトリで動いていたときと同じ時刻）
+    - cron: "43 14 * * *"      # 23:43（予備。その日の分が済んでいれば何もしない）
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "候補を見るだけ（いいねは付けない）"
+        type: boolean
+        default: true
+      limit:
+        description: "今回付ける件数（1〜200）。空なら設定（MTG_BSKY_LIKE_LIMIT）の値"
+        default: ""
+
+permissions:
+  contents: read
+  actions: read     # 今日の自動の実行がもう済んだかを調べるため（実行の一覧を見るだけ）
+
+concurrency:
+  group: mtg-bsky-like
+  cancel-in-progress: false
+
+jobs:
+  like:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: 今日の自動の分がもう済んだかを調べる（自動の実行のときだけ）
+        id: done
+        if: github.event_name == 'schedule'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          LIKE_WORKFLOW: mtg-bsky-like.yml
+        run: node sns/bsky-like-done.mjs
+
+      - name: いいねを付ける
+        if: steps.done.outputs.done != 'true'
+        env:
+          DRY_RUN: ${{ inputs.dry_run == true && '1' || '' }}
+          LIKE_LIMIT: ${{ inputs.limit || vars.MTG_BSKY_LIKE_LIMIT || '30' }}
+          LIKE_LIMIT_SRC: ${{ inputs.limit && 'input' || vars.MTG_BSKY_LIKE_LIMIT && 'var' || 'default' }}
+          MANUAL: ${{ github.event_name == 'workflow_dispatch' && '1' || '' }}
+          BSKY_HANDLE: ${{ secrets.MTG_BSKY_HANDLE }}
+          BSKY_APP_PASSWORD: ${{ secrets.MTG_BSKY_APP_PASSWORD }}
+        run: node sns/mtg-bsky-like.mjs
