@@ -28,6 +28,7 @@ Escape from Tarkov の無料ツール集。tarkov.dev のデータを使う。
 | `snapshot.mjs` | 価格を tarkov.dev から取って `public/data/<モード>.json` に保存する |
 | `.github/workflows/snapshot.yml` | 「価格｜価格を取って保存する」：2時間おきに snapshot.mjs を動かし、Workers KV に置く |
 | `.github/workflows/bsky-like.yml` | 「SNS｜Bluesky のいいね」：タルコフの投稿にいいねを付ける（自動・1日1回。夜に予備の時刻つき） |
+| `.github/workflows/mtg-bsky-like.yml` | 「SNS｜Bluesky のいいね・MTG」：MTG のサイトのアカウントで、MTG の投稿にいいねを付ける（`sns/mtg-bsky-like.mjs`。自動・1日1回。結果は件数だけ出す） |
 | `.github/workflows/bsky-post-video.yml` | 「SNS｜動画を Bluesky で告知する」：ラットスポットのショート動画を1本ずつ告知する（手動） |
 | `sns/` | Bluesky とのやり取り（`bsky.mjs`）・いいね（`bsky-like.mjs`）・1日1回の確認（`bsky-like-done.mjs`）・動画の告知（`bsky-post-video.mjs`） |
 | `tools/` | 手元専用の道具（マップ作成） |
