@@ -241,43 +241,43 @@ html.needsdata:not(.loaded) main > :not(.phead){visibility:hidden}
 <body>
 <header>
   <div class="hl"><a class="brand" href="index.en.html">EFT Workbench</a><select id="modeSel"></select></div>
-  <nav class="pages" id="pages" hidden><a href="index.en.html" id="pgTop" data-i18n="pageTop"></a><a href="flip.en.html" id="pgFlip" data-i18n="pageBoard"></a><a href="loot.en.html" id="pgLoot" data-i18n="pageLoot"></a><a href="watch.en.html" id="pgWatch" data-i18n="pageWatch"></a><a href="rat.en.html" id="pgRat" data-i18n="pageRat"></a><a href="settings.en.html" id="pgSettings" data-i18n="pageSettings"></a></nav>
-  <span class="lang" role="group" aria-label="Language / 言語"><button type="button" data-lang="ja">日本語</button><button type="button" data-lang="en">English</button></span>
+  <nav class="pages" id="pages"><a href="index.en.html" id="pgTop" data-i18n="pageTop">Home</a><a href="flip.en.html" id="pgFlip" data-i18n="pageBoard" aria-current="page">Flip board</a><a href="loot.en.html" id="pgLoot" data-i18n="pageLoot">Loot tier list</a><a href="watch.en.html" id="pgWatch" data-i18n="pageWatch">Buy &amp; sell signals</a><a href="rat.en.html" id="pgRat" data-i18n="pageRat">Rat spots</a><a href="settings.en.html" id="pgSettings" data-i18n="pageSettings">Player settings</a></nav>
+  <span class="lang" role="group" aria-label="Language / 言語"><button type="button" data-lang="ja" aria-pressed="false">日本語</button><button type="button" data-lang="en" aria-pressed="true">English</button></span>
 </header>
 <main>
-  <div class="phead"><h1 data-i18n="title">EFT 転売ボード</h1><span class="status" id="status"></span></div>
+  <div class="phead"><h1 data-i18n="title">EFT Flip Board</h1><span class="status" id="status"></span></div>
   <section id="topCards" class="cards" hidden>
-    <a class="card" href="flip.en.html"><b data-i18n="pageBoard"></b><span data-i18n="topFlip"></span></a>
-    <a class="card" href="loot.en.html"><b data-i18n="pageLoot"></b><span data-i18n="topLoot"></span></a>
-    <a class="card" href="watch.en.html"><b data-i18n="pageWatch"></b><span data-i18n="topWatch"></span></a>
-    <a class="card" href="rat.en.html"><b data-i18n="pageRat"></b><span data-i18n="topRat"></span></a>
-    <a class="card sub" href="settings.en.html"><b data-i18n="pageSettings"></b><span data-i18n="topSettings"></span></a>
+    <a class="card" href="flip.en.html"><b data-i18n="pageBoard">Flip board</b><span data-i18n="topFlip">Items you can buy on one side and sell on the other (flea ⇄ traders) for a profit, with how easily they sell.</span></a>
+    <a class="card" href="loot.en.html"><b data-i18n="pageLoot">Loot tier list</b><span data-i18n="topLoot">Raid loot ranked S–D by take-home per grid slot, so you know what to carry out first.</span></a>
+    <a class="card" href="watch.en.html"><b data-i18n="pageWatch">Buy &amp; sell signals</b><span data-i18n="topWatch">Rankings of items trading near their past lows (buy zone) and near their past highs (sell zone), with suggested buy and sell prices and a moving-average chart.</span></a>
+    <a class="card" href="rat.en.html"><b data-i18n="pageRat">Rat spots</b><span data-i18n="topRat">Ambush (rat) spots for each map: where they are, how to get there, ratings and real kill videos.</span></a>
+    <a class="card sub" href="settings.en.html"><b data-i18n="pageSettings">Player settings</b><span data-i18n="topSettings">Player level, trader loyalty levels and Intelligence Center. Used for fees and what you can buy.</span></a>
   </section>
   <details class="settings" id="flipBox">
-    <summary data-i18n="flipSummary"></summary>
+    <summary data-i18n="flipSummary">Flip conditions (minimum profit, offers, etc.)</summary>
     <div class="grid" id="flipGrid"></div>
   </details>
-  <details class="settings" id="settingsBox">
-    <summary data-i18n="settingsSummary"></summary>
+  <details class="settings" id="settingsBox" hidden data-off="1">
+    <summary data-i18n="settingsSummary">Your progress (saved automatically)</summary>
     <div class="grid" id="settingsGrid"></div>
   </details>
 
-  <div class="bar">
-    <label class="note"><span data-i18n="topN"></span> <select id="topN"><option>20</option><option selected>30</option><option>50</option></select></label>
-    <label class="note"><span data-i18n="days"></span> <select id="daysSel"></select></label>
+  <div class="bar" id="bar">
+    <label class="note" id="topNWrap"><span data-i18n="topN">Items to analyze</span> <select id="topN"><option>20</option><option selected>30</option><option>50</option></select></label>
+    <label class="note" id="daysWrap"><span data-i18n="days">History</span> <select id="daysSel"></select></label>
     <label class="note" id="lootFilterWrap" hidden><input type="search" id="lootSearch" placeholder="" size="14"></label>
     <span class="note hides" id="lootHideWrap" hidden></span>
-    <span class="note hides" id="lootRareWrap" hidden><label><span data-i18n="lootRare1"></span><input type="number" id="lootMinOffers" min="0" max="999" style="width:4.5em"><span data-i18n="lootRare2"></span></label> <span id="lootCut"></span></span>
+    <span class="note hides" id="lootRareWrap" hidden><label><span data-i18n="lootRare1">Hide items with fewer than </span><input type="number" id="lootMinOffers" min="0" max="999" style="width:4.5em"><span data-i18n="lootRare2"> flea offers (0 = off)</span></label> <span id="lootCut"></span></span>
     <button id="viewBtn" hidden></button>
     <button id="shareBtn" hidden></button>
     <span class="note" id="progress"></span>
   </div>
 
-  <div class="tabs" role="tablist">
-    <button role="tab" aria-selected="true" data-tab="f2t" data-i18n="tabF2T"></button>
-    <button role="tab" aria-selected="false" data-tab="t2f" data-i18n="tabT2F"></button>
-    <button role="tab" aria-selected="false" data-tab="b2f" data-i18n="tabB2F"></button>
-    <button role="tab" aria-selected="false" data-tab="loot" data-i18n="tabLoot"></button>
+  <div class="tabs" id="tabs" role="tablist">
+    <button role="tab" aria-selected="true" data-tab="f2t" data-i18n="tabF2T">Buy on flea, sell to traders</button>
+    <button role="tab" aria-selected="false" data-tab="t2f" data-i18n="tabT2F">Buy from traders, sell on flea</button>
+    <button role="tab" aria-selected="false" data-tab="b2f" data-i18n="tabB2F">Barter at traders, sell on flea</button>
+    <button role="tab" aria-selected="false" data-tab="loot" id="tabLootBtn" data-i18n="tabLoot" hidden data-off="1">What to bring back</button>
   </div>
   <div id="banner"></div>
   <section id="marketPanel" hidden></section>
@@ -287,7 +287,7 @@ html.needsdata:not(.loaded) main > :not(.phead){visibility:hidden}
   <div class="tablewrap" id="listWrap"><table id="tbl"><thead></thead><tbody></tbody></table></div>
 </main>
 <div id="shareDlg" class="shdlg" hidden></div>
-<footer id="footer"></footer>
+<footer id="footer"><a href="about.en.html">About</a> · <a href="faq.en.html">FAQ</a> · <a href="privacy.en.html">Privacy</a> · <a href="contact.en.html">Contact</a></footer>
 <div id="tip" hidden></div>
 
 <script>
@@ -1545,34 +1545,28 @@ $days.addEventListener("change", () => { S.days = +$days.value; saveSettings(); 
 /* ページごとの見え方（転売ボード／持ち帰りティア表） */
 const PAGE_TITLE = {top: "titleTop", flip: "title", loot: "titleLoot", watch: "titleWatch", rat: "titleRat", settings: "titleSettings", all: "title"};
 const PAGE_NAV = {top: "pgTop", flip: "pgFlip", loot: "pgLoot", watch: "pgWatch", rat: "pgRat", settings: "pgSettings"};
-/* ページごとに、そのページの機能だけを見せる（中身の部品は共通） */
+/* ページごとに、そのページの機能だけを見せる（中身の部品は共通）。
+   どのページで何を出さないか・出すか・開いておくかは、この表だけで決める（#id で書く）。
+   サイトを作るとき（site/bake.mjs）もこの表を読んで、HTML そのものを同じ形にしておく。表の形は変えない */
+/*@@PAGE_PARTS:start@@*/
+const PAGE_PARTS = {
+  top:      {hide: ["#settingsBox", "#flipBox", "#status", "#bar", "#tabs", "#banner", "#tierLegend", "#tierBoard", "#listWrap"], show: ["#topCards"], open: []},
+  rat:      {hide: ["#settingsBox", "#flipBox", "#status", "#bar", "#tabs", "#banner", "#tierLegend", "#tierBoard", "#listWrap"], show: ["#ratPanel"], open: []},
+  settings: {hide: ["#flipBox", "#status", "#bar", "#tabs", "#banner", "#tierLegend", "#tierBoard", "#listWrap"], show: ["#settingsBox"], open: ["#settingsBox"]},
+  flip:     {hide: ["#settingsBox", "#tabLootBtn"], show: [], open: []},
+  loot:     {hide: ["#settingsBox", "#flipBox", "#tabs", "#topNWrap", "#daysWrap"], show: [], open: []},
+  watch:    {hide: ["#settingsBox", "#flipBox", "#tabs", "#topNWrap", "#daysWrap", "#bar", "#lootFilterWrap", "#lootHideWrap", "#lootRareWrap", "#viewBtn", "#shareBtn", "#listWrap", "#tierLegend", "#tierBoard", "#banner"], show: ["#marketPanel"], open: []}
+};
+/*@@PAGE_PARTS:end@@*/
 function setupPage(){
   if(PAGE === "all") return;                                   // 開発・テスト用：全部入り
-  const hide = (...sels) => sels.forEach(sel => document.querySelectorAll(sel).forEach(el => { el.hidden = true; el.dataset.off = "1"; }));
-  const show = id => { const el = document.getElementById(id); el.hidden = false; };
-  show("pages");
+  const parts = PAGE_PARTS[PAGE], el = sel => document.getElementById(sel.slice(1));
+  document.getElementById("pages").hidden = false;
   document.getElementById(PAGE_NAV[PAGE]).setAttribute("aria-current", "page");
   document.querySelector(".phead h1").dataset.i18n = PAGE_TITLE[PAGE];
-  hide("#settingsBox");                                        // 設定はプレイヤー設定のページだけ
-  if(PAGE !== "flip") hide("#flipBox");                        // 転売の条件は転売ボードだけ
-  if(PAGE === "top" || PAGE === "settings" || PAGE === "rat"){
-    hide("#status", ".bar", ".tabs", "#banner", "#tierLegend", "#tierBoard", "#listWrap");
-    if(PAGE === "top") show("topCards");
-    else if(PAGE === "rat") show("ratPanel");
-    else{ const b = document.getElementById("settingsBox"); b.hidden = false; delete b.dataset.off; b.open = true; }
-    return;
-  }
-  if(PAGE === "flip"){
-    hide('.tabs button[data-tab="loot"]');
-    return;
-  }
-  /* 持ち帰りティア表・売り時・買い時 */
-  hide(".tabs");
-  for(const id of ["topN", "daysSel"]) document.getElementById(id).closest("label").hidden = true;
-  if(PAGE === "watch"){
-    hide(".bar", "#lootFilterWrap", "#lootHideWrap", "#lootRareWrap", "#viewBtn", "#shareBtn", "#listWrap", "#tierLegend", "#tierBoard", "#banner");   // モードはヘッダーにあるので、この段には何も残らない
-    show("marketPanel");
-  }
+  for(const sel of parts.hide){ el(sel).hidden = true; el(sel).dataset.off = "1"; }
+  for(const sel of parts.show){ el(sel).hidden = false; delete el(sel).dataset.off; }
+  for(const sel of parts.open) el(sel).open = true;
 }
 /* 各ツールの上に出す、今のプレイヤー設定の要約（変えるのは設定ページで） */
 const $view = document.getElementById("viewBtn");

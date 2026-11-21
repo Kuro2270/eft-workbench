@@ -18,6 +18,7 @@ import { SITE, SITE_NAME } from "./config.mjs";
 import { ratData } from "./rat.mjs";
 import { enLinks } from "./lang.mjs";
 import { adsHead } from "./ads.mjs";
+import { readTables, bake, ratHtml } from "./bake.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const PAGE_MARK = 'const PAGE = "all";';
@@ -74,12 +75,13 @@ ${adsHead()}`;
 
 export function buildTools(){
   let src = readFileSync(join(ROOT, "src", "app.html"), "utf8");
+  const tables = readTables(src), rat = ratData(), ratUi = readFileSync(join(ROOT, "src", "rat-ui.js"), "utf8");   // HTML そのものに書き込む文言・ページの形（site/bake.mjs）
   for(const [mark, file] of PARTS){
     if(!src.includes(mark)) throw new Error(`${file} を埋め込む印が見つかりません`);
     src = src.replace(mark, () => readFileSync(join(ROOT, "src", file), "utf8"));
   }
   if(!src.includes(RAT_MARK)) throw new Error("ラットスポットのデータを埋め込む印が見つかりません");
-  src = src.replace(RAT_MARK, () => JSON.stringify(ratData()));
+  src = src.replace(RAT_MARK, () => JSON.stringify(rat));
   if(!src.includes(PAGE_MARK)) throw new Error("PAGE の行が見つかりません");
   const titleTag = src.match(/<title>[^<]*<\/title>/);
   if(!titleTag) throw new Error("<title> が見つかりません");
@@ -90,6 +92,7 @@ export function buildTools(){
     for(const lang of ["ja", "en"]){
       let html = publicSrc.replace(PAGE_MARK, `const PAGE = "${p.page}";`).replace(LANG_MARK, `const PAGE_LANG = "${lang}";`)
         .replace(titleTag[0], () => headFor(p, lang)).replace(/<html lang="[^"]*">/, `<html lang="${lang}">`);
+      html = bake(html, p.page, lang, tables, p.page === "rat" ? ratHtml(ratUi, rat, lang, tables) : "");
       if(lang === "en") html = enLinks(html);
       writeFileSync(join(ROOT, "public", fileOf(p, lang)), html);
       console.log("作成:", "public/" + fileOf(p, lang));

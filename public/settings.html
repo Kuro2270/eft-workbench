@@ -241,53 +241,53 @@ html.needsdata:not(.loaded) main > :not(.phead){visibility:hidden}
 <body>
 <header>
   <div class="hl"><a class="brand" href="index.html">EFT Workbench</a><select id="modeSel"></select></div>
-  <nav class="pages" id="pages" hidden><a href="index.html" id="pgTop" data-i18n="pageTop"></a><a href="flip.html" id="pgFlip" data-i18n="pageBoard"></a><a href="loot.html" id="pgLoot" data-i18n="pageLoot"></a><a href="watch.html" id="pgWatch" data-i18n="pageWatch"></a><a href="rat.html" id="pgRat" data-i18n="pageRat"></a><a href="settings.html" id="pgSettings" data-i18n="pageSettings"></a></nav>
-  <span class="lang" role="group" aria-label="Language / 言語"><button type="button" data-lang="ja">日本語</button><button type="button" data-lang="en">English</button></span>
+  <nav class="pages" id="pages"><a href="index.html" id="pgTop" data-i18n="pageTop">トップ</a><a href="flip.html" id="pgFlip" data-i18n="pageBoard">転売ボード</a><a href="loot.html" id="pgLoot" data-i18n="pageLoot">持ち帰りティア表</a><a href="watch.html" id="pgWatch" data-i18n="pageWatch">売り時・買い時</a><a href="rat.html" id="pgRat" data-i18n="pageRat">ラットスポット</a><a href="settings.html" id="pgSettings" data-i18n="pageSettings" aria-current="page">プレイヤー設定</a></nav>
+  <span class="lang" role="group" aria-label="Language / 言語"><button type="button" data-lang="ja" aria-pressed="true">日本語</button><button type="button" data-lang="en" aria-pressed="false">English</button></span>
 </header>
 <main>
-  <div class="phead"><h1 data-i18n="title">EFT 転売ボード</h1><span class="status" id="status"></span></div>
+  <div class="phead"><h1 data-i18n="titleSettings">EFT プレイヤー設定</h1><span class="status" id="status" hidden data-off="1"></span></div>
   <section id="topCards" class="cards" hidden>
-    <a class="card" href="flip.html"><b data-i18n="pageBoard"></b><span data-i18n="topFlip"></span></a>
-    <a class="card" href="loot.html"><b data-i18n="pageLoot"></b><span data-i18n="topLoot"></span></a>
-    <a class="card" href="watch.html"><b data-i18n="pageWatch"></b><span data-i18n="topWatch"></span></a>
-    <a class="card" href="rat.html"><b data-i18n="pageRat"></b><span data-i18n="topRat"></span></a>
-    <a class="card sub" href="settings.html"><b data-i18n="pageSettings"></b><span data-i18n="topSettings"></span></a>
+    <a class="card" href="flip.html"><b data-i18n="pageBoard">転売ボード</b><span data-i18n="topFlip">フリマとトレーダーの値段の差で利益が出る品を、売れやすさと一緒に一覧にします。</span></a>
+    <a class="card" href="loot.html"><b data-i18n="pageLoot">持ち帰りティア表</b><span data-i18n="topLoot">レイドで持ち帰る品を、1マスあたりの売値で S〜D の段に分けます。何を優先して持ち帰るかの目安に。</span></a>
+    <a class="card" href="watch.html"><b data-i18n="pageWatch">売り時・買い時</b><span data-i18n="topWatch">いまの値段が過去の底値付近の品（買い場）と、高値付近の品（売り場）をランキングで並べ、おすすめの買値・売値も出します。品を選ぶと値動きと移動平均のグラフも見られます。</span></a>
+    <a class="card" href="rat.html"><b data-i18n="pageRat">ラットスポット</b><span data-i18n="topRat">待ち伏せ（ラット）で勝てるスポットを、マップごとに。地図の位置・行き方・評価と、実際のキル動画つき。</span></a>
+    <a class="card sub" href="settings.html"><b data-i18n="pageSettings">プレイヤー設定</b><span data-i18n="topSettings">プレイヤーレベル・トレーダーのLL・インテルセンターなど。手数料や買える品の判定に使います。</span></a>
   </section>
-  <details class="settings" id="flipBox">
-    <summary data-i18n="flipSummary"></summary>
+  <details class="settings" id="flipBox" hidden data-off="1">
+    <summary data-i18n="flipSummary">転売の条件（最低利益・出品数など）</summary>
     <div class="grid" id="flipGrid"></div>
   </details>
-  <details class="settings" id="settingsBox">
-    <summary data-i18n="settingsSummary"></summary>
+  <details class="settings" id="settingsBox" open>
+    <summary data-i18n="settingsSummary">プレイヤーの状況（自動で保存されます）</summary>
     <div class="grid" id="settingsGrid"></div>
   </details>
 
-  <div class="bar">
-    <label class="note"><span data-i18n="topN"></span> <select id="topN"><option>20</option><option selected>30</option><option>50</option></select></label>
-    <label class="note"><span data-i18n="days"></span> <select id="daysSel"></select></label>
+  <div class="bar" id="bar" hidden data-off="1">
+    <label class="note" id="topNWrap"><span data-i18n="topN">分析する件数</span> <select id="topN"><option>20</option><option selected>30</option><option>50</option></select></label>
+    <label class="note" id="daysWrap"><span data-i18n="days">期間</span> <select id="daysSel"></select></label>
     <label class="note" id="lootFilterWrap" hidden><input type="search" id="lootSearch" placeholder="" size="14"></label>
     <span class="note hides" id="lootHideWrap" hidden></span>
-    <span class="note hides" id="lootRareWrap" hidden><label><span data-i18n="lootRare1"></span><input type="number" id="lootMinOffers" min="0" max="999" style="width:4.5em"><span data-i18n="lootRare2"></span></label> <span id="lootCut"></span></span>
+    <span class="note hides" id="lootRareWrap" hidden><label><span data-i18n="lootRare1">フリマの出品数が</span><input type="number" id="lootMinOffers" min="0" max="999" style="width:4.5em"><span data-i18n="lootRare2">件未満の品は外す（0で外さない）</span></label> <span id="lootCut"></span></span>
     <button id="viewBtn" hidden></button>
     <button id="shareBtn" hidden></button>
     <span class="note" id="progress"></span>
   </div>
 
-  <div class="tabs" role="tablist">
-    <button role="tab" aria-selected="true" data-tab="f2t" data-i18n="tabF2T"></button>
-    <button role="tab" aria-selected="false" data-tab="t2f" data-i18n="tabT2F"></button>
-    <button role="tab" aria-selected="false" data-tab="b2f" data-i18n="tabB2F"></button>
-    <button role="tab" aria-selected="false" data-tab="loot" data-i18n="tabLoot"></button>
+  <div class="tabs" id="tabs" role="tablist" hidden data-off="1">
+    <button role="tab" aria-selected="true" data-tab="f2t" data-i18n="tabF2T">フリマで買ってトレーダーに売る</button>
+    <button role="tab" aria-selected="false" data-tab="t2f" data-i18n="tabT2F">トレーダーで買ってフリマで売る</button>
+    <button role="tab" aria-selected="false" data-tab="b2f" data-i18n="tabB2F">交換で手に入れてフリマで売る</button>
+    <button role="tab" aria-selected="false" data-tab="loot" id="tabLootBtn" data-i18n="tabLoot">レイドで持ち帰る</button>
   </div>
-  <div id="banner"></div>
+  <div id="banner" hidden data-off="1"></div>
   <section id="marketPanel" hidden></section>
   <section id="ratPanel" hidden></section>
-  <p class="note" id="tierLegend"></p>
-  <div id="tierBoard" hidden></div>
-  <div class="tablewrap" id="listWrap"><table id="tbl"><thead></thead><tbody></tbody></table></div>
+  <p class="note" id="tierLegend" hidden data-off="1"></p>
+  <div id="tierBoard" hidden data-off="1"></div>
+  <div class="tablewrap" id="listWrap" hidden data-off="1"><table id="tbl"><thead></thead><tbody></tbody></table></div>
 </main>
 <div id="shareDlg" class="shdlg" hidden></div>
-<footer id="footer"></footer>
+<footer id="footer"><a href="about.html">このサイトについて</a>・<a href="faq.html">よくある質問</a>・<a href="privacy.html">プライバシーポリシー</a>・<a href="contact.html">お問い合わせ</a></footer>
 <div id="tip" hidden></div>
 
 <script>
@@ -1545,34 +1545,28 @@ $days.addEventListener("change", () => { S.days = +$days.value; saveSettings(); 
 /* ページごとの見え方（転売ボード／持ち帰りティア表） */
 const PAGE_TITLE = {top: "titleTop", flip: "title", loot: "titleLoot", watch: "titleWatch", rat: "titleRat", settings: "titleSettings", all: "title"};
 const PAGE_NAV = {top: "pgTop", flip: "pgFlip", loot: "pgLoot", watch: "pgWatch", rat: "pgRat", settings: "pgSettings"};
-/* ページごとに、そのページの機能だけを見せる（中身の部品は共通） */
+/* ページごとに、そのページの機能だけを見せる（中身の部品は共通）。
+   どのページで何を出さないか・出すか・開いておくかは、この表だけで決める（#id で書く）。
+   サイトを作るとき（site/bake.mjs）もこの表を読んで、HTML そのものを同じ形にしておく。表の形は変えない */
+/*@@PAGE_PARTS:start@@*/
+const PAGE_PARTS = {
+  top:      {hide: ["#settingsBox", "#flipBox", "#status", "#bar", "#tabs", "#banner", "#tierLegend", "#tierBoard", "#listWrap"], show: ["#topCards"], open: []},
+  rat:      {hide: ["#settingsBox", "#flipBox", "#status", "#bar", "#tabs", "#banner", "#tierLegend", "#tierBoard", "#listWrap"], show: ["#ratPanel"], open: []},
+  settings: {hide: ["#flipBox", "#status", "#bar", "#tabs", "#banner", "#tierLegend", "#tierBoard", "#listWrap"], show: ["#settingsBox"], open: ["#settingsBox"]},
+  flip:     {hide: ["#settingsBox", "#tabLootBtn"], show: [], open: []},
+  loot:     {hide: ["#settingsBox", "#flipBox", "#tabs", "#topNWrap", "#daysWrap"], show: [], open: []},
+  watch:    {hide: ["#settingsBox", "#flipBox", "#tabs", "#topNWrap", "#daysWrap", "#bar", "#lootFilterWrap", "#lootHideWrap", "#lootRareWrap", "#viewBtn", "#shareBtn", "#listWrap", "#tierLegend", "#tierBoard", "#banner"], show: ["#marketPanel"], open: []}
+};
+/*@@PAGE_PARTS:end@@*/
 function setupPage(){
   if(PAGE === "all") return;                                   // 開発・テスト用：全部入り
-  const hide = (...sels) => sels.forEach(sel => document.querySelectorAll(sel).forEach(el => { el.hidden = true; el.dataset.off = "1"; }));
-  const show = id => { const el = document.getElementById(id); el.hidden = false; };
-  show("pages");
+  const parts = PAGE_PARTS[PAGE], el = sel => document.getElementById(sel.slice(1));
+  document.getElementById("pages").hidden = false;
   document.getElementById(PAGE_NAV[PAGE]).setAttribute("aria-current", "page");
   document.querySelector(".phead h1").dataset.i18n = PAGE_TITLE[PAGE];
-  hide("#settingsBox");                                        // 設定はプレイヤー設定のページだけ
-  if(PAGE !== "flip") hide("#flipBox");                        // 転売の条件は転売ボードだけ
-  if(PAGE === "top" || PAGE === "settings" || PAGE === "rat"){
-    hide("#status", ".bar", ".tabs", "#banner", "#tierLegend", "#tierBoard", "#listWrap");
-    if(PAGE === "top") show("topCards");
-    else if(PAGE === "rat") show("ratPanel");
-    else{ const b = document.getElementById("settingsBox"); b.hidden = false; delete b.dataset.off; b.open = true; }
-    return;
-  }
-  if(PAGE === "flip"){
-    hide('.tabs button[data-tab="loot"]');
-    return;
-  }
-  /* 持ち帰りティア表・売り時・買い時 */
-  hide(".tabs");
-  for(const id of ["topN", "daysSel"]) document.getElementById(id).closest("label").hidden = true;
-  if(PAGE === "watch"){
-    hide(".bar", "#lootFilterWrap", "#lootHideWrap", "#lootRareWrap", "#viewBtn", "#shareBtn", "#listWrap", "#tierLegend", "#tierBoard", "#banner");   // モードはヘッダーにあるので、この段には何も残らない
-    show("marketPanel");
-  }
+  for(const sel of parts.hide){ el(sel).hidden = true; el(sel).dataset.off = "1"; }
+  for(const sel of parts.show){ el(sel).hidden = false; delete el(sel).dataset.off; }
+  for(const sel of parts.open) el(sel).open = true;
 }
 /* 各ツールの上に出す、今のプレイヤー設定の要約（変えるのは設定ページで） */
 const $view = document.getElementById("viewBtn");
