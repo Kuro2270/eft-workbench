@@ -207,7 +207,22 @@ footer a{color:var(--muted)}
 @media (max-width:900px){header{grid-template-columns:1fr auto}header .pages{grid-column:1 / -1;grid-row:2}}
 @media (max-width:600px){header .hl{display:contents}header .brand{grid-column:1;grid-row:1}header .lang{grid-column:2;grid-row:1}header #modeSel{grid-column:1 / -1;grid-row:2;justify-self:start}header .pages{grid-row:3}}
 @media (max-width:700px){header,main{padding-left:10px;padding-right:10px}}
+/* 画面の組み立て（そのページの部品だけを見せる・文言を入れる）が済むまでは、見せない。
+   組み立てる前の形が一瞬見えてから直ると、内容が大きく動いてしまう（Cloudflare の CLS が「悪い」になる原因。2026年11月）。
+   組み立てが済むと <html class="ready"> になる。スクリプトが途中で止まったときは、3秒後にそのまま見せる */
+html:not(.ready) header,html:not(.ready) main,html:not(.ready) footer{visibility:hidden;animation:readywait 0s 3s forwards}
+@keyframes readywait{to{visibility:visible}}
+/* 価格を読むページ（転売ボード・持ち帰りティア表・売り時・買い時）は、最初の価格が出るまで、題と「読み込み中…」だけを見せる。
+   空の操作欄を先に見せると、価格が出たときに欄が増えて内容が動く。フッターも、押し出されて動かないように画面の外に置く。
+   価格が出る（または取れなかった）と <html class="loaded"> になる */
+html.needsdata main{min-height:100vh}
+html.needsdata:not(.loaded) main > :not(.phead){visibility:hidden}
+/* スマホでは「○時点の価格」を題の下の1行に決めておく（文の長さで折り返しが変わり、下が動くのを防ぐ） */
+@media (max-width:600px){.phead .status{flex-basis:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}
+/* 転売ボードの「分析中…／○件を分析しました」も、スマホでは操作欄の下の1行に決めておく（同じ理由） */
+@media (max-width:600px){html[data-page="flip"] #progress{flex-basis:100%;min-height:19px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}
 </style>
+<noscript><style>html:not(.ready) header,html:not(.ready) main,html:not(.ready) footer{visibility:visible;animation:none}</style></noscript>
 </head>
 <body>
 <header>
@@ -1424,6 +1439,7 @@ async function loadInitial(){
     else await loadLive();
   }finally{
     LOADING = false;
+    document.documentElement.classList.add("loaded");   // 最初の価格が出た（または取れなかった）ので、操作欄と一覧を見せる
     nextCheck = DATA ? DATA.at.getTime() + FRESH_MS : Date.now() + RETRY_MS;
   }
 }
@@ -2232,8 +2248,11 @@ if($share){
 }
 
 
+document.documentElement.dataset.page = PAGE;
+if(NEEDS_DATA) document.documentElement.classList.add("needsdata");   // 最初の価格が出るまでの見せ方（上の <style> の説明）
 setupPage();
 applyLang();
+document.documentElement.classList.add("ready");   // 組み立てが済んだので、見せる（上の <style> の説明）
 if(NEEDS_DATA) loadInitial();
 </script>
 </body>
